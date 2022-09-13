@@ -1,0 +1,33 @@
+#header {
+    .navbar-nav a {
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        &:hover {
+            color: rgb(78, 96, 156);
+        }
+        //on active
+    }
+    .dropdown-menu a.dropdown-item span {
+        color: black;
+        text-decoration: none;
+        transition: all 0.6s ease-in-out;
+        &:hover {
+            color: rgb(78, 104, 207);
+        }
+    }
+    .avatar-box {
+        width: 40px;
+        height: 40px;
+        margin: 0 10px;
+        border-color: white;
+        border-width: 2px;
+        border-style: solid;
+        overflow: hidden;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}
