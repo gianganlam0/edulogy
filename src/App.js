@@ -5,7 +5,6 @@ import {Routes, Route, Link} from 'react-router-dom';
 function App() {
   return (
     <>
-    <Header/>
     <Routes>
       <Route path="/" element={<Home/>}/>
       {/* <Route path="/courses" element={<Courses/>}/>
@@ -16,6 +15,7 @@ function App() {
       <Route path="/profile" element={<Profile/>}/>
       <Route path="/logout" element={<Logout/>}/> */}
     </Routes>
+    <Header/>
     <Footer/>
     </>
   );

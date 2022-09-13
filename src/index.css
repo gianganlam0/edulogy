@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: rgb(155, 39, 39);
     height: 100vh;
     min-height: 100vh;
+    color: #a2a2a2;
 }

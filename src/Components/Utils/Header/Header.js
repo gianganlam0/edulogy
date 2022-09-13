@@ -9,26 +9,18 @@ import { useState } from 'react';
 
 export default function Header() {
 
-  const [navBar, setNavBar] = useState({fixed:'', bg:'transparent'});
+  const [navBarBg, setNavBarBg] = useState('transparent');
   const handleScroll = () => {
     if (window.scrollY > 100) {
-      setNavBar(
-        {
-          fixed: 'top',
-          bg: 'black',
-        }
-      )
+      setNavBarBg('black')
     } else {
-      setNavBar({
-        fixed: '',
-        bg: 'transparent',
-      })
+      setNavBarBg('transparent')
     }
   }
 
   window.addEventListener('scroll', handleScroll);
   return <>
-    <Navbar id="header" fixed={navBar.fixed} collapseOnSelect expand="lg" bg={navBar.bg} variant="dark">
+    <Navbar id="header" fixed='top' collapseOnSelect expand="lg" bg={navBarBg} variant="dark">
       <Container>
         <Navbar.Brand href="#home"><img src = {Logo} alt = 'logo'></img></Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
