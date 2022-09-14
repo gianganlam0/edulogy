@@ -34,6 +34,7 @@ export default function Header() {
             <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link>
             <NavDropdown title="anlam">
               <NavDropdown.Item href="/profile"><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
+              <NavDropdown.Item href="/my-courses"><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="/logout"><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>

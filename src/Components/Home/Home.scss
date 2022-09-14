@@ -54,11 +54,35 @@
             right: 0;
             margin: auto;
             text-align: center;
-            i {
-                display: block;
-                font-size: 14px;
+            svg {
+                display: inline-block;
+                font-size: 40px;
                 padding: 10px;
             }
+        }
+    }
+    .section-2 {
+        background-color: #f6f6f6;
+        position: relative;
+        .section-title h3 {
+            color: #000;
+            font-weight: 700;
+            font-size: 36px;
+            text-transform: uppercase;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .section-title {
+            margin-bottom: 45px;
+        }
+        .outer-slider {
+            //for slider
+            padding: 0 10px;
+        }
+        .section-button {
+            padding: 20px
         }
     }
 }
