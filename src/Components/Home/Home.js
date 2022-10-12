@@ -76,12 +76,10 @@ export default function Home() {
                     <hr/>
 
                     <div className="section-button text-center">
-                        <Button variant="success">Xem thêm</Button>
+                        <Button variant="success" onClick={()=>{navigate('course-list')}}>Xem thêm</Button>
                     </div>
                 </div>
             </section>
-
-
 
         </div>
     </>

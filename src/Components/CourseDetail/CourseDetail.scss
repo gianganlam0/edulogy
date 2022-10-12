@@ -1,0 +1,73 @@
+.course-detail {
+    position: relative;
+    min-height: 100vh;
+    background-color: rgb(61, 72, 82);
+    .section-detail {
+        position: relative;
+        z-index: 11;
+        padding: 100px 0;
+        .course-image {
+            img {
+                width: 100%;
+            }
+            margin: 20px;
+        }
+        .course-desc {
+            h3 {
+                color: rgb(255, 255, 255);
+                text-transform: uppercase;
+                margin: 10px 0 50px;
+                text-align: center;
+            }
+            p {
+                min-height: 200px;
+                color: rgb(255, 255, 255);
+                margin: 10px;
+            }
+            .course-footer {
+                display: inline-block;
+                width: 100%;
+                padding: 1.5rem 2rem;
+                border-top: 1px solid #eaeaea;
+                border-radius: 0 0 6px 6px;
+                border-top: 1px solid #eaeaea;
+                padding: 15px;
+                .pull-left {
+                    float: left;
+                    color: #eaeaea;
+                }
+                .pull-right {
+                    //to the right of the div
+                    float: right;
+                    color: #eaeaea;
+                }
+            }
+            .course-meta {
+                display: inline-block;
+                width: 100%;
+                position: relative;
+                margin: 30px 0;
+                padding: 30px 0;
+                border-top: 1px solid #f6f6f6;
+                border-bottom: 1px solid #f6f6f6;
+                color: #f6f6f6;
+                .cate {
+                    float: right;
+                }
+            }
+        }
+        .comment-box {
+            border: 1px solid #eee;
+            padding: 3rem;
+            margin-top: 6rem;
+            display: block;
+            .small-title {
+                color: #000;
+                font-size: 20px;
+                padding: 0 0 30px;
+                margin: 0;
+                line-height: 1;
+            }
+        }
+    }
+}
