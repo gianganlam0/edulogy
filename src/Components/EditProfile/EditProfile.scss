@@ -82,6 +82,13 @@
                 border-radius: 5px;
                 border: 0;
                 margin-bottom: 1rem;
+                .btn-right {
+                    float: right;
+                    margin-top: 20px;
+                    button {
+                        margin-left: 10px;
+                    }
+                }
             }
         }
     }

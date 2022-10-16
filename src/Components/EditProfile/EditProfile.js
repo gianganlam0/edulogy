@@ -24,12 +24,12 @@ export default function EditProfile() {
                                                 <div class="user-avatar">
                                                     <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Nguyễn Hữu Bảo" />
                                                 </div>
-                                                <h5 class="user-name">Nguyễn Hữu Bảo</h5>
+                                                {/* <input type="file" />Chọn ảnh đại diện                                               <h5 class="user-name">Nguyễn Hữu Bảo</h5> */}
                                                 <h6 class="user-email">vios.tee97@gmail.com</h6>
                                             </div>
                                             <div class="about">
                                                 <h5>Giới thiệu</h5>
-                                                <p>I'm Bảo. Full Stack Designer I enjoy creating user-centric, delightful and human experiences.</p>
+                                                <p>I'm Bảo. Full Stack Designer. I enjoy creating user-centric, delightful and human experiences.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -99,9 +99,19 @@ export default function EditProfile() {
                                         </div>
                                         <div class="row">
                                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                                <div class="btn-right" style={{float: 'right', marginTop: '20px'}}>
-                                                    <Button variant='danger'>Hu</Button>
-                                                    <button type="button" id="submit" name="submit" class="btn btn-primary">Update</button>
+                                                <h6 class="mt-3 mb-2 text-primary">Giới thiệu</h6>
+                                            </div>
+                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="form-group">
+                                                    <textarea class="form-control" id="about" rows="5" placeholder="Giới thiệu"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="btn-right">
+                                                    <Button variant='danger'>Hủy</Button>
+                                                    <Button>Cập nhật</Button>
                                                 </div>
                                             </div>
                                         </div>
