@@ -5,7 +5,7 @@ import * as Icon from 'react-bootstrap-icons';
 import {Button} from 'react-bootstrap';
 import Comment from '../Utils/Comment/Comment';
 export default function CourseDetail() {
-
+    document.title = "Chi tiết khóa học";
     return (
         <div className='course-detail'>
             <div className="overlay" />
@@ -29,19 +29,22 @@ export default function CourseDetail() {
                                 <div className="course-footer">
                                     <div className="pull-left">
                                         <div>
-                                            Số học viên <Icon.PersonFill /> 21
+                                            Số học viên: <Icon.PersonFill /> 21
                                         </div>  
                                         <div>
-                                            Thời gian <Icon.ClockFill /> 2h 30m
+                                            Thời gian: <Icon.ClockFill /> 2h 30m
+                                        </div>
+                                        <div>
+                                            Giáo viên: <Icon.MortarboardFill /> Nguyễn Văn A
                                         </div>
                                     </div>
                                     {/* end left */}
                                     <div className="pull-right">
                                         <div>
-                                            Giá tiền <Icon.CashStack /> 200.000đ
+                                            Giá tiền: <Icon.CashStack /> 200.000đ
                                         </div>
                                         <div>
-                                            Đánh giá <Icon.StarFill /> 4.5/5
+                                            Đánh giá: <Icon.StarFill /> 4.5/5
                                         </div>
                                     </div>
                                 </div>

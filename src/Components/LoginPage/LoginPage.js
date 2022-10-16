@@ -14,7 +14,7 @@ import {
     from 'mdb-react-ui-kit';
 
 export default function LoginPage() {
-
+    document.title = "Đăng nhập";
     return (
         <div className="login-page">
             <div className="main-bg">

@@ -1,39 +1,38 @@
 import { useState } from 'react';
-import './CourseList.scss';
-import CourseSquare from '../Utils/CourseSquare/CourseSquare';
+import './CateList.scss';
+import CateSquare from '../Utils/CateSquare/CateSquare';
 import COURSE_IMAGE from '../../images/course1.jpg';
 import {DropdownButton, Dropdown, Pagination} from 'react-bootstrap';
 
-function ColCourseSquare(props) {
+function ColCateSquare(props) {
     return (
         <div class="col-md-4" style={{margin: '20px 0'}}>
-            <CourseSquare src={props.src} />
+            <CateSquare src={props.src} />
         </div>
     );
 }
 
-export default function CourseList() {
-    document.title = "Danh sách khóa học";
+export default function CateList() {
+    document.title = "Danh mục";
     return (
-        <div className='course-list'>
+        <div className='cate-list'>
             <div className="overlay" />
 
-            <section className="section-course">
+            <section className="section-cate">
                 <div className="container">
                     <div class="boxed">
                         <div className="section-title text-center">
-                            <h3>Danh sách khóa học</h3>
+                            <h3>Danh sách thể loại</h3>
                         </div>
 
-                        <div class="course-top">
+                        <div class="cate-top">
                             <div class="left-text">
                                 <p> Tìm thấy 25 kết quả</p>
                             </div>
                             <div class="right-text">
                                 <DropdownButton variant="dark" title="Lọc theo">
                                     <Dropdown.Item>Theo tên</Dropdown.Item>
-                                    <Dropdown.Item active>Theo số sao</Dropdown.Item>
-                                    <Dropdown.Item>Theo giá tiền</Dropdown.Item>
+                                    <Dropdown.Item active>Theo số lượng khóa học</Dropdown.Item>
                                 </DropdownButton>
 
                                 <DropdownButton variant="dark" title="Thứ tự">
@@ -43,14 +42,15 @@ export default function CourseList() {
                             </div>
                         </div>
 
-                        {/* show course list grid */}
-                        <div class="row course-grid">
-                            <ColCourseSquare src={COURSE_IMAGE} />
-                            <ColCourseSquare src={COURSE_IMAGE} />
-                            <ColCourseSquare src={COURSE_IMAGE} />
-                            <ColCourseSquare src={COURSE_IMAGE} />
-                            <ColCourseSquare src={COURSE_IMAGE} />
-                            <ColCourseSquare src={COURSE_IMAGE} />
+                        {/* show cate list grid */}
+                        <div class="row cate-grid">
+                            <ColCateSquare src={COURSE_IMAGE} />
+                            <ColCateSquare src={COURSE_IMAGE} />
+                            <ColCateSquare src={COURSE_IMAGE} />
+                            <ColCateSquare src={COURSE_IMAGE} />
+                            <ColCateSquare src={COURSE_IMAGE} />
+                            <ColCateSquare src={COURSE_IMAGE} />
+                            <ColCateSquare src={COURSE_IMAGE} />
                         </div>
 
                         <hr class="invis"></hr>

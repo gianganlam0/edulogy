@@ -1,0 +1,88 @@
+.edit-profile {
+    position: relative;
+    min-height: 100vh;
+    .overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1;
+        background: url('../../images/pattern.png') repeat center center rgba(0, 0, 0, 0.7);
+    }
+    .section-profile {
+        position: relative;
+        z-index: 111;
+        padding: 100px 0;
+        .boxed {
+            display: block;
+            box-shadow: 0 30px 50px 0 rgba(1, 1, 1, 0.18);
+            padding: 8rem 4rem 8rem;
+            background: linear-gradient(135deg, white 0%, #723e3e 100%);
+            padding-top: 4rem;
+            .section-title h3 {
+                color: #000;
+                font-weight: 700;
+                font-size: 36px;
+                text-transform: uppercase;
+                margin: 0;
+                text-align: center;
+                padding-bottom: 30px;
+            }
+            .account-settings {
+                .user-profile {
+                    margin: 0 0 1rem 0;
+                    padding-bottom: 1rem;
+                    text-align: center;
+                    .user-avatar {
+                        margin: 0 0 1rem 0;
+                        img {
+                            width: 90px;
+                            height: 90px;
+                            -webkit-border-radius: 100px;
+                            -moz-border-radius: 100px;
+                            border-radius: 100px;
+                        }
+                    }
+                    .user-name {
+                        margin: 0 0 0.5rem 0;
+                    }
+                    .user-email {
+                        margin: 0;
+                        font-size: 0.8rem;
+                        font-weight: 400;
+                        color: #9fa8b9;
+                    }
+                }
+                .about {
+                    margin: 2rem 0 0 0;
+                    text-align: center;
+                    h5 {
+                        margin: 0 0 15px 0;
+                        color: #007ae1;
+                    }
+                    p {
+                        font-size: 0.825rem;
+                    }
+                }
+            }
+            .form-control {
+                border: 1px solid #cfd1d8;
+                -webkit-border-radius: 2px;
+                -moz-border-radius: 2px;
+                border-radius: 2px;
+                font-size: .825rem;
+                background: #ffffff;
+                color: #2e323c;
+            }
+            .card {
+                background: #ffffff;
+                -webkit-border-radius: 5px;
+                -moz-border-radius: 5px;
+                border-radius: 5px;
+                border: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}

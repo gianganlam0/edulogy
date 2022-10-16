@@ -31,18 +31,18 @@ export default function Header() {
           <Nav className="me-auto">
             <Nav.Link onClick={()=>{navigate('/')}}><Icon.HouseFill/> Trang chủ</Nav.Link>
             <Nav.Link onClick={()=>{navigate('/course-list')}}><Icon.BookFill/> Khóa học</Nav.Link>
-            {/* <Nav.Link href="/news"><Icon.Newspaper/> Tin tức</Nav.Link> */}
+            <Nav.Link onClick={()=>{navigate('/cate-list')}}><Icon.PenFill/> Thể loại</Nav.Link>
           </Nav>
           <Nav>
             <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link>
             <NavDropdown title="anlam">
-              <NavDropdown.Item href="/profile"><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
+              <NavDropdown.Item onClick={()=>{navigate('/edit-profile')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item href="/my-courses"><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="/logout"><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link href="/login"> Đăng nhập</Nav.Link>
-            <Nav.Link href="/cart"><Icon.Cart/></Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/login')}}> Đăng nhập</Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/cart')}}><Icon.Cart/></Nav.Link>
             {/* avatar box */}
             <div className="avatar-box">
               <img src={Avatar} alt="avatar" />

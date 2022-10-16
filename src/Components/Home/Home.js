@@ -11,6 +11,7 @@ import {
 
 
 export default function Home() {
+    document.title = "Trang chủ";
     const responsive = { //for carousel
         desktop: {
             breakpoint: { max: 3000, min: 1024 },
