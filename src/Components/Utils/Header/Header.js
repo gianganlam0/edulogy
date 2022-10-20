@@ -4,6 +4,8 @@ import './Header.scss';
 import { useState, useEffect} from 'react';
 import {useNavigate,} from "react-router-dom";
 import * as CK from '../../Utils/Cookie';
+import $ from 'jquery';
+import Swal from 'sweetalert2';
 
 export default function Header() {
   const LS = localStorage;
@@ -28,6 +30,48 @@ export default function Header() {
       setNavBarBg('transparent')
     }
   }
+  const handleLogout = () => {
+    const url = '/edulogy/api/Controller/LogoutController.php';
+        $.ajax({
+            url: url,
+            type: 'POST',
+        }).done(function(res){
+            res = JSON.parse(res);
+            if (res.status === 1){
+              Swal.fire({
+                  position: 'center',
+                  text: res.message,
+                  icon: 'success',
+                  showConfirmButton: true,
+                  timer: 2000,
+                  width: 500,
+              })
+            }
+            else{
+              Swal.fire({
+                  position: 'top',
+                  text: res.message,
+                  icon: 'error',
+                  timer: 4000,
+                  width: 500,
+              })
+            }
+            navigate('/');           
+        }).fail(function(){
+            Swal.fire({
+              position: 'top',
+              text: 'Lỗi kết nối',
+              icon: 'error',
+              timer: 4000,
+              width: 500,
+          })
+        });
+    // CK.deleteCookie('id');
+    // CK.deleteCookie('token');
+    LS.removeItem('fullname');
+    LS.removeItem('avatar');
+    navigate('/');
+  }
 
   window.addEventListener('scroll', handleScroll);
   return <>
@@ -47,7 +91,7 @@ export default function Header() {
               <NavDropdown.Item onClick={()=>{navigate('/edit-profile')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item href="/my-courses"><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="/logout"><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>
             <Nav.Link hidden={isLogin} onClick={()=>{navigate('/login')}}> Đăng nhập</Nav.Link>
             <Nav.Link hidden={!isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/></Nav.Link>
