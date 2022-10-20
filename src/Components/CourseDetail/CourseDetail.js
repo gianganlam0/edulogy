@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './CourseDetail.scss';
 import COURSE_IMAGE from '../../images/course1.jpg';
 import * as Icon from 'react-bootstrap-icons';

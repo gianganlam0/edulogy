@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import './Cart.scss';
-import COURSE_IMAGE from '../../images/course1.jpg';
 import {Button, Pagination} from 'react-bootstrap';
 import * as Icon from 'react-bootstrap-icons';
 

@@ -7,7 +7,7 @@ import CourseDetail from './Components/CourseDetail/CourseDetail';
 import CateList from './Components/CateList/CateList';
 import Cart from './Components/Cart/Cart';
 import EditProfile from './Components/EditProfile/EditProfile';
-import {Routes, Route, Link} from 'react-router-dom';
+import {Routes, Route} from 'react-router-dom';
 
 function App() {
   return (

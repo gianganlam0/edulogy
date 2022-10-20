@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './CourseList.scss';
 import CourseSquare from '../Utils/CourseSquare/CourseSquare';
 import COURSE_IMAGE from '../../images/course1.jpg';

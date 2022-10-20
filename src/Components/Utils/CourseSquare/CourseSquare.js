@@ -1,4 +1,3 @@
-import { CarouselItem } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './CourseSquare.scss';
 import * as Icon from 'react-bootstrap-icons';

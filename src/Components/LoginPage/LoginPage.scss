@@ -34,6 +34,14 @@
                     background: #eee;
                 }
             }
+            .login-img {
+                //image has height of 100 of outer container
+                height: 100%;
+                background-image: url('../../images/login-bg.png');
+                background-position: center center;
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
         }
     }
 }

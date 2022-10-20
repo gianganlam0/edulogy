@@ -1,6 +1,5 @@
 import './EditProfile.scss';
 import { Button } from 'react-bootstrap';
-import * as Icon from 'react-bootstrap-icons';
 
 export default function EditProfile() {
     document.title = "Thay đổi thông tin cá nhân";

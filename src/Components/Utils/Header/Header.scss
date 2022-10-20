@@ -1,4 +1,12 @@
 #header {
+    .main-logo {
+        background-image: url(../../../images/logo.png);
+        width: 180px;
+        height: 45px;
+        &:hover {
+            background-image: url(../../../images/logo-dark.png);
+        }
+    }
     .navbar-nav a {
         color: #fff;
         text-decoration: none;
