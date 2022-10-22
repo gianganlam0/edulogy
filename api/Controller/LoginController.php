@@ -8,32 +8,32 @@ $username = $rq['username'];
 $password = $rq['password'];
 // echo $username;
 $res = array(
-    'status' => 0,
+    'status' => '',
     'message' => '',
-    'data' => array()
+    'data' => ''
 );
 
-//if chua dang nhap
+//if chua dang nhap thì bắt đầu sess
 if (!isset($_SESSION)) {
     session_start();
-    setcookie('PHPSESSID', session_id(), time() + 3600, '/');
+    setcookie('PHPSESSID', session_id(), time() + 3600*24, '/');//1 ngày
 }
 if (isset($_SESSION['id'])) {
-    $res['status'] = 2;
+    $res['status'] = 1;
     $res['message'] = 'Bạn đã đăng nhập rồi';
     $res['data'] = array(
+        'id' => $_SESSION['id'],
+        'role' => $_SESSION['role'],
         'fullname' => $_SESSION['fullname'],
         'avatar' => $_SESSION['avatar']
     );
-    setcookie('id', $_SESSION['id'], time() + 3600, '/');
-    setcookie('role', $_SESSION['role'], time() + 3600, '/');
     echo json_encode($res);
     return;
 }
 //username start with lowercase letter and only has lowercase letters, numbers, ., _ and length 1 to 100
 $regexUsername = '/^[a-z][a-z0-9._]{1,100}$/';
 if (!preg_match($regexUsername, $username)) {
-    $res['status'] = 0;
+    $res['status'] = 3;
     $res['message'] = 'Tên đăng nhập không hợp lệ!';
     echo json_encode($res);
     return;

@@ -20,12 +20,11 @@ $CFG->dboptions = array (
   'dbcollation' => 'utf8mb4_unicode_ci',
 );
 
-$CFG->wwwroot   = 'http://localhost/sura';
-$CFG->dataroot  = 'C:\\xampp\\moodledata';
+$CFG->wwwroot   = 'http://localhost/saru';
+$CFG->dataroot  = $DBS['dataroot'];
 $CFG->admin     = 'admin';
 
-
-$CFG->siteguest = '0'; //no guest
+$CFG->siteguest = '1';
 
 $sql = "SELECT userid FROM user WHERE role = '2'"; //get userid of admins, 2 is admin role
 $CONN = connectDB();

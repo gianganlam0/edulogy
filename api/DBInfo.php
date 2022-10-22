@@ -2,8 +2,10 @@
 //new array
 $DBS = array();
 $DBS['dbhost']    = 'localhost';
-$DBS['dbname']    = 'sura';
+$DBS['dbname']    = 'saru';
 $DBS['dbuser']    = 'root';
 $DBS['dbpass']    = 'sura';
-$DBS['prefix']    = 'sura_';
+$DBS['prefix']    = 'saru_';
+$DBS['dataroot']    = 'C:/xampp/sarudata';
+$DBS['edulogydata']    = 'C:/xampp/edulogydata';
 ?>

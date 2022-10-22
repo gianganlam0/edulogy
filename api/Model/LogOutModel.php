@@ -2,7 +2,7 @@
 function handleLogout(){
     $fullname = $_SESSION['fullname'];
     $res = array(
-        'status' => 1,
+        'status' => 0,
         'message' => $fullname . " đã đăng xuất thành công!",
         'data' => array()
     );

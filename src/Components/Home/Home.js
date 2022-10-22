@@ -5,11 +5,11 @@ import COURSE_IMAGE from '../../images/course1.jpg';
 import * as Icon from 'react-bootstrap-icons';
 import Carousel from "react-multi-carousel";
 import {useNavigate} from "react-router-dom";
-import * as CK from '../Utils/Cookie';
-
-
+import { useEffect, useState, useContext } from 'react';
+import { Context } from '../Utils/ContextProvider';
 export default function Home() {
-    const isLogin = CK.getCookie('id');
+    const context = useContext(Context);
+    
     document.title = "Trang chủ";
     const responsive = { //for carousel
         desktop: {
@@ -39,8 +39,8 @@ export default function Home() {
                             unlimited page templates, color options, and menu features.
                         </small>
                         <div className="btn-wrapper">
-                            <Button hidden={isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button>     
-                            <Button variant="success" size="lg" hidden={!isLogin} onClick={()=>{window.location.href="http://localhost/sura"}}>Truy cập trang moodle</Button>
+                            <Button hidden={context.isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button>     
+                            <Button variant="success" size="lg" hidden={!context.isLogin} onClick={()=>{window.location.href="http://localhost/sura"}}>Truy cập trang moodle</Button>
                         </div>
                     </div>
                 </div>
@@ -75,7 +75,7 @@ export default function Home() {
                     <hr/>
 
                     <div className="section-button text-center">
-                        <Button variant="success" onClick={()=>{navigate('course-list')}}>Xem thêm</Button>
+                        <Button variant="success" onClick={()=>{navigate('/course-list')}}>Xem thêm</Button>
                     </div>
                 </div>
             </section>

@@ -1,26 +1,16 @@
 import * as Icon from 'react-bootstrap-icons';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import './Header.scss';
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useContext} from 'react';
 import {useNavigate,} from "react-router-dom";
-import * as CK from '../../Utils/Cookie';
 import $ from 'jquery';
+import * as CK from '../Cookie';
 import Swal from 'sweetalert2';
+import { Context } from '../ContextProvider';
 
 export default function Header() {
+  const context = useContext(Context);
   const LS = localStorage;
-  const [fullname , setFullname] = useState('');
-  const [avatar , setAvatar] = useState('');
-  
-  const isLogin = CK.getCookie('id') !== '' ? true : false;
-
-  useEffect(() => {
-    const fullname = 'fullname' in LS ? JSON.parse(LS.getItem('fullname')) : 'Khách';
-    const avatar = 'avatar' in LS ? JSON.parse(LS.getItem('avatar')) : 'https://i.imgur.com/AxnVk1a.png';
-    setAvatar(avatar);
-    setFullname(fullname);
-  }, [isLogin, LS]);
-
   const navigate = useNavigate();
   const [navBarBg, setNavBarBg] = useState('transparent');
   const handleScroll = () => {
@@ -37,7 +27,7 @@ export default function Header() {
             type: 'POST',
         }).done(function(res){
             res = JSON.parse(res);
-            if (res.status === 1){
+            if (res.status === 0){
               Swal.fire({
                   position: 'center',
                   text: res.message,
@@ -46,17 +36,35 @@ export default function Header() {
                   timer: 2000,
                   width: 500,
               })
+              context.setFullname("Khách");
+              context.setAvatar("");
+              context.setIsLogin(false);
+              navigate('/login');
             }
-            else{
-              Swal.fire({
+            else if (res.status === 1){
+              Swal.fire({ //dang xuat roi
                   position: 'top',
                   text: res.message,
                   icon: 'error',
                   timer: 4000,
                   width: 500,
               })
+              LS.removeItem('fullname');
+              LS.removeItem('avatar');
+              context.setIsLogin(false);
+              navigate('/login');
             }
-            navigate('/');           
+            else{
+              Swal.fire({
+                  position: 'top',
+                  text: "Lỗi không xác định",
+                  icon: 'error',
+                  timer: 4000,
+                  width: 500,
+              })
+            }
+            
+            
         }).fail(function(){
             Swal.fire({
               position: 'top',
@@ -64,13 +72,9 @@ export default function Header() {
               icon: 'error',
               timer: 4000,
               width: 500,
-          })
+            })
         });
-    // CK.deleteCookie('id');
-    // CK.deleteCookie('token');
-    LS.removeItem('fullname');
-    LS.removeItem('avatar');
-    navigate('/');
+    
   }
 
   window.addEventListener('scroll', handleScroll);
@@ -87,17 +91,17 @@ export default function Header() {
           </Nav>
           <Nav>
             {/* <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link> */}
-            <NavDropdown disabled={!isLogin} title={fullname}>
-              <NavDropdown.Item onClick={()=>{navigate('/edit-profile')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
+            <NavDropdown disabled={!context.isLogin} title={context.fullname}>
+              <NavDropdown.Item onClick={()=>{navigate('/edit-profile/' + CK.getCookie('id'))}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item href="/my-courses"><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link hidden={isLogin} onClick={()=>{navigate('/login')}}> Đăng nhập</Nav.Link>
-            <Nav.Link hidden={!isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/></Nav.Link>
+            <Nav.Link hidden={context.isLogin} onClick={()=>{navigate('/login')}}> Đăng nhập</Nav.Link>
+            <Nav.Link hidden={!context.isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/></Nav.Link>
             {/* avatar box */}
-            <div hidden={!isLogin} className="avatar-box">
-              <img src={avatar} alt="avatar" />
+            <div hidden={!context.isLogin} className="avatar-box">
+              <img src={context.avatar} alt="avatar" />
               
             </div>
           </Nav>

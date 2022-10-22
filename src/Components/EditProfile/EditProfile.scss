@@ -44,10 +44,10 @@
                             border-radius: 100px;
                         }
                     }
-                    .user-name {
+                    .fullname {
                         margin: 0 0 0.5rem 0;
                     }
-                    .user-email {
+                    .email {
                         margin: 0;
                         font-size: 0.8rem;
                         font-weight: 400;
@@ -65,6 +65,12 @@
                         font-size: 0.825rem;
                     }
                 }
+                .change-ava-btn {
+                    text-align: center;
+                    button {
+                        margin: 10px 0;
+                    }
+                }
             }
             .form-control {
                 border: 1px solid #cfd1d8;
@@ -72,8 +78,6 @@
                 -moz-border-radius: 2px;
                 border-radius: 2px;
                 font-size: .825rem;
-                background: #ffffff;
-                color: #2e323c;
             }
             .card {
                 background: #ffffff;

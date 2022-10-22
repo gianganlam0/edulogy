@@ -15,15 +15,15 @@ function handleLogin($username, $password){
     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
     $count = mysqli_num_rows($result);
     $res = array(
-        'status' => 0,
+        'status' => '',
         'message' => '',
-        'data' => array()
+        'data' => ''
     );
     if ($count == 1) {
         $_SESSION['id'] = $row['userid'];
-        setcookie('id', $_SESSION['id'], time() + 3600, '/');
+        setcookie('id', $row['userid'], time() + 3600*24, '/');//1 ngày
         $_SESSION['role'] = $row['role'];
-        setcookie('role', $_SESSION['role'], time() + 3600, '/');
+        setcookie('role', $row['role'], time() + 3600*24, '/');//1 ngày
         $_SESSION['avatar'] = $row['avatar'];
         //lấy tên
         $userTable = $DBS['prefix'] . 'user';
@@ -32,14 +32,16 @@ function handleLogin($username, $password){
         $row2 = mysqli_fetch_array($result, MYSQLI_ASSOC);
         $_SESSION['fullname'] = $row2['lastname'] . ' ' . $row2['firstname'];
 
-        $res['status'] = 1;
+        $res['status'] = 0;
         $res['message'] = 'Đăng nhập thành công';
         $res['data'] = array(
+            'id' => $_SESSION['id'],
+            'role' => $_SESSION['role'],
             'fullname' => $_SESSION['fullname'],
             'avatar' => $_SESSION['avatar']
         );
     } else {
-        $res['status'] = 0;
+        $res['status'] = 2;
         $res['message'] = 'Tên đăng nhập hoặc mật khẩu không đúng';
     }
     return json_encode($res);
