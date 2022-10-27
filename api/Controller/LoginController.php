@@ -1,8 +1,6 @@
 <?php
 
-require '../Model/LoginModel.php';
-//data from post is json format
-
+require_once '../Model/LoginModel.php';
 $rq = json_decode($_POST['data'], true);
 $username = $rq['username'];
 $password = $rq['password'];
@@ -48,5 +46,12 @@ if (!preg_match($regexUsername, $username)) {
 //     return;
 // }
 
-echo handleLogin($username, $password);
+try {
+    echo handleLogin($username, $password);
+}
+catch (Throwable $th) {
+    $res['status'] = -1;
+    $res['message'] = 'Đã có lỗi xảy ra!';
+    echo json_encode($res);
+}
 return;

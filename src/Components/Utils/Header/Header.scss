@@ -1,4 +1,4 @@
-#header {
+.header {
     .main-logo {
         background-image: url(../../../images/logo.png);
         width: 180px;
@@ -15,6 +15,9 @@
             color: rgb(78, 96, 156);
         }
         //on active
+        &.active {
+            color: rgb(204, 214, 60);
+        }
     }
     .dropdown-menu a.dropdown-item span {
         color: black;
@@ -37,5 +40,8 @@
             height: 100%;
             object-fit: cover;
         }
+    }
+    .navbar-toggler-icon {
+        background-image: url(../../../images/favicon.ico);
     }
 }

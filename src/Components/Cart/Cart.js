@@ -6,7 +6,6 @@ function Item(props) {
     const courseStyle={
         float:'left',
         color: 'black',
-
     }
     const costStyle={
         float:'right',
@@ -15,12 +14,10 @@ function Item(props) {
         //center   
         justifyContent: 'center',
         alignItems: 'center',
-
-
     }
     return (
         <>
-        <div class="col-md-12" style={{display: 'inline-block'}}>
+        <div className="col-md-12" style={{display: 'inline-block'}}>
             <div className='course-name' style={courseStyle}>
                 Lập trình web cơ bản
             </div>
@@ -44,20 +41,20 @@ export default function Cart() {
 
             <section className="section-cart">
                 <div className="container">
-                    <div class="boxed">
+                    <div className="boxed">
                         <div className="section-title text-center">
                             <h3>Giỏ hàng của bạn</h3>
                         </div>
 
-                        <div class="cart-top">
-                            <div class="left-text">
+                        <div className="cart-top">
+                            <div className="left-text">
                                 <p> Tổng số 10 sản phẩm</p>
                             </div>
                             
                         </div>
                         <hr style={{color:'black'}}></hr>
                         {/* show cart list grid */}
-                        <div class="cart-grid">
+                        <div className="cart-grid">
                             <Item/>
                             <Item/>
                             <Item/>
@@ -65,11 +62,11 @@ export default function Cart() {
                         </div>
 
                         
-                        <div class="cart-total">
-                            <div class="left-cost">
+                        <div className="cart-total">
+                            <div className="left-cost">
                                 Tổng tiền: 200.000đ
                             </div>
-                            <div class="right-btn">
+                            <div className="right-btn">
                                 <Button variant="success">Thanh toán</Button>
                             </div>
                         </div>

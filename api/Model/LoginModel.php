@@ -1,8 +1,11 @@
 <?php
 
 function handleLogin($username, $password){
-    require '../connectDB.php';
+    require_once '../connectDB.php';
 
+    if (!isset($_SESSION)) {
+        session_start();
+    }
     //anti sql injection
     $CONN = connectDB();
     $username = stripslashes($username);
@@ -12,6 +15,10 @@ function handleLogin($username, $password){
 
     $sql = "SELECT * FROM user WHERE username = '$username' AND password = '$password'";
     $result = mysqli_query($CONN, $sql);
+    //check if wrong sql query
+    if (!$result) {
+        throw new Exception(mysqli_error($CONN));
+    }
     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
     $count = mysqli_num_rows($result);
     $res = array(
@@ -29,6 +36,9 @@ function handleLogin($username, $password){
         $userTable = $DBS['prefix'] . 'user';
         $sql = "SELECT * FROM $userTable WHERE username = '$username'";
         $result = mysqli_query($CONN, $sql);
+        if (!$result) {
+            throw new Exception(mysqli_error($CONN));
+        }
         $row2 = mysqli_fetch_array($result, MYSQLI_ASSOC);
         $_SESSION['fullname'] = $row2['lastname'] . ' ' . $row2['firstname'];
 

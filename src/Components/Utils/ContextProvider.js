@@ -8,7 +8,10 @@ export const ContextProvider = ({children}) => {
     const [fullname, setFullname] = useLocalStorage('fullname', 'Khách');
     const [avatar, setAvatar] = useLocalStorage('avatar', '');
     return (
-        <Context.Provider value={{isLogin, setIsLogin, isAdmin, setIsAdmin, fullname, setFullname, avatar, setAvatar}}>
+        <Context.Provider value={{isLogin, setIsLogin,
+        isAdmin, setIsAdmin,
+        fullname, setFullname,
+        avatar, setAvatar}}>
             {children}
         </Context.Provider>
     )

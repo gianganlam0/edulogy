@@ -1,5 +1,8 @@
 <?php
 function handleLogout(){
+    if (!isset($_SESSION)) {
+        session_start();
+    }
     $fullname = $_SESSION['fullname'];
     $res = array(
         'status' => 0,

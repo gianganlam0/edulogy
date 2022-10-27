@@ -28,8 +28,7 @@ export default function Footer() {
         })
     }
     return <>
-        <footer id="footer">
-
+        <footer className="footer">
             <MDBFooter className='text-center' color='white' bgColor='dark'>
                 <MDBContainer className='p-4'>
                     <section className='mb-4'>

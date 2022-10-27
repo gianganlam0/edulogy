@@ -5,7 +5,7 @@ import {DropdownButton, Dropdown, Pagination} from 'react-bootstrap';
 
 function ColCateSquare(props) {
     return (
-        <div class="col-md-4" style={{margin: '20px 0'}}>
+        <div className="col-md-4" style={{margin: '20px 0'}}>
             <CateSquare src={props.src} />
         </div>
     );
@@ -19,16 +19,16 @@ export default function CateList() {
 
             <section className="section-cate">
                 <div className="container">
-                    <div class="boxed">
+                    <div className="boxed">
                         <div className="section-title text-center">
                             <h3>Danh sách thể loại</h3>
                         </div>
 
-                        <div class="cate-top">
-                            <div class="left-text">
+                        <div className="cate-top">
+                            <div className="left-text">
                                 <p> Tìm thấy 25 kết quả</p>
                             </div>
-                            <div class="right-text">
+                            <div className="right-text">
                                 <DropdownButton variant="dark" title="Lọc theo">
                                     <Dropdown.Item>Theo tên</Dropdown.Item>
                                     <Dropdown.Item active>Theo số lượng khóa học</Dropdown.Item>
@@ -42,7 +42,7 @@ export default function CateList() {
                         </div>
 
                         {/* show cate list grid */}
-                        <div class="row cate-grid">
+                        <div className="row cate-grid">
                             <ColCateSquare src={COURSE_IMAGE} />
                             <ColCateSquare src={COURSE_IMAGE} />
                             <ColCateSquare src={COURSE_IMAGE} />
@@ -52,7 +52,7 @@ export default function CateList() {
                             <ColCateSquare src={COURSE_IMAGE} />
                         </div>
 
-                        <hr class="invis"></hr>
+                        <hr className="invis"></hr>
 
                         <Pagination variant="primary">
                             <Pagination.First />

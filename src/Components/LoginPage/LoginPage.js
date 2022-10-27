@@ -67,7 +67,9 @@ export default function LoginPage() {
             type: 'POST',
             data: data,
         }).done(function(res){
-            res = JSON.parse(res);
+            try {
+                res = JSON.parse(res);
+            } catch (error) {}
             if (res.status === 0 || res.status === 1){//đăng nhập thành công hoặc đã đăng nhập
                 Swal.fire({
                     position: 'center',
@@ -91,7 +93,16 @@ export default function LoginPage() {
                     width: 500,
                 })
             }
-            else {
+            else if (res.status === -1){
+                Swal.fire({
+                    position: 'top',
+                    text: res.message,
+                    icon: 'error',
+                    timer: 4000,
+                    width: 500,
+                })
+            }
+            else if (isNaN(res.status)){//loi k xd
                 Swal.fire({
                     position: 'top',
                     text: "Lỗi không xác định",
@@ -102,7 +113,13 @@ export default function LoginPage() {
             }
             
         }).fail(function(){
-            setErrorMsg('Lỗi kết nối!');
+            Swal.fire({
+                position: 'top',
+                text: "Lỗi kết nối",
+                icon: 'error',
+                timer: 4000,
+                width: 500,
+            })
         });
     }
     document.title = "Đăng nhập";

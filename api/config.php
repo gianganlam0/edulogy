@@ -27,16 +27,24 @@ $CFG->admin     = 'admin';
 $CFG->siteguest = '1';
 
 $sql = "SELECT userid FROM user WHERE role = '2'"; //get userid of admins, 2 is admin role
-$CONN = connectDB();
-$result = mysqli_query($CONN, $sql);
 $admins = array();
-while($row = mysqli_fetch_assoc($result)){
-    if ($row['userid'] != 0) { //acc admin nhưng chưa đăng nhập nên userid = null
-        $admins[] = $row['userid'];
-    }
-}
-$CFG->siteadmins = implode(',', $admins);
 
-$CFG->directorypermissions = 0777;
-///////////////////
+try {
+  $CONN = connectDB();
+  $result = mysqli_query($CONN, $sql);
+  if (!$result){
+    throw new Exception("Lỗi truy vấn !");
+  }
+  while($row = mysqli_fetch_assoc($result)){
+      if ($row['userid'] != 0) { //acc admin nhưng chưa đăng nhập nên userid = null
+          $admins[] = $row['userid'];
+      }
+  }
+  $CFG->siteadmins = implode(',', $admins);
+  $CFG->directorypermissions = 0777;
+  }
+  catch (Throwable $th) {
+    throw $th;
+  }
+
 ?>

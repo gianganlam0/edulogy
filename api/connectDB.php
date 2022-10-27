@@ -1,11 +1,18 @@
 <?php
 require 'DBInfo.php';
 function connectDB(){
+  error_reporting(E_ALL ^ E_WARNING); 
   require 'DBInfo.php';
-  $CONN = mysqli_connect($DBS['dbhost'], $DBS['dbuser'], $DBS['dbpass'], $DBS['dbname']);
+  try {
+    $CONN = mysqli_connect($DBS['dbhost'], $DBS['dbuser'], $DBS['dbpass'], $DBS['dbname']);
+    if (!$CONN) {
+      throw new Exception("Lỗi kết nối cơ sở dữ liệu!");
+    }
+    return $CONN;
 
-  if (!$CONN) {
-    die("Kết nối thất bại: " . mysqli_connect_error());
   }
-  return $CONN;
+  catch (Throwable $th) {
+    throw $th;
+  }
+  
 }

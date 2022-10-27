@@ -41,4 +41,14 @@ function removeDir($dir = null){
         rmdir($dir);
     }
 }
+function randomString($min , $max) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $length = rand($min, $max);
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
 ?>
