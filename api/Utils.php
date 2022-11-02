@@ -87,6 +87,8 @@ function deleteImgur($deleteHash){
 }
 function sendMail($to, $subject, $message){
     //user gmail api send mail
+    $client = new Google_Client();
+
 
 }
 ?>
