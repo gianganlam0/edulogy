@@ -39,8 +39,9 @@ export default function Home() {
                             unlimited page templates, color options, and menu features.
                         </small>
                         <div className="btn-wrapper">
-                            <Button hidden={context.isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button>     
-                            <Button variant="success" size="lg" hidden={!context.isLogin} onClick={()=>{window.location.href="http://localhost/sura"}}>Truy cập trang moodle</Button>
+                            <div><Button hidden={context.isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button></div>
+                            <Button variant="warning" hidden={context.isLogin} onClick={()=>{navigate('/register')}}>Đăng ký tài khoản</Button>    
+                            <Button variant="success" size="lg" hidden={!context.isLogin} onClick={()=>{window.location.href="http://localhost/saru"}}>Truy cập trang moodle</Button>
                         </div>
                     </div>
                 </div>

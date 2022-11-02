@@ -2,6 +2,7 @@ import Header from './Components/Utils/Header/Header';
 import Footer from './Components/Utils/Footer/Footer';
 import Home from './Components/Home/Home';
 import LoginPage from './Components/LoginPage/LoginPage';
+import RegisterPage from './Components/RegisterPage/RegisterPage';
 import CourseList from './Components/CourseList/CourseList';
 import CourseDetail from './Components/CourseDetail/CourseDetail';
 import CateList from './Components/CateList/CateList';
@@ -42,6 +43,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home/>}/>
       <Route path="/login" element={!isLogin ? <LoginPage/> : <ErrorPage msg="Bạn đã đăng nhập rồi !"/>}/>
+      <Route path="/register" element={!isLogin ? <RegisterPage/> : <ErrorPage msg="Bạn phải đăng xuất mới đăng ký tài khoản được !"/>}/>
       <Route path="/course-list" element={<CourseList/>}/>
       <Route path="/course-detail" element={<CourseDetail/>}/>
       <Route path="/cate-list" element={<CateList/>}/>

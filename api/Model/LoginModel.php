@@ -29,29 +29,44 @@ function handleLogin($username, $password){
         'data' => ''
     );
     if ($count == 1) {
-        //lấy tên
-        $userTable = $DBS['prefix'] . 'user';
-        $sql = "SELECT * FROM $userTable WHERE username = ?";
-        $stmt = mysqli_stmt_init($CONN);
-        if (!mysqli_stmt_prepare($stmt, $sql)) {
-            throw new Exception('SQL error');
+        //giờ coi userid có null hay không, null là chưa login bên trang kia
+        if ($row['userid'] == null){
+            $res['status'] = -2;
+            return $res;
         }
-        mysqli_stmt_bind_param($stmt, "s", $username);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        //check if wrong sql query
-        if (!$result) {
-            throw new Exception(mysqli_error($CONN));
-        }
-        $row2 = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        else{
+            //lấy tên
+            $userTable = $DBS['prefix'] . 'user';
+            $sql = "SELECT * FROM $userTable WHERE username = ?";
+            $stmt = mysqli_stmt_init($CONN);
+            if (!mysqli_stmt_prepare($stmt, $sql)) {
+                throw new Exception('SQL error');
+            }
+            mysqli_stmt_bind_param($stmt, "s", $username);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            //check if wrong sql query
+            if (!$result) {
+                throw new Exception(mysqli_error($CONN));
+            }
+            $row2 = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-        $res['status'] = 0;
-        $res['data'] = array(
-            'id' => $row['userid'],
-            'role' => $row['role'],
-            'fullname' => $row2['lastname'] . ' ' . $row2['firstname'],
-            'avatar' => $row['avatar'],
-        );
+            //giờ check cập nhật tên, họ, mail chưa
+            if ($row2['firstname'] == '' || $row2['lastname'] == '' || $row2['email'] == ''){
+                $res['status'] = -2;
+                return $res;
+            }
+            else{
+                $res['status'] = 0;
+                $res['data'] = array(
+                'id' => $row['userid'],
+                'role' => $row['role'],
+                'fullname' => $row2['lastname'] . ' ' . $row2['firstname'],
+                'avatar' => $row['avatar'],
+            );
+            }      
+        }
+        
     } else {
         $res['status'] = 2;
     }

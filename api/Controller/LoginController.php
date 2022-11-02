@@ -53,6 +53,7 @@ if (!preg_match($regexPassword, $password)) {
 try {
     $res = handleLogin($username, $password);
     if ($res['status'] == 0){
+        
         $res['message'] = 'Đăng nhập thành công';
         $_SESSION['id'] = $res['data']['id'];
         setcookie('id', $res['data']['id'], time() + 3600*24, '/');//1 ngày
@@ -61,10 +62,16 @@ try {
         $_SESSION['fullname'] = $res['data']['fullname'];
         $_SESSION['avatar'] = $res['data']['avatar'];
         echo json_encode($res);
+        
         return;
     }
     else if ($res['status'] == 2){
         $res['message']  = 'Sai tên đăng nhập hoặc mật khẩu';
+        echo json_encode($res);
+        return;
+    }
+    else if ($res['status'] == -2){
+        $res['message']  = 'Tài khoản chưa cập nhật thông tin';
         echo json_encode($res);
         return;
     }

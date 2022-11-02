@@ -1,17 +1,18 @@
 import { useState, useContext} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './LoginPage.scss';
+import './RegisterPage.scss';
 import {MDBBtn,MDBContainer,MDBCard,MDBCardBody,MDBRow,MDBCol,MDBInput} from 'mdb-react-ui-kit';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import {sha256} from 'js-sha256';
 import { Context } from '../Utils/ContextProvider';
-export default function LoginPage() {
+export default function RegisterPage() {
 
     const navigate = useNavigate();
-    const context = useContext(Context);
+    const {setFullname,setAvatar,setIsLogin} = useContext(Context);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [rePassword, setRePassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [isHidden, setIsHidden] = useState(true);
     const [showPassword, setShowPassword] = useState('password');
@@ -23,14 +24,21 @@ export default function LoginPage() {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
         return regex.test(password);
     }
+    function valiSamePassword(password1, password2) {
+        return password1 === password2;
+    }
 
-    function valiAll(username, password) {
+    function valiAll(username, password, rePassword) {
         if (!valiUsername(username)) {
             setErrorMsg('Tên đăng nhập không hợp lệ');
             setIsHidden(true);
         }
         else if(!valiPassword(password)){
             setErrorMsg('Mật khẩu không hợp lệ');
+            setIsHidden(true);
+        }
+        else if(!valiSamePassword(password, rePassword)){
+            setErrorMsg('Mật khẩu không khớp');
             setIsHidden(true);
         }
         else {
@@ -41,11 +49,25 @@ export default function LoginPage() {
 
     function handleUsername(e){
         setUsername(e.target.value);
-        valiAll(e.target.value, password);
+        if(!valiUsername(e.target.value)){
+            setErrorMsg('Tên đăng nhập không hợp lệ');
+            setIsHidden(true);
+        }
+        else
+            valiAll(e.target.value, password, rePassword);
     }
     function handlePassword(e){
         setPassword(e.target.value);
-        valiAll(username, e.target.value);
+        if(!valiPassword(e.target.value)){
+            setErrorMsg('Mật khẩu không hợp lệ');
+            setIsHidden(true);
+        }
+        else
+            valiAll(username, e.target.value, rePassword);
+    }
+    function handleRePassword(e){
+        setRePassword(e.target.value);
+        valiAll(username, password, e.target.value);      
     }
     function handleShowPassword(){
         if(showPassword === 'password'){
@@ -54,8 +76,8 @@ export default function LoginPage() {
             setShowPassword('password');
         }
     }
-    function handleLogin(){
-        const url = '/edulogy/api/Controller/LoginController.php';
+    function handleRegister(){
+        const url = '/edulogy/api/Controller/RegisterController.php';
         const data = {
             data: JSON.stringify({
                 username: username,
@@ -70,63 +92,46 @@ export default function LoginPage() {
             try {
                 res = JSON.parse(res);
             } catch (error) {}
-            if (res.status === 0 || res.status === 1){//đăng nhập thành công hoặc đã đăng nhập
+            if (res.status === 0){//đăng ký thành công
                 Swal.fire({
                     position: 'center',
                     text: res.message,
                     icon: 'success',
-                    timer: 2000,
-                    width: 500,
-                })
-                context.setFullname(res.data.fullname);
-                context.setAvatar(res.data.avatar);
-                context.setIsLogin(true);
-                navigate('/');
-            }
-            else if (res.status === 2 || res.status === 3 || res.status === -1 ){//sai username hoặc password hoặc lỗi qq j đó
-                Swal.fire('Lỗi', res.message, 'error');
-            }
-            else if (res.status === -2){//chưa capaj nhat thong tin
-                Swal.fire({
-                    position: 'center',
-                    text: res.message,
-                    icon: 'error',
                     showDenyButton: true,
                     confirmButtonText: 'Cập nhật ngay!',
                     denyButtonText: 'Để sau',
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        navigate('/');
+                        //new tab
                         window.open('http://localhost/saru/', '_blank');
                         
                     } else if (result.isDenied) {
-                        // navigate('/');
+                        navigate('/');
                     }
                 })
-
+                
+            }
+            else if (res.status === -1){//chưa đăng xuất
+                Swal.fire('Thông báo', res.message, 'error');
+                setFullname("Khách");
+                setAvatar("");
+                setIsLogin(false);
+            }
+            else if (res.status === -2 || res.status === -3){ //username đã tồn tại or tên đăng nhập/mk không hợp lệ
+                Swal.fire('Lỗi', res.message, 'error');
             }
             else if (isNaN(res.status)){//loi k xd
-                Swal.fire({
-                    position: 'top',
-                    text: "Lỗi không xác định",
-                    icon: 'error',
-                    timer: 4000,
-                    width: 500,
-                })
+                Swal.fire('Lỗi', 'Lỗi không xác định', 'error');
             }
             
         }).fail(function(){
-            Swal.fire({
-                position: 'top',
-                text: "Lỗi kết nối",
-                icon: 'error',
-                timer: 4000,
-                width: 500,
-            })
+            Swal.fire('Lỗi', 'Không thể kết nối đến server', 'error');
         });
     }
-    document.title = "Đăng nhập";
+    document.title = "Đăng ký tài khoản";
     return (
-        <div className="login-page">
+        <div className="register">
             <div className="main-bg">
                 <div className="overlay" />
                 <MDBContainer>
@@ -135,15 +140,16 @@ export default function LoginPage() {
                         <MDBRow className='g-0'>
 
                             <MDBCol md='6'>
-                                <div className='login-img' />
+                                <div className='register-img' />
                             </MDBCol>
 
                             <MDBCol md='6'>
                                 <MDBCardBody className='d-flex flex-column'>
-                                    <h3 className="fw-normal my-4 pb-3">ĐĂNG NHẬP</h3>
+                                    <h3 className="fw-normal my-4 pb-3">ĐĂNG KÝ</h3>
 
                                     <MDBInput value={username} onChange={handleUsername} wrapperClass='mb-4' label='Tên tài khoản' type='text' size="lg" />
                                     <MDBInput value={password} onChange={handlePassword} wrapperClass='mb-4' label='Mật khẩu' type={showPassword} size="lg" />
+                                    <MDBInput value={rePassword} onChange={handleRePassword} wrapperClass='mb-4' label='Nhập lại mật khẩu' type={showPassword} size="lg" />
                                     {/* check box show password */}
                                     <div className="form-check mb-4">
                                         <input type="checkbox" className="form-check-input" onClick={handleShowPassword}/>
@@ -151,10 +157,8 @@ export default function LoginPage() {
                                     </div>
 
                                     <div style={{minHeight:'30px', color: 'red'}}>{errorMsg}</div>
-                                    <MDBBtn disabled = {isHidden} className="mb-4 px-5" color='primary' size='lg' onClick={handleLogin}>Đăng nhập</MDBBtn>
-                                    <Link to={'/forgot-password'} style={{ fontSize: 'small' }}>Quên mật khẩu?</Link>
-                                    <Link to={'/register'} style={{ color: '#393f81' }}>Chưa có tài khoản? Đăng ký ngay!</Link>
-
+                                    <MDBBtn disabled = {isHidden} className="mb-4 px-5" color='primary' size='lg' onClick={handleRegister}>Đăng ký</MDBBtn>
+                                    <Link to={'/login'} style={{ color: '#393f81' }}>Đã có tài khoản? Đăng nhập ngay!</Link>
                                 </MDBCardBody>
                             </MDBCol>
 
