@@ -1,5 +1,6 @@
 <?php
 require_once 'DBInfo.php';
+require_once '../vendor/autoload.php';
 function logger(){
     echo "<script>alert('I am here');</script>";
 }
