@@ -31,10 +31,7 @@ export default function CourseSquare(props) {
                 <div className="course-footer">
                     <div className="pull-left">
                         <div>
-                            <Icon.PersonFill /> 21
-                        </div>
-                        <div>
-                            <Icon.Clock /> 2h 30m
+                            <Icon.Clock /> T3, T5, T7
                         </div>
                         <div>
                             <Icon.MortarboardFill /> Nguyễn Văn A

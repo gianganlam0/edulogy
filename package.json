@@ -8,6 +8,7 @@
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
         "bootstrap": "^5.2.1",
+        "image-to-base64": "^2.2.0",
         "interweave": "^13.0.0",
         "interweave-autolink": "^5.1.0",
         "jquery": "^3.6.1",

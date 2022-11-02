@@ -5,7 +5,7 @@ import COURSE_IMAGE from '../../images/course1.jpg';
 import * as Icon from 'react-bootstrap-icons';
 import Carousel from "react-multi-carousel";
 import {useNavigate} from "react-router-dom";
-import { useEffect, useState, useContext } from 'react';
+import { useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 export default function Home() {
     const context = useContext(Context);

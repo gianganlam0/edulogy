@@ -1,7 +1,7 @@
 <?php
 require_once 'DBInfo.php';
 function logger(){
-    echo "<script>console.log('I am here');</script>";
+    echo "<script>alert('I am here');</script>";
 }
 function removeSign($str){ //bỏ dấu
     $unicode = array(
@@ -50,5 +50,42 @@ function randomString($min , $max) {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
     return $randomString;
+}
+function uploadImgur($file){
+    //new token get: https://api.imgur.com/oauth2/authorize?client_id=89a2cb7a66dd32c&response_type=token
+    //new access token link post: https://api.imgur.com/oauth2/token?client_id=89a2cb7a66dd32c&client_secret=4514d4922434f3f376b8ecb432eefb8b8df767b9&refresh_token=9c72c87271d2d628eb1311cc1abb8502b4cc3ba9&grant_type=refresh_token
+    $YOUR_ACCESS_TOKEN = '3b2a0809d98660ee56bcf219470326c564530fb1';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Authorization: Bearer '. $YOUR_ACCESS_TOKEN
+    ));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+        'image' => base64_encode(file_get_contents($file['tmp_name']))
+    ));
+    $reply = curl_exec($ch);
+    curl_close($ch);
+    $reply = json_decode($reply);
+    return $reply->data;
+}
+function deleteImgur($deleteHash){
+    $YOUR_ACCESS_TOKEN = '3b2a0809d98660ee56bcf219470326c564530fb1';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image/'.$deleteHash);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Authorization: Bearer '. $YOUR_ACCESS_TOKEN
+    ));
+    $reply = curl_exec($ch);
+    curl_close($ch);
+    $reply = json_decode($reply);
+    return $reply->data;
+}
+function sendMail($to, $subject, $message){
+    //user gmail api send mail
+
 }
 ?>

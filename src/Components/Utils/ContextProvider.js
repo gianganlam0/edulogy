@@ -7,11 +7,20 @@ export const ContextProvider = ({children}) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [fullname, setFullname] = useLocalStorage('fullname', 'Khách');
     const [avatar, setAvatar] = useLocalStorage('avatar', '');
+    const BASIC_AVATAR = 'https://i.imgur.com/AxnVk1a.png';
+    function log(text){
+        console.log(text);
+    }
+    function checkPathname(pathname, str){
+        const regex = new RegExp('^' + str + '/*$');
+        return regex.test(pathname);
+    }
     return (
-        <Context.Provider value={{isLogin, setIsLogin,
+        <Context.Provider value={{BASIC_AVATAR, log, isLogin, setIsLogin,
         isAdmin, setIsAdmin,
         fullname, setFullname,
-        avatar, setAvatar}}>
+        avatar, setAvatar,
+        checkPathname}}>
             {children}
         </Context.Provider>
     )

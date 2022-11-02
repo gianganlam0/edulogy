@@ -1,7 +1,7 @@
 import * as Icon from 'react-bootstrap-icons';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import './Header.scss';
-import { useState, useEffect, useContext} from 'react';
+import { useState, useEffect, useContext, useMemo} from 'react';
 import {useNavigate, useLocation} from "react-router-dom";
 import $ from 'jquery';
 import * as CK from '../Cookie';
@@ -9,20 +9,23 @@ import Swal from 'sweetalert2';
 import { Context } from '../ContextProvider';
 
 export default function Header() {
-  const {fullname, setFullname, avatar, setAvatar, isLogin, setIsLogin} = useContext(Context);
+  const {log, checkPathname, fullname, setFullname, avatar, setAvatar, isLogin, setIsLogin} = useContext(Context);
   const navigate = useNavigate();
   const {pathname} = useLocation();
   const [navBarBg, setNavBarBg] = useState('transparent');
   const [isExpand, setIsExpand] = useState(false);
-  const initState = {
-    home: false,
-    courses: false,
-    cate: false,
-    myInfo: false,
-    myCourse: false,
-    login: false,
-    cart: false
-  }
+  const initState = useMemo(() => {
+    return {
+      home: false,
+      courses: false,
+      cate: false,
+      myInfo: false,
+      myCourse: false,
+      changePass: false,
+      login: false,
+      cart: false
+    }
+  }, []);
 
   const [active, setActive] = useState(initState);
   const [scrollY, setScrollY] = useState(0);
@@ -33,28 +36,27 @@ export default function Header() {
     if (pathname === '/') {
       setActive({...initState, home: true})
     }
-    else if (pathname.includes('/course-list?') || pathname === '/course-list') {
+    else if (pathname.includes('/course-list?') || checkPathname(pathname, '/course-list')) {
       setActive({...initState, courses: true})
     }
     else if (pathname.includes('/cate-list')) {
       setActive({...initState, cate: true})
     }
-    else if(pathname === "/edit-profile"||
-            pathname === "/edit-profile/"||
-            pathname === "/edit-profile/my"||
-            pathname === "/edit-profile/my/"||
-            pathname === "/edit-profile/" + CK.getCookie('id')||
-            pathname === "/edit-profile/" + CK.getCookie('id') + "/") {
+    else if(checkPathname(pathname, "/edit-profile")||
+            checkPathname(pathname, "/edit-profile/my")||
+            checkPathname(pathname, "/edit-profile/" + CK.getCookie('id'))) {
       setActive({...initState, myInfo: true});
     }
-    else if(pathname === "/course-list/my"||
-            pathname === "/course-list/my/") {
+    else if(checkPathname(pathname, "/course-list/my")) {
       setActive({...initState, myCourse: true});
     }
-    else if(pathname === "/login") {
+    else if (checkPathname(pathname, '/change-password')) {
+      setActive({...initState, changePass: true})
+    }
+    else if(checkPathname(pathname, "/login")) {
       setActive({...initState, login: true})
     }
-    else if(pathname === "/cart") {
+    else if(checkPathname(pathname, "/cart")) {
       setActive({...initState, cart: true})
     }
     else {
@@ -62,8 +64,8 @@ export default function Header() {
     }
     
   }
-  , [pathname]);
-  
+  , [checkPathname, initState, pathname]);
+
   function handleDropdown(expanded){
     setIsExpand(expanded);
     setNavBarBg('black');
@@ -138,7 +140,6 @@ export default function Header() {
         });
     
   }
-
   
   return (
   <header className="header">
@@ -154,9 +155,10 @@ export default function Header() {
           </Nav>
           <Nav>
             {/* <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link> */}
-            <NavDropdown active={active.myInfo || active.myCourse} disabled={!isLogin} title={fullname}>
+            <NavDropdown active={active.myInfo || active.myCourse || active.changePass} disabled={!isLogin} title={fullname}>
               <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/my')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
+              <NavDropdown.Item active={active.changePass} onClick={()=>{navigate('/change-password')}}><span><Icon.Lock/> Thay đổi mật khẩu</span></NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>

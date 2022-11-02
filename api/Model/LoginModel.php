@@ -6,15 +6,17 @@ function handleLogin($username, $password){
     if (!isset($_SESSION)) {
         session_start();
     }
-    //anti sql injection
     $CONN = connectDB();
-    $username = stripslashes($username);
-    $password = stripslashes($password);
-    $username = mysqli_real_escape_string($CONN, $username);
-    $password = mysqli_real_escape_string($CONN, $password);
 
-    $sql = "SELECT * FROM user WHERE username = '$username' AND password = '$password'";
-    $result = mysqli_query($CONN, $sql);
+    $sql = "SELECT * FROM user WHERE username = ? AND password = ?";
+    //MySQLi (procedural)
+    $stmt = mysqli_stmt_init($CONN);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        throw new Exception('SQL error');
+    }
+    mysqli_stmt_bind_param($stmt, "ss", $username, $password);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     //check if wrong sql query
     if (!$result) {
         throw new Exception(mysqli_error($CONN));
@@ -27,32 +29,31 @@ function handleLogin($username, $password){
         'data' => ''
     );
     if ($count == 1) {
-        $_SESSION['id'] = $row['userid'];
-        setcookie('id', $row['userid'], time() + 3600*24, '/');//1 ngày
-        $_SESSION['role'] = $row['role'];
-        setcookie('role', $row['role'], time() + 3600*24, '/');//1 ngày
-        $_SESSION['avatar'] = $row['avatar'];
         //lấy tên
         $userTable = $DBS['prefix'] . 'user';
-        $sql = "SELECT * FROM $userTable WHERE username = '$username'";
-        $result = mysqli_query($CONN, $sql);
+        $sql = "SELECT * FROM $userTable WHERE username = ?";
+        $stmt = mysqli_stmt_init($CONN);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('SQL error');
+        }
+        mysqli_stmt_bind_param($stmt, "s", $username);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        //check if wrong sql query
         if (!$result) {
             throw new Exception(mysqli_error($CONN));
         }
         $row2 = mysqli_fetch_array($result, MYSQLI_ASSOC);
-        $_SESSION['fullname'] = $row2['lastname'] . ' ' . $row2['firstname'];
 
         $res['status'] = 0;
-        $res['message'] = 'Đăng nhập thành công';
         $res['data'] = array(
-            'id' => $_SESSION['id'],
-            'role' => $_SESSION['role'],
-            'fullname' => $_SESSION['fullname'],
-            'avatar' => $_SESSION['avatar']
+            'id' => $row['userid'],
+            'role' => $row['role'],
+            'fullname' => $row2['lastname'] . ' ' . $row2['firstname'],
+            'avatar' => $row['avatar'],
         );
     } else {
         $res['status'] = 2;
-        $res['message'] = 'Tên đăng nhập hoặc mật khẩu không đúng';
     }
-    return json_encode($res);
+    return $res;
 }

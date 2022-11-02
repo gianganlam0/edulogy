@@ -31,10 +31,13 @@ export default function CourseDetail() {
                                             Số học viên: <Icon.PersonFill /> 21
                                         </div>  
                                         <div>
-                                            Thời gian: <Icon.ClockFill /> 2h 30m
+                                            Thời gian học: <Icon.ClockFill /> 2h 30m
                                         </div>
                                         <div>
                                             Giáo viên: <Icon.MortarboardFill /> Nguyễn Văn A
+                                        </div>
+                                        <div>
+                                            Thời gian bắt đầu: <Icon.Calendar /> 20/10/2021
                                         </div>
                                     </div>
                                     {/* end left */}
@@ -44,6 +47,11 @@ export default function CourseDetail() {
                                         </div>
                                         <div>
                                             Đánh giá: <Icon.StarFill /> 4.5/5
+                                        </div><div>
+                                            Địa điểm học: <Icon.Map /> Online
+                                        </div>
+                                        <div>
+                                            Thời gian kết thúc: <Icon.CalendarFill /> 20/10/2021
                                         </div>
                                     </div>
                                 </div>

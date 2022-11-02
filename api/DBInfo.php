@@ -1,5 +1,6 @@
 <?php
 //new array
+global $DBS;
 $DBS = array();
 $DBS['dbhost']    = 'localhost';
 $DBS['dbname']    = 'saru';
