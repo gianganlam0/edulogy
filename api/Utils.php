@@ -1,6 +1,7 @@
 <?php
+
 require_once 'DBInfo.php';
-require_once '../vendor/autoload.php';
+
 function logger(){
     echo "<script>alert('I am here');</script>";
 }
@@ -85,10 +86,17 @@ function deleteImgur($deleteHash){
     $reply = json_decode($reply);
     return $reply->data;
 }
-function sendMail($to, $subject, $message){
-    //user gmail api send mail
-    $client = new Google_Client();
-
-
+function sendMail($toList, $subject, $body){
+    require_once 'phpmailer.php';
+    for ($i = 0; $i < count($toList); $i++) {
+        $mail->AddAddress($toList[$i]);
+    }
+    // $mail->AddReplyTo("reply-to-email@domain", "reply-to-name");
+    // $mail->AddCC("cc-recipient-email@domain", "cc-recipient-name");
+    $mail->Subject = $subject;
+    $mail->MsgHTML($body); 
+    if(!$mail->Send()) {
+        throw new Exception('Error sending email: ' . $mail->ErrorInfo);
+    }
 }
 ?>
