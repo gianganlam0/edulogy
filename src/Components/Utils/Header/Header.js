@@ -151,10 +151,11 @@ export default function Header() {
           <Nav className="me-auto">
             <Nav.Link active={active.home} onClick={()=>{navigate('/')}}><Icon.HouseFill/> Trang chủ</Nav.Link>
             <Nav.Link active={active.courses} onClick={()=>{navigate('/course-list')}}><Icon.BookFill/> Khóa học</Nav.Link>
-            <Nav.Link active={active.cate} onClick={()=>{navigate('/cate-list')}}><Icon.PenFill/> Thể loại</Nav.Link>
+            <Nav.Link active={active.cate} onClick={()=>{navigate('/cate-list')}}><Icon.PenFill/> Danh mục</Nav.Link>
+            {/* <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link> */}
           </Nav>
           <Nav>
-            {/* <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link> */}
+            
             <NavDropdown active={active.myInfo || active.myCourse || active.changePass} disabled={!isLogin} title={fullname}>
               <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/my')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>

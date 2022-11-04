@@ -9,6 +9,7 @@ import CateList from './Components/CateList/CateList';
 import Cart from './Components/Cart/Cart';
 import EditProfile from './Components/EditProfile/EditProfile';
 import ChangePassword from './Components/ChangePassword/ChangePassword';
+import AddCate from './Components/AddCate/AddCate';
 import ErrorPage from './Components/ErrorPage/ErrorPage';
 import {Routes, Route} from 'react-router-dom';
 
@@ -17,7 +18,9 @@ import {useContext, useLayoutEffect, useEffect} from 'react';
 import { Context } from './Components/Utils/ContextProvider';
 
 function App() {
-  const {log, isLogin, setIsLogin,
+  const {log,
+    isLogin, setIsLogin,
+    isTeacher, setIsTeacher,
     isAdmin, setIsAdmin} = useContext(Context);
   useLayoutEffect(() => {
     if (CK.getCookie('id') !== '') { //da dang nhap
@@ -26,7 +29,7 @@ function App() {
           setIsAdmin(false);
         }
         else if (CK.getCookie('role') === '1') {
-          // setIsAdmin(true);
+          setIsTeacher(true);
         }
         else if (CK.getCookie('role') === '2') {
           setIsAdmin(true);
@@ -34,6 +37,7 @@ function App() {
     }
     else {
       setIsLogin(false);
+      setIsTeacher(false);
       setIsAdmin(false);
     }
 
@@ -47,6 +51,8 @@ function App() {
       <Route path="/course-list" element={<CourseList/>}/>
       <Route path="/course-detail" element={<CourseDetail/>}/>
       <Route path="/cate-list" element={<CateList/>}/>
+      <Route path="/cate-list/?page=:page&keyword=:keyword&sortby=:sortby&orderby:=orderby" element={<CateList/>}/>
+      <Route path="/add-cate" element={(isTeacher || isAdmin) ? <AddCate/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cart" element={<Cart/>}/>
       <Route path="/edit-profile"     element={isLogin ? <EditProfile/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
       <Route path="/edit-profile/:id" element={isLogin ? <EditProfile/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
