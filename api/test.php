@@ -30,6 +30,6 @@ function addCate($name, $IDNumber, $DBS){
     removeDir($DBS['dataroot'].'/cache/cachestore_file/default_application/core_coursecattree');
 
 }
-for ($i = 1; $i <= 1; $i++) {
+for ($i = 1; $i <= 140; $i++) {
     addCate(randomString(5,10),randomString(2,4), $DBS);
 }

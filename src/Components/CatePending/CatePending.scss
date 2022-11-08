@@ -1,0 +1,39 @@
+.cate-pending {
+    tr,
+    th,
+    td {
+        color: rgba(0, 0, 0, 0.7);
+    }
+    position: relative;
+    min-height: 100vh;
+    .overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1;
+        background: url('../../images/pattern.png') repeat center center rgba(0, 0, 0, 0.7);
+    }
+    .section-cate {
+        position: relative;
+        z-index: 111;
+        padding: 100px 0;
+        .boxed {
+            display: block;
+            box-shadow: 0 30px 50px 0 rgba(1, 1, 1, 0.18);
+            padding: 8rem 4rem 8rem;
+            background: linear-gradient(135deg, rgba(241, 241, 241, 0.726) 0%, #723e3e 100%);
+            padding-top: 4rem;
+            border-radius: 10px;
+            .section-title h3 {
+                color: #000;
+                font-weight: 700;
+                font-size: 36px;
+                text-transform: uppercase;
+                margin: 0;
+                text-align: center;
+            }
+        }
+    }
+}

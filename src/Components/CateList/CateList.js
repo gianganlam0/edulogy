@@ -226,7 +226,7 @@ export default function CateList() {
                             </Col>
                             <Col xs={12} lg={3} style={{justifyContent: 'center'}}>
                                 <div hidden={!isAdmin && !isTeacher} className="text-center">
-                                <Button variant="success"><I.CheckCircleFill/>Danh sách chờ duyệt</Button>
+                                <Button onClick={()=>{navi('/cate-pending')}} variant="success"><I.CheckCircleFill/>Danh sách chờ duyệt</Button>
                                 </div>
                             </Col>
                         </Row>

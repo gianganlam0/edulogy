@@ -10,6 +10,7 @@ import Cart from './Components/Cart/Cart';
 import EditProfile from './Components/EditProfile/EditProfile';
 import ChangePassword from './Components/ChangePassword/ChangePassword';
 import AddCate from './Components/AddCate/AddCate';
+import CatePending from './Components/CatePending/CatePending';
 import ErrorPage from './Components/ErrorPage/ErrorPage';
 import {Routes, Route} from 'react-router-dom';
 
@@ -42,6 +43,8 @@ function App() {
     }
 
   }, [isLogin]);
+  //check if cookie is expired five second a time
+  
   return (
     <>
     <Routes>
@@ -53,6 +56,7 @@ function App() {
       <Route path="/cate-list" element={<CateList/>}/>
       <Route path="/cate-list/?page=:page&keyword=:keyword&sortby=:sortby&orderby:=orderby" element={<CateList/>}/>
       <Route path="/add-cate" element={(isTeacher || isAdmin) ? <AddCate/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
+      <Route path="/cate-pending" element={(isTeacher || isAdmin) ? <CatePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cart" element={<Cart/>}/>
       <Route path="/edit-profile"     element={isLogin ? <EditProfile/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
       <Route path="/edit-profile/:id" element={isLogin ? <EditProfile/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>

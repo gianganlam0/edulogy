@@ -34,9 +34,8 @@ export default function Home() {
                     <div className="home-message">
                         <p>Hệ thống quản lý khóa học</p>
                         <small>
-                            Edulogy is the ideal choice for your organization, your business and
-                            your online education system. Create your online course now with
-                            unlimited page templates, color options, and menu features.
+                        Edulogy là một hệ thống giáo dục trực tuyến lý tưởng dành cho bạn.
+                        Tham gia khóa học trực tuyến của chúng tôi ngay bây giờ !.
                         </small>
                         <div className="btn-wrapper">
                             <div><Button hidden={context.isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button></div>
@@ -57,9 +56,7 @@ export default function Home() {
                     <div className="section-title text-center">
                         <h3>Khóa học nổi bậc</h3>
                         <p>
-                            Maecenas sit amet tristique turpis. Quisque porttitor eros quis leo
-                            pulvinar, at hendrerit sapien iaculis. Donec consectetur accumsan arcu,
-                            sit amet fringilla ex ultricies.
+                            Dưới đây là danh sách các khóa học nổi bật nhất của chúng tôi.
                         </p>
                     </div>
 
