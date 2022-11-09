@@ -120,3 +120,125 @@ else if ($action == 'addCate'){
         return;
     }
 }
+else if ($action == 'getCatePending'){
+    if ($_SESSION['role'] != 2){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền thực hiện thao tác này!';
+        echo json_encode($res);
+        return;
+    }
+    $offset = $rq['offset'];
+    //offset must be a number >= 0
+    if (!is_numeric($offset) || $offset < 0)
+        $offset = 0;
+    //itemPerPage must be a number > 0
+    try {
+        $res = getCatePending($offset);
+        if ($res['status'] == 0){ 
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+    return;
+}
+else if ($action == 'getMyCatePending'){
+    if ($_SESSION['role'] != 1){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền thực hiện thao tác này!';
+        echo json_encode($res);
+        return;
+    }
+    $offset = $rq['offset'];
+    //offset must be a number >= 0
+    if (!is_numeric($offset) || $offset < 0)
+        $offset = 0;
+    //itemPerPage must be a number > 0
+    try {
+        $res = getMyCatePending($offset, $_SESSION['id']);
+        if ($res['status'] == 0){ 
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+    return;
+}
+else if ($action == 'acceptCate'){
+    if ($_SESSION['role'] != 2){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền thực hiện thao tác này!';
+        echo json_encode($res);
+        return;
+    }
+    $id = $rq['id'];
+    //validate
+    if (!is_numeric($id) || $id <= 0){
+        $res['status'] = -2;
+        $res['message'] = 'ID danh mục không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = acceptCate($id);
+        if ($res['status'] == 0){ 
+            $res['message'] = 'Duyệt danh mục thành công!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($res['status'] == -1){
+            $res['message']  = 'Danh mục không tồn tại!';
+            echo json_encode($res);
+            return;
+        }
+    } catch (\Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'rejectCate'){
+    if ($_SESSION['role'] != 2){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền thực hiện thao tác này!';
+        echo json_encode($res);
+        return;
+    }
+    $id = $rq['id'];
+    //validate
+    if (!is_numeric($id) || $id <= 0){
+        $res['status'] = -2;
+        $res['message'] = 'ID danh mục không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = rejectCate($id);
+        if ($res['status'] == 0){ 
+            $res['message'] = 'Từ chối danh mục thành công!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($res['status'] == -1){
+            $res['message']  = 'Danh mục không tồn tại!';
+            echo json_encode($res);
+            return;
+        }
+    } catch (\Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}

@@ -57,6 +57,7 @@ function App() {
       <Route path="/cate-list/?page=:page&keyword=:keyword&sortby=:sortby&orderby:=orderby" element={<CateList/>}/>
       <Route path="/add-cate" element={(isTeacher || isAdmin) ? <AddCate/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cate-pending" element={(isTeacher || isAdmin) ? <CatePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
+      <Route path="/cate-pending?page=:page" element={(isTeacher || isAdmin) ? <CatePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cart" element={<Cart/>}/>
       <Route path="/edit-profile"     element={isLogin ? <EditProfile/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
       <Route path="/edit-profile/:id" element={isLogin ? <EditProfile/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>

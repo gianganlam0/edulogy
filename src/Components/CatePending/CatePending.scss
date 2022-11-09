@@ -34,6 +34,37 @@
                 margin: 0;
                 text-align: center;
             }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin: 20px 0;
+                //text color
+                a {
+                    color: #000;
+                }
+                .page-item.active .page-link {
+                    background-color: black;
+                    color: #fff; //text color
+                }
+                .page-item.active .page-link:hover {
+                    background-color: #fff;
+                    color: #000;
+                }
+                //on disabled
+                .page-item.disabled .page-link {
+                    background-color: transparent;
+                    color: #000;
+                }
+                //on focus
+                .page-link:focus {
+                    background-color: transparent;
+                    color: #000;
+                }
+                .page-link:hover {
+                    background-color: #fff;
+                    color: #000;
+                }
+            }
         }
     }
 }
