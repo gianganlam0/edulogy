@@ -15,7 +15,40 @@ $res = array(
 if (!isset($_SESSION)) {
     session_start();
 }
-if (!isset($_SESSION['id'])) {
+if ($action == 'forgotPassword'){
+    if (isset($_SESSION['id'])){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn đã đăng nhập';
+        echo json_encode($res);
+    }
+    else{
+        $email = $data['email'];
+        $regex = '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/';
+        if (!preg_match($regex, $email)){
+            $res['status'] = -2;
+            $res['message'] = 'Email không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        try {
+            $res = handleForgotPassword($email);
+            if ($res['status'] == 0){
+                $res['message'] = 'Một email khôi phục mật khẩu đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email để lấy lại mật khẩu.';
+                echo json_encode($res);
+            }
+            else{
+                $res['message'] = 'Email không tồn tại.';
+                echo json_encode($res);
+            }
+        } catch (\Throwable $th) {
+            $res['status'] = -3;
+            $res['message'] = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+            echo json_encode($res);
+        }
+    }
+
+}
+else if (!isset($_SESSION['id'])) {
     $res['status'] = -1;
     $res['message'] = 'Bạn chưa đăng nhập!';
     echo json_encode($res);

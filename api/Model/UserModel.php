@@ -182,3 +182,49 @@ function changePassword($id, $oldPassword, $newPassword){
     }
     return $res;
 }
+function handleForgotPassword($email){
+    require_once '../connectDB.php';
+
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    $CONN = connectDB();
+    $userTable = $DBS['prefix'] . 'user';
+    $sql = "SELECT id FROM $userTable WHERE email = '$email'";
+    $result = mysqli_query($CONN, $sql);
+    if (!$result) {
+        throw new Exception(mysqli_error($CONN));
+    }
+    $count = mysqli_num_rows($result);
+    $res = array(
+        'status' => '',
+        'message' => '',
+        'data' => ''
+    );
+    if ($count == 1) {
+        $res['status'] = 0;
+        $code = randomString(64,64);
+        //sha 256 timestamp
+        $hash = hash('sha256', time());
+        //now send mail
+        //$body has html format
+        $body = '<p>Click vào <a href="http://localhost/edulogy/api/ResetPassword.php?code='.$code.'&hash='.$hash.'">Link này</a> để đặt lại mật khẩu 
+        cho tài khoản Edulogy</p>';
+        $subject = '[Đặt lại mật khẩu cho tài khoản Edulogy]';
+        try {
+            sendMail([$email], $subject, $body);
+            $forgotInfoTable = 'forgot_info';
+            //upsert
+            $sql = "INSERT INTO $forgotInfoTable (email, code, hash)
+                    VALUES ('$email', '$code', '$hash')
+                    ON DUPLICATE KEY UPDATE code = '$code', hash = '$hash'";
+            $result = mysqli_query($CONN, $sql);
+        } catch (\Throwable $th) {
+            $res['status'] = -1;
+            $res['message'] = 'Không thể gửi mail';
+        }
+    } else {
+        $res['status'] = -3;
+    }
+    return $res;
+}

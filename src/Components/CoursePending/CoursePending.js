@@ -1,15 +1,16 @@
-import './CatePending.scss';
+import './CoursePending.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
 import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link , useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
-import CateItem from './CateItem';
+import CourseItem from './CourseItem';
 
-export default function CatePending() {
+export default function CoursePending() {
+    const navi = useNavigate();
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
@@ -17,6 +18,7 @@ export default function CatePending() {
     const [totalPage, setTotalPage] = useState();
     const [pendingList, setPendingList] = useState([]);
     const [totalPending, setTotalPending] = useState();
+    const [totalAccept, setTotalAccept] = useState();
     const [render, setRender] = useState(false);
     useEffect(() => {//take params from url
         setPage(parseInt(params.get('page')));
@@ -24,7 +26,7 @@ export default function CatePending() {
             setPage(1);  
     }}, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = '/edulogy/api/Controller/CourseController.php';
         const data = {
             offset: (page - 1) * 10
         }
@@ -32,7 +34,7 @@ export default function CatePending() {
             url: url,
             type: 'POST',
             data: {data: JSON.stringify(data),
-                action: isAdmin ? 'getCatePending' : 'getMyCatePending'
+                action: isAdmin ? 'getCoursePending' : 'getMyCoursePending'
             },
         }).done(function(res){
             try {
@@ -42,6 +44,7 @@ export default function CatePending() {
                 setTotalPage(Math.ceil(res.data.total / 10));
                 setPendingList(res.data.data);
                 setTotalPending(res.data.totalPending);
+                setTotalAccept(res.data.totalAccept);
             }
         }).fail(function(err){
             console.log(err);
@@ -175,9 +178,32 @@ export default function CatePending() {
                 
         }
     }, [page, totalPage, setPage, setParams]);
-
+    useEffect(() => {//check if course startdate is <= today
+        const url = '/edulogy/api/Controller/CourseController.php';
+        const data = {
+            offset: (page - 1) * 10
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {data: JSON.stringify(data),
+                action: 'checkStartDate',
+            },
+        }).done(function(res){
+            try {
+                res = JSON.parse(res);
+            } catch (error) {}
+            if (res.status === 0) {
+                if (res.data.isExp)
+                    setRender(!render);
+            }
+            
+        }).fail(function(err){
+            console.log(err);
+        });
+    }, [page, render]);
     function handleAccept(id){
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = '/edulogy/api/Controller/CourseController.php';
         const data = {
             id: id,
         }
@@ -185,7 +211,7 @@ export default function CatePending() {
             url: url,
             type: 'POST',
             data: {data: JSON.stringify(data),
-                    action: 'acceptCate'},
+                    action: 'acceptCourse'},
         }).done(function(res){
             try {
                 res = JSON.parse(res);
@@ -203,7 +229,7 @@ export default function CatePending() {
     }
 
     function handleReject(id){
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = '/edulogy/api/Controller/CourseController.php';
         const data = {
             id: id,
         }
@@ -211,7 +237,7 @@ export default function CatePending() {
             url: url,
             type: 'POST',
             data: {data: JSON.stringify(data),
-                    action: 'rejectCate'},
+                    action: 'rejectCourse'},
         }).done(function(res){
             try {
                 res = JSON.parse(res);
@@ -227,12 +253,34 @@ export default function CatePending() {
             Swal.fire('Thất bại', 'Từ chối thất bại', 'error');
         });
     }
-
-
-
-    document.title = "Danh mục chờ duyệt";
+    function handleSaveCsv(){
+        const url = '/edulogy/api/Controller/CourseController.php';
+        const data = {
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {data: JSON.stringify(data),
+                    action: 'saveCsvCourse'},
+        }).done(function(res){
+            try {
+                res = JSON.parse(res);
+            } catch (error) {}
+            if (res.status === 0){
+                Swal.fire('', res.message, 'success');
+                setRender(!render);
+            }
+            else{
+                Swal.fire('', res.message, 'error');
+            }
+        }).fail(function(err){
+            Swal.fire('Thất bại', 'Lỗi mạng', 'error');
+        });
+        
+    }
+    document.title = "Khóa học chờ duyệt";
     return (
-        <div className='cate-pending'>
+        <div className='course-pending'>
             <div className="overlay" />
 
             <section className="section-cate">
@@ -240,30 +288,44 @@ export default function CatePending() {
                     <div className="boxed">
 
                         <div className="section-title text-center">
-                            <h3>Danh mục chờ duyệt</h3>
+                            <h3>Khóa học chờ duyệt</h3>
                         </div>
                         
                         <Row style={{padding: '10px 0 0'}}>
                             <Col className="left-text" xs={12} lg={3}>
-                                <p> Có {totalPending} danh mục chưa duyệt</p>
+                                <p> Có {totalPending} khóa học chưa duyệt</p>
+                                <p> Có {totalAccept} khóa học chưa xuất csv</p>
+                            </Col>
+                            <Col className="right-text" lg={{span: 3, offset: 6}}>
+                                <Row>
+                                <Button disabled={totalAccept === '0'} hidden={!isAdmin} onClick={handleSaveCsv} className="mb-1" variant='success'>Lưu csv</Button>
+                                <Button hidden={!isAdmin} onClick={()=>navi('/course-csv')} className="mb-1" variant='warning'>Xem lịch sử xuất csv</Button>
+                                </Row>
                             </Col>
                             <Col md={12} className="mx-auto">
                                 
                                 <Table responsive style={{textAlign: 'center'}} size="sm" striped bordered hover>
                                 <thead>
                                     <tr>
-                                        <th>Tên danh mục</th>
+                                        <th>Tên khóa học</th>
+                                        <th>Tên rút gọn</th>
+                                        <th><div style={{minWidth: '200px'}}>Thời khóa biểu</div></th>
+                                        <th>Thể loại</th>
+                                        <th>Ngày bắt đầu</th>
+                                        <th>Ngày kết thúc</th>
+                                        <th>Mã khóa học</th>
                                         <th><div style={{minWidth: '200px'}}>Mô tả</div></th>
-                                        <th>Người đăng</th>
+                                        <th>Giá</th>
                                         <th><div style={{minWidth: '300px'}}>Hình ảnh</div></th>
-                                        <th>Thời gian</th>
+                                        <th>Giáo viên</th>                                  
+                                        <th>Thời gian đăng</th>
                                         <th>Trạng thái</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {pendingList.map((item, index) => {
-                                        return <CateItem key={item.id} {...item} onAccept={()=>{handleAccept(item.id)}} onReject={()=>{handleReject(item.id)}}/>
+                                        return <CourseItem key={item.id} {...item} onAccept={()=>{handleAccept(item.id)}} onReject={()=>{handleReject(item.id)}}/>
                                     })}
                                 </tbody>
                                 </Table>                                  

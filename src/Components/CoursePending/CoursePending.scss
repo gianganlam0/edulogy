@@ -1,4 +1,9 @@
-.course-list {
+.course-pending {
+    tr,
+    th,
+    td {
+        color: rgba(0, 0, 0, 0.7);
+    }
     position: relative;
     min-height: 100vh;
     .overlay {
@@ -18,7 +23,7 @@
             display: block;
             box-shadow: 0 30px 50px 0 rgba(1, 1, 1, 0.18);
             padding: 8rem 4rem 8rem;
-            background: linear-gradient(135deg, rgb(106, 141, 138) 0%, #723e3e 100%);
+            background: linear-gradient(135deg, rgba(241, 241, 241, 0.726) 0%, #723e3e 100%);
             padding-top: 4rem;
             border-radius: 10px;
             .section-title h3 {
@@ -28,22 +33,6 @@
                 text-transform: uppercase;
                 margin: 0;
                 text-align: center;
-            }
-            .cate-top {
-                margin-bottom: 30px;
-                padding: 20px 0;
-                width: 100%;
-                .left-text {
-                    p {
-                        color: rgb(71, 13, 13);
-                        font-size: large;
-                    }
-                }
-                .right-text {
-                    .dropdown {
-                        margin: 0 10px;
-                    }
-                }
             }
             .pagination {
                 display: flex;

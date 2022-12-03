@@ -29,6 +29,11 @@ export default function Header() {
 
   const [active, setActive] = useState(initState);
   const [scrollY, setScrollY] = useState(0);
+  useEffect(() => { // kiểm tra cookie hết hạn
+    if (CK.getCookie('id') === '') {
+      setFullname('Khách');
+    }
+  }, [pathname]);
   useEffect(() => { //chuyển trang thì đóng dropdown
     setIsExpand(false);
   }, [pathname]);
@@ -158,7 +163,7 @@ export default function Header() {
             
             <NavDropdown active={active.myInfo || active.myCourse || active.changePass} disabled={!isLogin} title={fullname}>
               <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
-              <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/my')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
+              <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/?mycourse=1')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
               <NavDropdown.Item active={active.changePass} onClick={()=>{navigate('/change-password')}}><span><Icon.Lock/> Thay đổi mật khẩu</span></NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>

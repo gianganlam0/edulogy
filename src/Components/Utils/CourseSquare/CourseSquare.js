@@ -1,50 +1,41 @@
-import { useNavigate } from 'react-router-dom';
 import './CourseSquare.scss';
 import * as Icon from 'react-bootstrap-icons';
-export default function CourseSquare(props) {
-    const navigate = useNavigate();
+import { Interweave } from 'interweave';
+import { UrlMatcher, HashtagMatcher } from 'interweave-autolink';
+export default function CourseSquare({id, avatar, name, desc, courseCount, IDNumber, onClick}) {
     return (
-        <div className="course-square">
+        <div className="course-square" onClick={onClick}>
             <div className="course-box">
-                <div className="image-wrap entry">
-                    <img src={props.src} alt="" className="img-responsive" />
-                    <div className="magnifier">
-                        <a href="a" title="">
-                            <i className="flaticon-add" />
-                        </a>
-                    </div>
+                <div className="image-wrap">
+                    <img src={avatar} alt="" />
                 </div>
                 {/* end image-wrap */}
                 <div className="course-details">
+                    <h6 className="cate-name">
+                        {/* {cateName} */}
+                    </h6>
                     <h4>
-                        <small>Javascript</small>
-                        <div className="title" onClick={()=>{navigate('/course-detail')}}>
-                            Modern JavaScript Linting With ESLint
+                        <div className="title">
+                            {name}
                         </div>
                     </h4>
-                    <p>
-                        Fusce interdum, elit sit amet vehicula malesuada, eros libero
-                        elementum orci.
-                    </p>
+                    <Interweave content={desc}
+                        matchers={[new UrlMatcher('url'), new HashtagMatcher('hashtag')]}
+                        newWindow
+                    />
                 </div>
                 {/* end details */}
                 <div className="course-footer">
                     <div className="pull-left">
                         <div>
-                            <Icon.Clock /> T3, T5, T7
+                        Số khóa học: <Icon.Server style={{color: '#01bacf'}} />{courseCount}
                         </div>
                         <div>
-                            <Icon.MortarboardFill /> Nguyễn Văn A
+                        Mã danh mục: <b>{IDNumber}</b>
                         </div>
                     </div>
-                    {/* end left */}
                     <div className="pull-right">
-                        <div>
-                            <Icon.CashStack /> 200.000đ
-                        </div>
-                        <div style={{color:'gold'}}>
-                            <Icon.StarFill /> 4.5
-                        </div>
+                        
                     </div>
                 </div>
             </div>

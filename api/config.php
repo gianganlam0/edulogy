@@ -20,7 +20,7 @@ $CFG->dboptions = array (
   'dbcollation' => 'utf8mb4_unicode_ci',
 );
 
-$CFG->wwwroot   = 'http://localhost/saru';
+$CFG->wwwroot   = $DBS['home'];
 $CFG->dataroot  = $DBS['dataroot'];
 $CFG->admin     = 'admin';
 

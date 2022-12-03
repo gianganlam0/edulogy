@@ -3,7 +3,11 @@ import Footer from './Components/Utils/Footer/Footer';
 import Home from './Components/Home/Home';
 import LoginPage from './Components/LoginPage/LoginPage';
 import RegisterPage from './Components/RegisterPage/RegisterPage';
+import ForgotPassword from './Components/ForgotPassword/ForgotPassword';
 import CourseList from './Components/CourseList/CourseList';
+import AddCourse from './Components/AddCourse/AddCourse';
+import CoursePending from './Components/CoursePending/CoursePending';
+import CourseCsv from './Components/CourseCsv/CourseCsv';
 import CourseDetail from './Components/CourseDetail/CourseDetail';
 import CateList from './Components/CateList/CateList';
 import Cart from './Components/Cart/Cart';
@@ -51,11 +55,18 @@ function App() {
       <Route path="/" element={<Home/>}/>
       <Route path="/login" element={!isLogin ? <LoginPage/> : <ErrorPage msg="Bạn đã đăng nhập rồi !"/>}/>
       <Route path="/register" element={!isLogin ? <RegisterPage/> : <ErrorPage msg="Bạn phải đăng xuất mới đăng ký tài khoản được !"/>}/>
+      <Route path="/forgot-password" element={!isLogin ? <ForgotPassword/> : <ErrorPage msg="Bạn phải đăng xuất trước !"/>}/>
       <Route path="/course-list" element={<CourseList/>}/>
+      <Route path="/course-list/?page=:page&keyword=:keyword&cateid=:cateid&mycourse=:mycourse&searchby=:searchby&sortby=:sortby&orderby:=orderby" element={<CourseList/>}/>
+      <Route path="/add-course" element={(isTeacher || isAdmin) ? <AddCourse/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/course-detail" element={<CourseDetail/>}/>
       <Route path="/cate-list" element={<CateList/>}/>
       <Route path="/cate-list/?page=:page&keyword=:keyword&sortby=:sortby&orderby:=orderby" element={<CateList/>}/>
       <Route path="/add-cate" element={(isTeacher || isAdmin) ? <AddCate/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
+      <Route path="/course-pending" element={(isTeacher || isAdmin) ? <CoursePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
+      <Route path="/course-pending?page=:page" element={(isTeacher || isAdmin) ? <CoursePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
+      <Route path="/course-csv" element={isAdmin ? <CourseCsv/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
+      <Route path="/course-csv?page=:page" element={isAdmin ? <CourseCsv/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cate-pending" element={(isTeacher || isAdmin) ? <CatePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cate-pending?page=:page" element={(isTeacher || isAdmin) ? <CatePending/> : <ErrorPage msg="Bạn không có quyền xem trang này !"/>}/>
       <Route path="/cart" element={<Cart/>}/>

@@ -136,9 +136,10 @@ export default function AddCate() {
                             
                             <Col md={8} className="mx-auto">
                                 <div style={{minHeight:'30px', color: 'red'}}>{error}</div> 
+                                <p>Dấu <span style={{color:'red'}}>*</span> chỉ mục bắt buộc</p>
                                 <Form>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Tên danh mục</Form.Label>
+                                        <Form.Label>Tên danh mục <span style={{color:'red'}}>*</span></Form.Label>
                                         <Form.Control value={name} onChange={handleName} type="text" placeholder="Nhập tên danh mục" />
                                     </Form.Group>
 

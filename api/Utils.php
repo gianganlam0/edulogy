@@ -43,7 +43,7 @@ function removeDir($dir = null){
         rmdir($dir);
     }
 }
-function randomString($min , $max) {
+function randomString($min = 8, $max = 16) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $length = rand($min, $max);
     $charactersLength = strlen($characters);
@@ -87,10 +87,12 @@ function deleteImgur($deleteHash){
     return $reply->data;
 }
 function sendMail($toList, $subject, $body){
-    require_once 'phpmailer.php';
+    require 'phpmailer.php';
     for ($i = 0; $i < count($toList); $i++) {
         $mail->AddAddress($toList[$i]);
     }
+    //utf8
+    $mail->CharSet = "UTF-8";
     // $mail->AddReplyTo("reply-to-email@domain", "reply-to-name");
     // $mail->AddCC("cc-recipient-email@domain", "cc-recipient-name");
     $mail->Subject = $subject;
@@ -98,5 +100,129 @@ function sendMail($toList, $subject, $body){
     if(!$mail->Send()) {
         throw new Exception('Error sending email: ' . $mail->ErrorInfo);
     }
+}
+function string2time($str){
+    $time = explode(':', $str);
+    return $time[0]*60 + $time[1];
+}
+function time2string($time){
+    $hour = floor($time/60);
+    $minute = $time%60;
+    //return padding 2 zero
+    return sprintf("%02d:%02d", $hour, $minute);
+}
+function checkOverlapSche($sche1, $sche2){
+    date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+    //first get overlap date
+    $overlapDate = array();
+    $startDate1 = $sche1['startdate'];
+    $endDate1 = $sche1['enddate'];
+    $startDate2 = $sche2['startdate'];
+    $endDate2 = $sche2['enddate'];
+    $overlapDate['startdate'] = max($startDate1, $startDate2);
+    $overlapDate['enddate'] = min($endDate1, $endDate2);
+    if($overlapDate['startdate'] > $overlapDate['enddate']){
+        return array(
+            'isOverlap' => false,
+            'data' => array(),
+        );
+    }
+    //count number of day between 2 overlap date
+    $numDay = (strtotime($overlapDate['enddate']) - strtotime($overlapDate['startdate']))/86400 + 1;
+    $notCheckDay = array(
+        '1' => 'Sunday',
+        '2' => 'Monday',
+        '3' => 'Tuesday',
+        '4' => 'Wednesday',
+        '5' => 'Thursday',
+        '6' => 'Friday',
+        '7' => 'Saturday',
+    );
+    if ($numDay < 7) {
+        //get dayofweek not in overlap date
+        for ($i = 0; $i < count($numDay); $i++) {
+            $dow = date('N', strtotime($overlapDate['startdate'].' +'.$i.' day')) + 1;
+            if ($dow > 7) {
+                $dow = 1;
+            }
+            $dow = (string)$dow;
+            unset($notCheckDay[$dow]);
+        }
+    }
+    else {
+        $notCheckDay = array();
+    }
+    //get overlap schedule
+    $overlapSche = array();
+    $sches1 = $sche1['schedule'];
+    $sches2 = $sche2['schedule'];
+    $sches1 = json_decode($sches1, true);
+    $sches2 = json_decode($sches2, true);
+    //join 2 schedule
+    $sche = array_merge($sches1, $sches2);
+    //check overlap
+    for ($i = 0; $i < count($sche); $i++) {
+        for ($j = $i+1; $j < count($sche); $j++) {
+            if($sche[$i]['day'] == $sche[$j]['day'] && !in_array($sche[$i]['day'], $notCheckDay)){
+                $start1 = string2time($sche[$i]['start']);
+                $end1 = string2time($sche[$i]['end']);
+                $start2 = string2time($sche[$j]['start']);
+                $end2 = string2time($sche[$j]['end']);
+                if($start1 < $end2 && $start2 < $end1){  
+                    $day =''; 
+                    if ($sche[$i]['day'] == '1') {
+                        $day = 'Chủ nhật';
+                    }
+                    else {
+                        $day = 'Thứ '.$sche[$i]['day'];
+                    }          
+                    $overlapSche = array(
+                        'startdate'=> date('d/m/Y', $overlapDate['startdate']),
+                        'enddate'=> date('d/m/Y', $overlapDate['enddate']),
+                        'day' => $day,
+                        'start' => time2string(max($start1, $start2)),
+                        'end' => time2string(min($end1, $end2)),
+                    );
+                    return array(
+                        'isOverlap' => true,
+                        'data' => $overlapSche,
+                    );
+                }
+            }
+        }
+    }
+}
+function array2Csv($arr){
+    //array is array of object
+    $csv = '';
+    //get header
+    $header = array_keys((array)$arr[0]);
+    $csv .= implode(',', $header)."\n";
+    //get data
+    for ($i = 0; $i < count($arr); $i++) {
+        $data = array_values((array)$arr[$i]);
+        $csv .= implode(',', $data)."\n";
+    }
+    return $csv;
+}
+function csv2Array($csv){
+    $arr = array();
+    //csv2array with key is header, value is data
+    $csv = explode("\n", $csv);
+    $header = explode(',', $csv[0]);
+    for ($i = 1; $i < count($csv) - 1; $i++) {
+        $data = explode(',', $csv[$i]);
+        $obj = array();
+        for ($j = 0; $j < count($header); $j++) {
+            $obj[$header[$j]] = $data[$j];
+        }
+        $arr[] = $obj;
+    }
+    return $arr;
+}
+function test($msg = ''){
+    var_dump($msg);
+    // exit;
 }
 ?>

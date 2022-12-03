@@ -1,22 +1,24 @@
-import './CatePending.scss';
+import './CourseCsv.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
 import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link , useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
-import CateItem from './CateItem';
+import CourseCsvItem from './CourseCsvItem';
 
-export default function CatePending() {
+export default function CourseCsv() {
+    const navi = useNavigate();
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {isAdmin, isTeacher} = useContext(Context);
+    const {moodleHome} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [pendingList, setPendingList] = useState([]);
-    const [totalPending, setTotalPending] = useState();
+    const [total, setTotal] = useState();
+    const [totalUnconfirm, setTotalUnconfirm] = useState();
     const [render, setRender] = useState(false);
     useEffect(() => {//take params from url
         setPage(parseInt(params.get('page')));
@@ -24,7 +26,7 @@ export default function CatePending() {
             setPage(1);  
     }}, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = '/edulogy/api/Controller/CourseController.php';
         const data = {
             offset: (page - 1) * 10
         }
@@ -32,7 +34,7 @@ export default function CatePending() {
             url: url,
             type: 'POST',
             data: {data: JSON.stringify(data),
-                action: isAdmin ? 'getCatePending' : 'getMyCatePending'
+                action: 'getCourseCsv'
             },
         }).done(function(res){
             try {
@@ -41,7 +43,8 @@ export default function CatePending() {
             if (res.status === 0) {
                 setTotalPage(Math.ceil(res.data.total / 10));
                 setPendingList(res.data.data);
-                setTotalPending(res.data.totalPending);
+                setTotal(res.data.total);
+                setTotalUnconfirm(res.data.totalUnconfirm);
             }
         }).fail(function(err){
             console.log(err);
@@ -175,9 +178,9 @@ export default function CatePending() {
                 
         }
     }, [page, totalPage, setPage, setParams]);
-
-    function handleAccept(id){
-        const url = '/edulogy/api/Controller/CateController.php';
+    
+    function handleConfirm(id){
+        const url = '/edulogy/api/Controller/CourseController.php';
         const data = {
             id: id,
         }
@@ -185,8 +188,20 @@ export default function CatePending() {
             url: url,
             type: 'POST',
             data: {data: JSON.stringify(data),
-                    action: 'acceptCate'},
+                    action: 'confirmCourseCsv'},
+            beforeSend: function(){
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    html: 'Xin chờ...',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                      Swal.showLoading()
+                    }
+                  });
+            },
         }).done(function(res){
+            Swal.close();
             try {
                 res = JSON.parse(res);
             } catch (error) {}
@@ -198,41 +213,19 @@ export default function CatePending() {
                 Swal.fire('', res.message, 'error');
             }
         }).fail(function(err){
-            Swal.fire('Thất bại', 'Duyệt thất bại', 'error');
+            Swal.fire('Thất bại', 'Xác nhận thất bại', 'error');
         });
     }
 
-    function handleReject(id){
-        const url = '/edulogy/api/Controller/CateController.php';
-        const data = {
-            id: id,
-        }
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: {data: JSON.stringify(data),
-                    action: 'rejectCate'},
-        }).done(function(res){
-            try {
-                res = JSON.parse(res);
-            } catch (error) {}
-            if (res.status === 0){
-                Swal.fire('', res.message, 'success');
-                setRender(!render);
-            }
-            else{
-                Swal.fire('', res.message, 'error');
-            }
-        }).fail(function(err){
-            Swal.fire('Thất bại', 'Từ chối thất bại', 'error');
-        });
+    function handleDownload(csv){
+        const file = new Blob([csv], {type: 'text/csv'});
+        const url = URL.createObjectURL(file);
+        window.open(url);
+        URL.revokeObjectURL(url);
     }
-
-
-
-    document.title = "Danh mục chờ duyệt";
+    document.title = "Lịch sử xuất csv";
     return (
-        <div className='cate-pending'>
+        <div className='course-csv'>
             <div className="overlay" />
 
             <section className="section-cate">
@@ -240,30 +233,34 @@ export default function CatePending() {
                     <div className="boxed">
 
                         <div className="section-title text-center">
-                            <h3>Danh mục chờ duyệt</h3>
+                            <h3>Lịch sử xuất csv</h3>
                         </div>
                         
                         <Row style={{padding: '10px 0 0'}}>
                             <Col className="left-text" xs={12} lg={3}>
-                                <p> Có {totalPending} danh mục chưa duyệt</p>
+                                <p> Có {total} kết quả xuất csv</p>
+                                <p> Có {totalUnconfirm} kết quả chưa xác nhận upload</p>
+                            </Col>
+                            <Col className="right-text" lg={{span: 3, offset: 6}}>
+                                <Row>
+                                <Button onClick={()=> {window.open(moodleHome+'/admin/tool/uploadcourse/index.php')}} className="mb-1">Upload csv</Button>
+                                </Row>
                             </Col>
                             <Col md={12} className="mx-auto">
                                 
                                 <Table responsive style={{textAlign: 'center'}} size="sm" striped bordered hover>
                                 <thead>
                                     <tr>
-                                        <th>Tên danh mục</th>
-                                        <th><div style={{minWidth: '200px'}}>Mô tả</div></th>
-                                        <th>Người đăng</th>
-                                        <th><div style={{minWidth: '300px'}}>Hình ảnh</div></th>
-                                        <th>Thời gian</th>
+                                        <th><div style={{minWidth: '300px'}}>Các tên rút gọn khóa học</div></th>
+                                        <th>Người xuất</th>                   
+                                        <th>Thời gian xuất</th>
                                         <th>Trạng thái</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {pendingList.map((item, index) => {
-                                        return <CateItem key={item.id} {...item} onAccept={()=>{handleAccept(item.id)}} onReject={()=>{handleReject(item.id)}}/>
+                                        return <CourseCsvItem key={item.id} {...item} onConfirm={()=>{handleConfirm(item.id)}} onDownload={()=>{handleDownload(item.data)}}/>
                                     })}
                                 </tbody>
                                 </Table>                                  

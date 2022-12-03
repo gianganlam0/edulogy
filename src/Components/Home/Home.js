@@ -40,7 +40,7 @@ export default function Home() {
                         <div className="btn-wrapper">
                             <div><Button hidden={context.isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button></div>
                             <Button variant="warning" hidden={context.isLogin} onClick={()=>{navigate('/register')}}>Đăng ký tài khoản</Button>    
-                            <Button variant="success" size="lg" hidden={!context.isLogin} onClick={()=>{window.location.href="http://localhost/saru"}}>Truy cập trang moodle</Button>
+                            <Button variant="success" size="lg" hidden={!context.isLogin} onClick={()=>{window.open(context.moodleHome)}}>Truy cập trang moodle</Button>
                         </div>
                     </div>
                 </div>

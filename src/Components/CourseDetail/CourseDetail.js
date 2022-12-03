@@ -1,7 +1,7 @@
 import './CourseDetail.scss';
 import COURSE_IMAGE from '../../images/course1.jpg';
 import * as Icon from 'react-bootstrap-icons';
-import {Button} from 'react-bootstrap';
+import {Row, Col, Button, Table} from 'react-bootstrap';
 import Comment from '../Utils/Comment/Comment';
 export default function CourseDetail() {
     document.title = "Chi tiết khóa học";
@@ -11,50 +11,60 @@ export default function CourseDetail() {
 
             <section className="section-detail">
                 <div className="container">
-                    <div className="row">
-                        <div class="col-md-6">
+                    <Row>
+                        <Col md={6}>
                             <div class="course-image">
                                 <img src={COURSE_IMAGE} alt=""/>
                             </div>
-                        </div>
+                        </Col>
 
-                        <div class="col-md-6">
+                        <Col md={6}>
                             <div class="course-desc">
-                                <h3>Khóa học Java</h3>
+                                <h3>Lớp Java tháng 1/2022</h3>
                                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis consequat condimentum. In a tincidunt purus. Curabitur facilisis luctus aliquet. Aenean a cursus erat, sit amet interdum arcu. Mauris aliquam magna turpis,
                                     lobortis pellentesque velit elementum et. Nulla scelerisque a lorem nec posuere. Nunc convallis posuere tincidunt. Pellentesque a aliquet odio. Integer euismod, enim id lacinia auctor, tortor turpis malesuada enim, in semper
                                     turpis magna quis enim.
                                 </p>
-                                <div className="course-footer">
-                                    <div className="pull-left">
-                                        <div>
-                                            Số học viên: <Icon.PersonFill /> 21
-                                        </div>  
-                                        <div>
-                                            Thời gian học: <Icon.ClockFill /> 2h 30m
-                                        </div>
-                                        <div>
-                                            Giáo viên: <Icon.MortarboardFill /> Nguyễn Văn A
-                                        </div>
-                                        <div>
-                                            Thời gian bắt đầu: <Icon.Calendar /> 20/10/2021
-                                        </div>
-                                    </div>
-                                    {/* end left */}
-                                    <div className="pull-right">
-                                        <div>
-                                            Giá tiền: <Icon.CashStack /> 200.000đ
-                                        </div>
-                                        <div>
-                                            Đánh giá: <Icon.StarFill /> 4.5/5
-                                        </div><div>
-                                            Địa điểm học: <Icon.Map /> Online
-                                        </div>
-                                        <div>
-                                            Thời gian kết thúc: <Icon.CalendarFill /> 20/10/2021
-                                        </div>
-                                    </div>
-                                </div>
+                                <Table responsive size="sm" bordered>
+                                <thead>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Giáo viên: <Icon.MortarboardFill /></td>
+                                        <td>Nguyễn Văn A</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Số học viên: <Icon.PersonFill /></td>
+                                        <td>21</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thời gian học: <Icon.ClockFill /></td>
+                                        <td>T2: 14h30 - 17h30<br/>
+                                            T3: 14h30 - 17h30<br/>
+                                            T4: 14h30 - 17h30<br/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thời gian bắt đầu: <Icon.Calendar /></td>
+                                        <td>14/01/2023</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thời gian kết thúc: <Icon.CalendarFill /></td>
+                                        <td>14/01/2024</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Đánh giá: <Icon.StarFill /></td>
+                                        <td>4.5/5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mã khóa học: <Icon.Code /></td>
+                                        <td>JAVA-NVA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giá tiền: <Icon.CashStack /></td>
+                                        <td>1.000.000đ</td>
+                                    </tr>
+                                </tbody>
+                                </Table>    
                                 <div class="course-meta">
                                     <Button>Thêm vào giỏ hàng</Button>
                                     <div className="cate">
@@ -62,10 +72,10 @@ export default function CourseDetail() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={12}>
                             <div class="comment-box">
                                 <h3 class="small-title">3 bình luận</h3>
                                 <div class="comment-list">
@@ -79,21 +89,21 @@ export default function CourseDetail() {
                             <div class="comment-box">
                                 <h3 class="small-title">Để lại đánh giá</h3>
                                 
-                                <div class="col-md-4">
+                                <Col md={4}>
                                     <input type="text" class="form-control" name="name" placeholder="Số sao từ 0 đến 5"/>
-                                </div>
+                                </Col>
                                 <hr />
-                                <div class="col-md-12">
+                                <Col md={12}>
                                     <textarea placeholder="Bình luận" class="form-control"></textarea>
-                                </div>
+                                </Col>
                                 <hr />
                                 <Button>Gửi</Button>
                                 
 
                             </div>
 
-                        </div>
-                    </div>
+                        </Col>
+                    </Row>
                     
                 </div>
             </section>

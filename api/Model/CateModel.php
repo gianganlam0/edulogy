@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 function handleGetCate($keyword, $sortby, $orderby, $offset, $itemPerPage){
     require_once '../connectDB.php';
 
@@ -115,6 +116,12 @@ function getCatePending($offset){
     $result = mysqli_query($CONN, $sql);
     $row = mysqli_fetch_array($result);
     $total = $row[0];
+    //now count total pending = 0
+    $sql = "SELECT COUNT(*) FROM $catePendingTable WHERE pending = 0";
+    $result = mysqli_query($CONN, $sql);
+    $row3 = mysqli_fetch_array($result);
+    $totalPending = $row3[0];
+    //now get data
     $sql = "SELECT id, name, description, image, userid, pending, time FROM $catePendingTable ORDER BY pending, time LIMIT $offset, 10";
     $result = mysqli_query($CONN, $sql);
     $data = array();
@@ -139,7 +146,8 @@ function getCatePending($offset){
         'message' => '',
         'data' => array(
             'total' => $total,
-            'data' => $data
+            'data' => $data,
+            'totalPending' => $totalPending
         )
     );
     return $res;
@@ -153,10 +161,15 @@ function getMyCatePending($offset, $userId){
     $catePendingTable = "cate_pending";
     $userTable = $DBS['prefix'] . "user";
     //first count total
-    $sql = "SELECT COUNT(*) FROM $catePendingTable";
+    $sql = "SELECT COUNT(*) FROM $catePendingTable WHERE userid = $userId";
     $result = mysqli_query($CONN, $sql);
     $row = mysqli_fetch_array($result);
     $total = $row[0];
+    //now count total pending = 0
+    $sql = "SELECT COUNT(*) FROM $catePendingTable WHERE pending = 0 AND userid = $userId";
+    $result = mysqli_query($CONN, $sql);
+    $row3 = mysqli_fetch_array($result);
+    $totalPending = $row3[0];
     //now get name of uploader
     $sql = "SELECT lastname, firstname FROM $userTable WHERE id = '$userId'";
     $result = mysqli_query($CONN, $sql);
@@ -184,7 +197,8 @@ function getMyCatePending($offset, $userId){
         'message' => '',
         'data' => array(
             'total' => $total,
-            'data' => $data
+            'data' => $data,
+            'totalPending' => $totalPending
         )
     );
     return $res;
@@ -210,11 +224,15 @@ function acceptCate($id){
     $desc = $row['description'];
     $avatar = $row['image'];
     $time = $row['time'];
+    $pendingId = $id; //remember this id to update
     $sql = "INSERT INTO $cateTable (name, description, avatar, timemodified) VALUES ('$name', '$desc', '$avatar', '$time')";
     $result = mysqli_query($CONN, $sql);
     //update path
     $id = mysqli_insert_id($CONN);
     $sql = "UPDATE $cateTable SET path = '/$id' WHERE id = $id";
+    $result = mysqli_query($CONN, $sql);
+    //update cateid in cate_pending
+    $sql = "UPDATE $catePendingTable SET cateid = $id WHERE id = $pendingId";
     $result = mysqli_query($CONN, $sql);
     //now add to context table
     $contextTable = $DBS['prefix'] . "context";

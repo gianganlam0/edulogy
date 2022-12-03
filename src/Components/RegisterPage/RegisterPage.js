@@ -9,7 +9,7 @@ import { Context } from '../Utils/ContextProvider';
 export default function RegisterPage() {
 
     const navigate = useNavigate();
-    const {setFullname,setAvatar,setIsLogin} = useContext(Context);
+    const {setFullname,setAvatar,setIsLogin,moodleHome} = useContext(Context);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
@@ -104,7 +104,7 @@ export default function RegisterPage() {
                     if (result.isConfirmed) {
                         navigate('/');
                         //new tab
-                        window.open('http://localhost/saru/', '_blank');
+                        window.open(moodleHome, '_blank');
                         
                     } else if (result.isDenied) {
                         navigate('/');

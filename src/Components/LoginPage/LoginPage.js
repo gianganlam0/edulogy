@@ -96,7 +96,7 @@ export default function LoginPage() {
                     denyButtonText: 'Để sau',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.open('http://localhost/saru/', '_blank');
+                        window.open(context.moodleHome, '_blank');
                         
                     } else if (result.isDenied) {
                         // navigate('/');

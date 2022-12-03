@@ -9,10 +9,18 @@ export const ContextProvider = ({children}) => {
     const [fullname, setFullname] = useLocalStorage('fullname', 'Khách');
     const [avatar, setAvatar] = useLocalStorage('avatar', '');
     const BASIC_AVATAR = 'https://i.imgur.com/AxnVk1a.png';
+    const moodleHome = 'http://localhost/saru';
     function log(text){
         console.log(text);
     }
-    function timestamp2Date(time) {
+    function echo(text){
+        alert(JSON.stringify(text));
+    }
+    function string2time(str) { // 00:00
+        let [h,m] = str.split(':');
+        return h*60 + m*1;
+    }
+    function timestamp2Date(time, isSkipHour = false) {
         var date = new Date(time*1000);
         var dd = String(date.getDate()).padStart(2, '0');
         var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -20,6 +28,9 @@ export const ContextProvider = ({children}) => {
         var hh = String(date.getHours()).padStart(2, '0');
         var min = String(date.getMinutes()).padStart(2, '0');
         var ss = String(date.getSeconds()).padStart(2, '0');
+        if(isSkipHour){
+            return dd + '/' + mm + '/' + yyyy;
+        }
         return dd + '/' + mm + '/' + yyyy + ' - ' + hh + ':' + min + ':' + ss;
     }
     function checkPathname(pathname, str){
@@ -27,7 +38,7 @@ export const ContextProvider = ({children}) => {
         return regex.test(pathname);
     }
     return (
-        <Context.Provider value={{BASIC_AVATAR, log, timestamp2Date,
+        <Context.Provider value={{BASIC_AVATAR,moodleHome, log, echo, timestamp2Date,string2time,
         isLogin, setIsLogin,
         isTeacher, setIsTeacher,
         isAdmin, setIsAdmin,
