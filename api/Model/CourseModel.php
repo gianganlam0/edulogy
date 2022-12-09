@@ -1,33 +1,110 @@
 <?php
 //set timezone gmt+7
 date_default_timezone_set('Asia/Ho_Chi_Minh');
-function handleGetCate($keyword, $sortby, $orderby, $offset, $itemPerPage){
+function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacherid, $mycourse, $searchby, $sortby, $orderby){
     require_once '../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
     }
     $CONN = connectDB();
-    $cateTable = $DBS['prefix'] . "course_categories";
+    $courseTable = "course";
+    $threeDaysLater = time() + 3*24*60*60;
+    $cond = " pending = 4 ";
     $keyword = mysqli_real_escape_string($CONN, $keyword);
-    if ($keyword == ''){
+    $cateid = (int)$cateid;
+    $teacherid = (int)$teacherid;
+    $mycourse = (int)$mycourse;
+    $catecond = '';
+    $teachercond = '';
+    $keywordcond = '';
+    $mycoursecond = '';
+    switch($cateid){
+        case 0:
+            $catecond = "1";
+            break;
+        default:
+            $catecond = " category = $cateid ";
+            break;
+    }
+    switch($teacherid){
+        case 0:
+            $teachercond = "1";
+            break;
+        default:
+            $teachercond = " teacherid = $teacherid ";
+            break;
+    }
+    switch($searchby){
+        case 'name':
+            $searchby = 'fullname';
+            break;
+        case 'cate':
+            $searchby = 'catename';
+            break;
+        case 'teacher':
+            $searchby = 'teachername';
+            break;
+        default:
+            $searchby = 'fullname';
+            break;
+    }
+    switch($sortby){
+        case 'rate':
+            $sortby = 'rate';
+            break;
+        case 'cost':
+            $sortby = 'cost';
+            break;
+        case 'student':
+            $sortby = 'totaluser';
+            break;
+        default:
+            $sortby = 'rate';
+            break;
+    }
+    switch($keyword){
+        case '':
+            $keywordcond = "1";
+            break;
+        default:
+            $keywordcond = " $searchby LIKE '%$keyword%' ";
+            break;
+    }
+    if ($mycourse == 0){
+        $mycoursecond = " startdate > $threeDaysLater AND totaluser < 100 ";
+        $finalcond = "$cond AND $catecond AND $teachercond AND $keywordcond AND $mycoursecond";
         //first count total
-        $sql = "SELECT COUNT(*) FROM $cateTable";
+        $sql = "SELECT COUNT(*) FROM $courseTable
+        WHERE $finalcond";
         $result = mysqli_query($CONN, $sql);
         $row = mysqli_fetch_array($result);
         $total = $row[0];
         //now get data
-        $sql = "SELECT id, name, idnumber, description,coursecount,avatar FROM $cateTable ORDER BY $sortby $orderby LIMIT $offset, $itemPerPage";
+        $sql = "SELECT * FROM $courseTable 
+        WHERE $finalcond
+        ORDER BY $sortby $orderby LIMIT $offset, $itemPerPage";
         $result = mysqli_query($CONN, $sql);
         $data = array();
         while ($row = mysqli_fetch_array($result)){
             $data[] = array(
                 'id' => $row['id'],
-                'name' => $row['name'],
-                'IDNumber' => $row['idnumber'],
-                'desc' => $row['description'],
-                'courseCount' => $row['coursecount'],
-                'avatar' => $row['avatar']
+                'idnumber' => $row['idnumber'],
+                'courseId' => $row['courseid'],
+                'fullname' => $row['fullname'],
+                'shortname' => $row['shortname'],
+                'cateId' => $row['category'],
+                'cateName' => $row['catename'],
+                'schedule' => $row['schedule'],
+                'startdate' => $row['startdate'],
+                'enddate' => $row['enddate'],
+                'image' => $row['image'],
+                'desc' => $row['summary'],
+                'studentCount' => $row['totaluser'],
+                'cost' => $row['cost'],
+                'teacherId' => $row['teacherid'],
+                'teacherName' => $row['teachername'],
+                'rate' => $row['rate']
             );
         }
         $res = array(
@@ -41,23 +118,49 @@ function handleGetCate($keyword, $sortby, $orderby, $offset, $itemPerPage){
         return $res;
     }
     else{
+        $mycoursecond = " 1 ";
+        $finalcond = "$cond AND $catecond AND $teachercond AND $keywordcond AND $mycoursecond";
         //first count total
-        $sql = "SELECT COUNT(*) FROM $cateTable WHERE $sortby LIKE '%$keyword%'";
+        $myuserid = $_SESSION['id'];
+
+        $sql = "SELECT COUNT(*) FROM
+        course a
+        INNER JOIN
+        (SELECT courseid AS bid FROM course_user WHERE userid = $myuserid) b
+        ON a.courseid=b.bid
+        WHERE $finalcond";
         $result = mysqli_query($CONN, $sql);
         $row = mysqli_fetch_array($result);
         $total = $row[0];
         //now get data
-        $sql = "SELECT id, name, idnumber, description,coursecount,avatar FROM $cateTable WHERE $sortby LIKE '%$keyword%' ORDER BY $sortby $orderby LIMIT $offset, $itemPerPage";
+        $sql = "SELECT * FROM
+        course a
+        INNER JOIN
+        (SELECT courseid AS bid FROM course_user WHERE userid = $myuserid) b
+        ON a.courseid=b.bid
+        WHERE $finalcond
+        ORDER BY $sortby $orderby LIMIT $offset, $itemPerPage";
         $result = mysqli_query($CONN, $sql);
         $data = array();
         while ($row = mysqli_fetch_array($result)){
             $data[] = array(
                 'id' => $row['id'],
-                'name' => $row['name'],
-                'IDNumber' => $row['idnumber'],
-                'desc' => $row['description'],
-                'courseCount' => $row['coursecount'],
-                'avatar' => $row['avatar']
+                'courseId' => $row['courseid'],
+                'idnumber' => $row['idnumber'],
+                'fullname' => $row['fullname'],
+                'shortname' => $row['shortname'],
+                'cateId' => $row['category'],
+                'cateName' => $row['catename'],
+                'schedule' => $row['schedule'],
+                'startdate' => $row['startdate'],
+                'enddate' => $row['enddate'],
+                'image' => $row['image'],
+                'desc' => $row['summary'],
+                'studentCount' => $row['totaluser'],
+                'cost' => $row['cost'],
+                'teacherId' => $row['teacherid'],
+                'teacherName' => $row['teachername'],
+                'rate' => $row['rate']
             );
         }
         $res = array(
@@ -126,7 +229,7 @@ function addCoursePending($fullname, $shortname, $schedule, $category, $startdat
     //get inserted id
     $insertedId = mysqli_insert_id($CONN);
     if ($idnumber == ''){
-        $idnumber = 'C' . $insertedId;
+        $idnumber = $shortname;
         $sql = "UPDATE $coursePendingTable SET idnumber = '$idnumber' WHERE id = $insertedId";
         $result = mysqli_query($CONN, $sql);
     }
@@ -166,7 +269,14 @@ function getCoursePending($offset){
     $totalAccept = $row4[0];
     //now get data
     $sql = "SELECT id,fullname,shortname,schedule,category,startdate,enddate,idnumber,summary,cost,image,userid,pending,time
-            FROM $coursePendingTable ORDER BY pending, time LIMIT $offset, 10";
+            FROM $coursePendingTable ORDER BY
+            CASE
+                WHEN pending != 2 THEN pending
+                ELSE 5
+            END ASC,
+            CASE WHEN pending = 0 THEN time END ASC,
+            CASE WHEN pending != 0 THEN time END DESC
+            LIMIT $offset, 10";
     $result = mysqli_query($CONN, $sql);
     $data = array();
     while ($row = mysqli_fetch_array($result)){
@@ -236,7 +346,15 @@ function getMyCoursePending($offset, $userId){
     $totalAccept = $row4[0];
     //now get data
     $sql = "SELECT id,fullname,shortname,schedule,category,startdate,enddate,idnumber,summary,cost,image,userid,pending,time
-            FROM $coursePendingTable WHERE userid = '$userId' ORDER BY pending, time LIMIT $offset, 10";
+            FROM $coursePendingTable WHERE userid = '$userId'
+            ORDER BY
+            CASE
+                WHEN pending != 2 THEN pending
+                ELSE 5
+            END ASC,
+            CASE WHEN pending = 0 THEN time END ASC,
+            CASE WHEN pending != 0 THEN time END DESC
+            LIMIT $offset, 10";
     $result = mysqli_query($CONN, $sql);
     $data = array();
     while ($row = mysqli_fetch_array($result)){
@@ -287,18 +405,11 @@ function acceptCourse($id){
     }
     $CONN = connectDB();
     $coursePendingTable = "course_pending";
-    //now get schedule data
-    $sql = "SELECT fullname,schedule,startdate,enddate,userid FROM $coursePendingTable WHERE pending = 1 OR pending = 3 OR pending = 4 AND enddate > NOW()";
-    $result = mysqli_query($CONN, $sql);
-    $scheData = array();
-    while ($row = mysqli_fetch_array($result)){
-        $scheData[] = array(
-            'fullname' => $row['fullname'],
-            'schedule' => $row['schedule'],
-            'startdate' => $row['startdate'],
-            'enddate' => $row['enddate'],
-            'userid' => $row['userid']
+    if (!isset($_SESSION['id'])){
+        $res = array(
+            'status'=> -1,
         );
+        return $res;
     }
     //now get this course data
     $sql = "SELECT fullname,schedule,startdate,enddate,userid FROM $coursePendingTable WHERE id = '$id' AND pending = 0";
@@ -311,6 +422,39 @@ function acceptCourse($id){
         'enddate' => $row['enddate'],
         'userid' => $row['userid']
     );
+    $teacherId = $courseData['userid'];
+ 
+    $currTimestamp = time();
+    //now get schedule data
+    $sql = "SELECT fullname,schedule,startdate,enddate,userid FROM $coursePendingTable WHERE pending = 1 OR pending = 3 OR pending = 4 AND enddate > $currTimestamp";
+    $result = mysqli_query($CONN, $sql);
+    $scheData = array();
+    while ($row = mysqli_fetch_array($result)){
+        $scheData[] = array(
+            'fullname' => $row['fullname'],
+            'schedule' => $row['schedule'],
+            'startdate' => $row['startdate'],
+            'enddate' => $row['enddate'],
+            'userid' => $row['userid']
+        );
+    }
+    //now get schedule data in course I'm in but enddate > now
+    $sql = "SELECT fullname,schedule,startdate,enddate,userid FROM
+    course a
+    INNER JOIN
+    (SELECT courseid AS bid FROM course_user WHERE userid = $teacherId) b
+    ON a.courseid=b.bid
+    WHERE enddate > $currTimestamp";
+    $result = mysqli_query($CONN, $sql);
+    while ($row = mysqli_fetch_array($result)){
+        $scheData[] = array(
+            'fullname' => $row['fullname'],
+            'schedule' => $row['schedule'],
+            'startdate' => $row['startdate'],
+            'enddate' => $row['enddate'],
+            'userid' => $row['userid']
+        );
+    }
     //now check overlap
     foreach ($scheData as $sche){
         if ($sche['userid'] == $courseData['userid']){
@@ -533,6 +677,7 @@ function confirmCourseCsv($id){
     $csvTable = "csv";
     $courseTable = $DBS['prefix'] . "course";
     $coursePendingTable = "course_pending";
+    $courseUserTable = "course_user";
     $sql = "SELECT data FROM $csvTable WHERE id = $id AND type = 'course' AND pending = 0";
     $result = mysqli_query($CONN, $sql);
     $row = mysqli_fetch_array($result);
@@ -549,7 +694,7 @@ function confirmCourseCsv($id){
         );
         return $res;
     }
-    //now send mail
+    //now send mail and insert to course_user
     for ($i = 0; $i < count($data); $i++){
         $email = $data[$i]['email'];
         $userfullname = $data[$i]['userfullname'];
@@ -561,6 +706,10 @@ function confirmCourseCsv($id){
         $result = mysqli_query($CONN, $sql);
         $row = mysqli_fetch_array($result);
         $courseid = $row['id'];
+        $userid = $data[$i]['userid'];
+        //now insert to course_user
+        $sql = "INSERT INTO $courseUserTable (courseid,userid,classrole) VALUES ($courseid,$userid,1)";
+        mysqli_query($CONN, $sql);
         //now send mail
         $subject = "[Moodle] Khóa học '$fullname' đã được tạo";
         $body = "<p>Xin chào $userfullname,</p>
@@ -580,4 +729,587 @@ function confirmCourseCsv($id){
         'message' => '',
     );
     return $res;
+}
+function getCourse($courseid){
+    require_once '../connectDB.php';
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    $CONN = connectDB();
+    $courseTable = "course";
+    $courseUserTable = "course_user";
+    $myid='';
+    //check if is my course
+    $isMyCourse = false;
+    if (!isset($_SESSION['id'])){
+        $isMyCourse = false;
+    }
+    else{
+        $myid = $_SESSION['id'];      
+        $sql = "SELECT * FROM $courseUserTable WHERE courseid = $courseid AND userid = $myid";
+        $result = mysqli_query($CONN, $sql);
+        if (mysqli_num_rows($result) != 0){
+            $isMyCourse = true;
+        }
+    }
+    if(!$isMyCourse){
+        $threeDaysLater = time() + 3*24*60*60;
+        $maxUser = 100;
+        $sql = "SELECT * FROM $courseTable WHERE courseid = $courseid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        //check if no result
+        if (mysqli_num_rows($result) == 0){
+            $res = array(
+                'status'=> -1
+            );
+            return $res;
+        }
+        else{
+            //check if expired
+            // if ($row['startdate'] <= $threeDaysLater){
+            if ($row['startdate'] <= $threeDaysLater){
+                $res = array(
+                    'status'=> -3
+                );
+                return $res;
+            }
+            //check if full
+            if ($row['totaluser'] >= $maxUser){
+                $res = array(
+                    'status'=> -2
+                );
+                return $res;
+            }
+            //no error
+            $row['canRate'] = false;
+            $res = array(
+                'status'=> 0,
+                'data' => $row
+            );
+            return $res;
+        }
+    }
+    else{
+        //skip condition
+        $sql = "SELECT * FROM $courseTable WHERE courseid = $courseid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $row['isMyCourse'] = true;
+        $res2 = checkRateCourse($myid,$courseid);
+        if ($res2['status'] == 0){
+            $row['canRate'] = true;
+        }
+        else{
+            $row['canRate'] = false;
+        }
+        $res = array(
+            'status'=> 0,
+            'data' => $row
+        );
+        return $res;
+    }
+        
+}
+///need check overlap sche
+function buyCourses($idList){
+    require_once '../connectDB.php';
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    $CONN = connectDB();
+    $courseTable = "course";
+    $courseUserTable = "course_user";
+    $coursePendingTable = "course_pending";
+    $userTable = "user";
+    $transTable = "transaction";
+    //first get my balance
+    if(!isset($_SESSION['id'])){
+        $res = array(
+            'status'=> -4,//not logged in
+        );
+        return $res;
+    }
+    $myid = $_SESSION['id'];
+    $sql = "SELECT balance FROM $userTable WHERE userid = $myid";
+    $result = mysqli_query($CONN, $sql);
+    $row = mysqli_fetch_array($result);
+    $myBalance = $row['balance'];
+    //now get total price
+    $totalPrice = 0;
+    for ($i = 0; $i < count($idList); $i++){
+        $courseid = $idList[$i];
+        $sql = "SELECT cost FROM $courseTable WHERE courseid = $courseid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $totalPrice += $row['cost'];
+    }
+    //now check if enough balance
+    if ($myBalance < $totalPrice){
+        $res = array(
+            'status'=> -1,//not enough balance
+        );
+        return $res;
+    }
+    //now check if already bought
+    for ($i = 0; $i < count($idList); $i++){
+        $courseid = $idList[$i];
+        $sql = "SELECT * FROM $courseUserTable WHERE courseid = $courseid AND userid = $myid";
+        $result = mysqli_query($CONN, $sql);
+        if (mysqli_num_rows($result) != 0){
+            $res = array(
+                'status'=> -3,//already bought
+            );
+            return $res;
+        }
+    }
+    //now check overlap schedule, status = -4 -5
+    //get list course in cart
+    $currTimestamp = time();
+    //now get schedule data
+    $scheData = array();
+    //lay danh sach cac khoa hoc ma nguoi do lam giao vien
+    $sql = "SELECT fullname,schedule,startdate,enddate,userid
+    FROM $coursePendingTable 
+    WHERE userid = $myid AND (pending = 1 OR pending = 3 OR pending = 4) AND enddate > $currTimestamp";
+    $result = mysqli_query($CONN, $sql);
+    while ($row = mysqli_fetch_array($result)){
+        $scheData[] = $row;
+    }
+    //lay danh sach cac khoa hoc ma nguoi do dang hoc
+    $sql = "SELECT fullname,schedule,startdate,enddate,userid FROM
+    course a
+    INNER JOIN
+    (SELECT courseid AS bid FROM course_user WHERE userid = $myid) b
+    ON a.courseid=b.bid
+    WHERE enddate > $currTimestamp";
+    $result = mysqli_query($CONN, $sql);
+    while ($row = mysqli_fetch_array($result)){
+        $scheData[] = $row;
+    }
+    //gio lay danh sach cac khoa hoc trong gio hang
+    $cartCourseData = array();
+    for ($i = 0; $i < count($idList); $i++){
+        $courseid = $idList[$i];
+        $sql = "SELECT fullname,schedule,startdate,enddate,userid
+        FROM $courseTable 
+        WHERE courseid = $courseid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $row['userid'] = $myid;
+        $cartCourseData[] = $row;
+    }
+    
+    //now check overlap each course in cart
+    for ($i = 0; $i<count($cartCourseData);$i++){
+        for($j=$i+1;$j<count($cartCourseData);$j++){
+            $res = checkOverlapSche($cartCourseData[$i], $cartCourseData[$j]);
+            if ($res['isOverlap']){
+                $res['data']['fullname'] = $cartCourseData[$j]['fullname'];
+                $res2 = array(
+                    'status'=> -4,
+                    'message' => '',
+                    'data' => $res['data']
+                );
+                return $res2;
+            }
+        }
+    }
+    //now check overlap each course in cart with each course in schedule
+    for ($i = 0; $i<count($cartCourseData);$i++){
+        for($j=0;$j<count($scheData);$j++){
+            $res = checkOverlapSche($cartCourseData[$i], $scheData[$j]);
+            if ($res['isOverlap']){
+                $res['data']['fullname'] = $scheData[$j]['fullname'];
+                $res2 = array(
+                    'status'=> -5,
+                    'message' => '',
+                    'data' => $res['data']
+                );
+                return $res2;
+            }
+        }
+    }
+
+
+    //now insert to course_user
+    for ($i = 0; $i < count($idList); $i++){
+        $courseid = $idList[$i];
+        $sql = "INSERT INTO $courseUserTable (courseid,userid,classrole) VALUES ($courseid,$myid,0)";
+        mysqli_query($CONN, $sql);
+    }
+    //now update balance
+    if ($totalPrice == 0){
+        $res = array(
+            'status'=> 0,
+        );
+        return $res;
+    }
+    $newBalance = $myBalance - $totalPrice;
+    $sql = "UPDATE $userTable SET balance = $newBalance WHERE userid = $myid";
+    mysqli_query($CONN, $sql);
+
+    //now insert to transaction
+    //get list of name of course
+    $courseNameList = array();
+    for ($i = 0; $i < count($idList); $i++){
+        $courseid = $idList[$i];
+        $sql = "SELECT fullname FROM $courseTable WHERE courseid = $courseid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $courseNameList[] = $row['fullname'];
+    }
+    $courseNameListStr = implode(", ", $courseNameList);
+    $content = "Mua các khóa học: $courseNameListStr";
+    $sql = "INSERT INTO $transTable (userid,amount,content,time,type,status) VALUES ($myid,$totalPrice,'$content',$currTimestamp,'buy',1)";
+    mysqli_query($CONN, $sql);
+    
+    $res = array(
+        'status'=> 0,
+    );
+    return $res;
+}
+function getMemberList($courseid){
+    require_once '../connectDB.php';
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    $CONN = connectDB();
+    $courseUserTable = "course_user";
+    $userTable = $DBS['prefix']."user";
+    $courseTable = 'course';
+    //first check is course exist
+    $sql = "SELECT * FROM $courseUserTable WHERE courseid = $courseid";
+    $result = mysqli_query($CONN, $sql);
+    if (mysqli_num_rows($result) == 0){
+        $res = array(
+            'status'=> -2,
+        );
+        return $res;
+    }
+    //now check are you in this course
+    if (!isset($_SESSION['id'])){
+        $res = array(
+            'status'=> -3,
+        );
+        return $res;
+    }
+    $myid = $_SESSION['id'];
+    $sql = "SELECT * FROM $courseUserTable WHERE courseid = $courseid AND userid = $myid";
+    $result = mysqli_query($CONN, $sql);
+    if (mysqli_num_rows($result) == 0){
+        $res = array(
+            'status'=> -4,
+        );
+        return $res;
+    }
+    //now get name of course
+    $sql = "SELECT fullname FROM $courseTable WHERE courseid = $courseid";
+    $result = mysqli_query($CONN, $sql);
+    $row = mysqli_fetch_array($result);
+    $courseName = $row['fullname'];
+    //now check if i am teacher
+    $sql = "SELECT * FROM $courseUserTable WHERE courseid = $courseid AND userid = $myid AND classrole = 1";
+    $result = mysqli_query($CONN, $sql);
+    if (mysqli_num_rows($result) == 0){
+        $isTeacher = false;
+    }
+    else{
+        $isTeacher = true;
+    }
+    //now get member list
+    $sql = "SELECT userid,classrole FROM $courseUserTable WHERE courseid = $courseid ORDER BY classrole DESC";
+    $result = mysqli_query($CONN, $sql);
+    $memberList = array();
+    $csv = array();
+    while($row = mysqli_fetch_array($result)){
+        $userid = $row['userid'];
+        $sql = "SELECT * FROM $userTable WHERE id = $userid";
+        $result2 = mysqli_query($CONN, $sql);
+        $row2 = mysqli_fetch_array($result2);
+        $row['fullname'] = $row2['lastname'] . " " . $row2['firstname'];
+        $row['email'] = $row2['email'];
+        $row['phone'] = $row2['phone2'];
+        $temp = array();
+        $temp['username'] = $row2['username'];
+        $csv[] = $temp;
+        $memberList[] = $row;
+    }
+    $csv = array2Csv($csv);
+    $res = array(
+        'status'=> 0,
+        'data' => array(
+            'courseName' => $courseName,
+            'isTeacher' => $isTeacher,
+            'data' => $memberList,
+            'csv' => $csv,
+        ),
+    );
+    return $res;
+}
+function getSchedule($monday, $sunday){
+    require_once '../connectDB.php';
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    $CONN = connectDB();
+    $courseTable = "course";
+    $myuserid = $_SESSION['id'];
+    $sql = "SELECT courseid AS id,fullname,schedule,startdate,enddate FROM
+        $courseTable a
+        INNER JOIN
+        (SELECT courseid AS bid FROM course_user WHERE userid = $myuserid) b
+        ON a.courseid=b.bid";
+    $result = mysqli_query($CONN, $sql);
+    $courseList = array();
+    while($item = mysqli_fetch_array($result)){
+        //schedule=[{"day":"3","start":"00:00","end":"00:30"},
+        // {"day":"4","start":"05:00","end":"06:30"},
+        // {"day":"5","start":"00:00","end":"00:30"}]
+        $scheduleArr = json_decode($item['schedule'], true);
+        //add new key id,fullname to each object in scheduleArr
+        foreach($scheduleArr as &$value){
+            $value['id'] = $item['id'];
+            $value['fullname'] = $item['fullname'];
+        }
+        //first convert startdate and enddate has timestamp form to yyyy-mm-dd
+        $item['startdate'] = date('Y-m-d', $item['startdate']);
+        $item['enddate'] = date('Y-m-d', $item['enddate']);
+        if ($item['enddate'] < $monday || $item['startdate'] > $sunday){
+            continue;
+        }
+        if($item['startdate'] <= $monday && $item['enddate'] >= $sunday){
+            $item['schedule'] = $scheduleArr;
+            $courseList[] = $item;
+            continue;
+        }
+        //hard part
+        if($item['enddate']>=$monday && $item['enddate']<=$sunday){
+            //startdate=monday,enddate=enddate
+            //now get name of day of enddate, enddate is yyyy-mm-dd
+            $day = date('w', strtotime($item['enddate'])) + 1;//because I use 1 for sunday
+            $notCheckDayArr = array();
+            for($i=$day+1;$i<=7;$i++){
+                $notCheckDayArr[] = $i;
+            }
+            //now delete all day in scheduleArr that is in notCheckDayArr
+            $newScheduleArr = array();
+            for ($i=0;$i<count($scheduleArr);$i++){
+                if (!in_array((int)$scheduleArr[$i]['day'], $notCheckDayArr)){
+                    $newScheduleArr[] = $scheduleArr[$i];
+                }
+            }
+            $item['schedule'] = $newScheduleArr;
+            $courseList[] = $item;
+            continue;
+        }
+        if($item['startdate']>=$monday && $item['startdate']<=$sunday){
+            //startdate=startdate,enddate=sunday
+            //now get name of day of startdate, startdate is yyyy-mm-dd
+            $day = date('w', strtotime($item['startdate'])) + 1;//because I use 1 for sunday
+            $notCheckDayArr = array();
+            for($i=$day-1;$i>=1;$i--){
+                $notCheckDayArr[] = $i;
+            }
+            //now delete all day in scheduleArr that is in notCheckDayArr
+            $newScheduleArr = array();
+            for ($i=0;$i<count($scheduleArr);$i++){
+                if (!in_array((int)$scheduleArr[$i]['day'], $notCheckDayArr)){
+                    $newScheduleArr[] = $scheduleArr[$i];
+                }
+            }
+            $item['schedule'] = $newScheduleArr;
+            $courseList[] = $item;
+            continue;
+        }
+    }
+    //$courselist is array of course, each course has course['schedule] is array of scheduleitem, now push all scheduleitem to $scheduleList
+    $scheduleList = array();
+    foreach($courseList as $course){
+        foreach($course['schedule'] as $scheduleItem){
+            $scheduleList[] = $scheduleItem;
+        }
+    }
+    $res = array(
+        'status'=> 0,
+        'data' => $scheduleList,
+    );
+    return $res;
+}
+function getCourseComment($courseid,$offset){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $rateView = "rate_view";
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    if(isset($_SESSION['id'])){
+        $myuserid = $_SESSION['id'];
+    }else{
+        $myuserid = 0;
+    }
+    //first count number of comment in this course
+    $sql = "SELECT COUNT(*) AS count FROM $rateView WHERE courseid = $courseid";
+    $result = mysqli_query($CONN, $sql);
+    $row = mysqli_fetch_array($result);
+    $thisTotal = $row['count'];
+
+    $sql = "SELECT cateid,teacherid FROM $rateView WHERE courseid = $courseid";
+    $result = mysqli_query($CONN, $sql);
+    $row = mysqli_fetch_array($result);
+    $cateid = $row['cateid'];
+    $teacherid = $row['teacherid'];
+    //now count number of comment in this cate and teacher
+    if ($thisTotal == 0){
+        $globalTotal = 0;
+    }
+    else{
+        $sql = "SELECT COUNT(*) AS count FROM $rateView WHERE cateid = $cateid AND teacherid = $teacherid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $globalTotal = $row['count'];
+    }
+    if ($myuserid == 0){
+        $sql = "SELECT id,userid,courseid,comment,point,time,fullname,image FROM $rateView WHERE cateid = $cateid AND teacherid = $teacherid ORDER BY
+        CASE
+            WHEN courseid = $courseid THEN 1
+            ELSE 2
+        END, time DESC
+        LIMIT 0, $offset";
+    }
+    else{//set my comment to top
+        $sql = "SELECT id,userid,courseid,comment,point,time,fullname,image FROM $rateView WHERE cateid = $cateid AND teacherid = $teacherid ORDER BY
+        CASE
+            WHEN userid = $myuserid and courseid = $courseid THEN 1
+            WHEN userid = $myuserid and courseid != $courseid THEN 2
+            WHEN userid != $myuserid and courseid = $courseid THEN 3
+            ELSE 4
+        END, time DESC
+        LIMIT 0, $offset";
+    }
+    
+    $result = mysqli_query($CONN, $sql);
+    $commentList = array();
+    while($row = mysqli_fetch_array($result)){
+        if($row['courseid'] != $courseid)
+            $row['isThisCourse'] = false;
+        else $row['isThisCourse'] = true;
+        $commentList[] = $row;
+    }
+    $res = array(
+        'status'=> 0,
+        'data' => array(
+            'thisTotal' => $thisTotal,
+            'globalTotal' => $globalTotal,
+            'data' => $commentList,
+        ),
+    );
+    return $res;
+    
+}
+function deleteComment($id){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $rateView = "rate_view";
+    //check if this comment is exist
+    $sql = "SELECT * FROM $rateView WHERE id = $id";
+    $result = mysqli_query($CONN, $sql);
+    if(mysqli_num_rows($result) == 0){
+        $res = array(
+            'status'=> -2,
+        );
+        return $res;
+    }
+    $sql = "UPDATE $rateView SET comment = '' WHERE id = $id";
+    $result = mysqli_query($CONN, $sql);
+    if($result){
+        $res = array(
+            'status'=> 0,
+        );
+        return $res;
+    }
+    else{
+        $res = array(
+            'status'=> -1,
+        );
+        return $res;
+    }
+}
+function checkRateCourse($userid,$courseid){
+    require_once '../connectDB.php';
+    if(!isset($_SESSION)){
+        session_start();
+    }
+    $CONN = connectDB();
+    $rateView = "rate_view";
+    $course_user = "course_user";
+    $courseTable = "course";
+    //check can you rate this course
+    $sql = "SELECT * FROM $course_user WHERE userid = $userid AND courseid = $courseid AND classrole = 0";
+    $result = mysqli_query($CONN, $sql);
+    if(mysqli_num_rows($result) == 0){
+        $res = array(
+            'status'=> -3,
+        );
+        return $res;
+    }
+    //check if you have rated this course
+    $sql = "SELECT * FROM $rateView WHERE userid = $userid AND courseid = $courseid";
+    $result = mysqli_query($CONN, $sql);
+    if(mysqli_num_rows($result) != 0){
+        $res = array(
+            'status'=> -2,
+        );
+        return $res;
+    }
+    //check if course not end, now = timestamp
+    $now = time();
+    $sql = "SELECT * FROM $courseTable WHERE courseid = $courseid AND enddate > $now";
+    $result = mysqli_query($CONN, $sql);
+    if(mysqli_num_rows($result) != 0){
+        $res = array(
+            'status'=> -1,
+        );
+        return $res;
+    }
+    //check if course has end more than 1 month
+    $oneMonthAgo = $now - 30*24*60*60;
+    $sql = "SELECT * FROM $courseTable WHERE courseid = $courseid AND enddate < $oneMonthAgo";
+    $result = mysqli_query($CONN, $sql);
+    if(mysqli_num_rows($result) != 0){
+        $res = array(
+            'status'=> -4,
+        );
+        return $res;
+    }
+    $res = array(
+        'status'=> 0,
+    );
+}
+function rateCourse($userid,$courseid, $userrate,$usercomment){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $rateTable = "rate_result";
+    if(!isset($_SESSION)){
+        session_start();
+    }
+    $res = checkRateCourse($userid,$courseid);
+    if($res['status'] != 0){
+        return $res;
+    }
+    $time = time();
+    $sql = "INSERT INTO $rateTable (userid,courseid,point,comment,time) VALUES ($userid,$courseid,$userrate,'$usercomment',$time)";
+    $result = mysqli_query($CONN, $sql);
+    if($result){
+        $res = array(
+            'status'=> 0,
+        );
+        return $res;
+    }
+    else{
+        $res = array(
+            'status'=> -10,
+        );
+        return $res;
+    }
 }

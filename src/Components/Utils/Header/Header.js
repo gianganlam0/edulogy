@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { Context } from '../ContextProvider';
 
 export default function Header() {
-  const {log, checkPathname, fullname, setFullname, avatar, setAvatar, isLogin, setIsLogin} = useContext(Context);
+  const {log, checkPathname, fullname, setFullname, avatar, setAvatar, isLogin,setIsAdmin,setIsTeacher,setIsLogin,setCart} = useContext(Context);
   const navigate = useNavigate();
   const {pathname} = useLocation();
   const [navBarBg, setNavBarBg] = useState('transparent');
@@ -22,6 +22,9 @@ export default function Header() {
       myInfo: false,
       myCourse: false,
       changePass: false,
+      schedule: false,
+      recharge: false,
+      transHistory: false,
       login: false,
       cart: false
     }
@@ -57,6 +60,15 @@ export default function Header() {
     }
     else if (checkPathname(pathname, '/change-password')) {
       setActive({...initState, changePass: true})
+    }
+    else if (checkPathname(pathname, '/schedule')) {
+      setActive({...initState, schedule: true})
+    }
+    else if (checkPathname(pathname, '/recharge')) {
+      setActive({...initState, recharge: true})
+    }
+    else if (checkPathname(pathname, '/transaction-history')) {
+      setActive({...initState, transHistory: true})
     }
     else if(checkPathname(pathname, "/login")) {
       setActive({...initState, login: true})
@@ -108,7 +120,11 @@ export default function Header() {
               setFullname("Khách");
               setAvatar("");
               setIsLogin(false);
+              setIsTeacher(false);
+              setIsAdmin(false);
               navigate('/login');
+              setCart([])
+              localStorage.cart=JSON.stringify([]);
             }
             else if (res.status === 1){
               Swal.fire({ //dang xuat roi
@@ -122,6 +138,8 @@ export default function Header() {
               setAvatar("");
               setIsLogin(false);
               navigate('/login');
+              setCart([])
+              localStorage.cart=JSON.stringify([]);
             }
             else if (isNaN(res.status)){
               Swal.fire({
@@ -161,10 +179,15 @@ export default function Header() {
           </Nav>
           <Nav>
             
-            <NavDropdown active={active.myInfo || active.myCourse || active.changePass} disabled={!isLogin} title={fullname}>
+            <NavDropdown disabled={!isLogin} title={fullname}
+            active={active.myInfo || active.myCourse || active.changePass||
+              active.schedule||active.recharge||active.transHistory}>
               <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/?mycourse=1')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
               <NavDropdown.Item active={active.changePass} onClick={()=>{navigate('/change-password')}}><span><Icon.Lock/> Thay đổi mật khẩu</span></NavDropdown.Item>
+              <NavDropdown.Item active={active.schedule} onClick={()=>{navigate('/schedule')}}><span><Icon.Clock/> Xem thời khóa biểu</span></NavDropdown.Item>
+              <NavDropdown.Item active={active.recharge} onClick={()=>{navigate('/recharge')}}><span><Icon.Cash/> Nạp tiền vào tài khoản</span></NavDropdown.Item>
+              <NavDropdown.Item active={active.transHistory} onClick={()=>{navigate('/transaction-history')}}><span><Icon.ClockHistory/> Lịch sử giao dịch</span></NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>

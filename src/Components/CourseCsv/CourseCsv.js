@@ -14,7 +14,7 @@ export default function CourseCsv() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {moodleHome} = useContext(Context);
+    const {moodleHome,loading} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [pendingList, setPendingList] = useState([]);
     const [total, setTotal] = useState();
@@ -190,15 +190,7 @@ export default function CourseCsv() {
             data: {data: JSON.stringify(data),
                     action: 'confirmCourseCsv'},
             beforeSend: function(){
-                Swal.fire({
-                    title: 'Đang xử lý...',
-                    html: 'Xin chờ...',
-                    allowEscapeKey: false,
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                      Swal.showLoading()
-                    }
-                  });
+                loading();
             },
         }).done(function(res){
             Swal.close();

@@ -266,7 +266,7 @@ export default function CateList() {
                             {cateList.map((item, index) => {
                                 return (
                                     <Col lg={4} md={6} key={item.id} style={{margin: '10px 0'}}>
-                                        <CateSquare {...item} onClick={()=>{console.log(item.id)}}/>
+                                        <CateSquare {...item}/>
                                     </Col>
                                 )
                             })}

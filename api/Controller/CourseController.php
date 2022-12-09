@@ -18,40 +18,39 @@ if (!isset($_SESSION)) {
     setcookie('PHPSESSID', session_id(), time() + 3600*24, '/');//1 ngày
 }
 
-if ($action == 'getCateList'){
-    $keyword = $rq['keyword'];
-    $sortby = $rq['sortBy'];
-    $orderby = $rq['orderBy'];
+if ($action == 'getCourseList'){
     $offset = $rq['offset'];
     $itemPerPage = $rq['itemPerPage'];
+    $keyword = $rq['keyword'];
+    $cateid = $rq['cateid'];
+    $teacherid = $rq['teacherid'];
+    $mycourse = $rq['mycourse'];
+    $searchby = $rq['searchby'];
+    $sortby = $rq['sortby'];
+    $orderby = $rq['orderby'];
     //anti sql injection in keyword
-    if ($sortby != 'name' && $sortby != 'idnumber')
-        $sortby = 'name';
+    if ($searchby != 'name' && $searchby != 'cate' && $searchby != 'teacher')
+        $searchby = 'name';
+    if ($sortby != 'rate' && $sortby != 'cost' && $sortby != 'student')
+        $sortby = 'rate';
     if ($orderby != 'asc' && $orderby != 'desc')
         $orderby = 'asc';
-    //offset must be a number >= 0
-    if (!is_numeric($offset) || $offset < 0)
+    if (!is_numeric($cateid) || (int)$cateid < 0)
+        $cateid = 0;
+    if (!is_numeric($teacherid) || (int)$teacherid < 0)
+        $teacherid = 0;
+    if (!is_numeric($mycourse) || (int)$mycourse < 0 || (int)$mycourse > 1)
+        $mycourse = 0;
+    if (!is_numeric($offset) || (int)$offset < 0)
         $offset = 0;
-    //itemPerPage must be a number > 0
-    if (!is_numeric($itemPerPage) || $itemPerPage <= 0)
+    if (!is_numeric($itemPerPage) || (int)$itemPerPage <= 0)
         $itemPerPage = 10;
-
     try {
-        $res = handleGetCate($keyword, $sortby, $orderby, $offset, $itemPerPage);
+        $res = handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacherid, $mycourse, $searchby, $sortby, $orderby);
         if ($res['status'] == 0){ 
             echo json_encode($res);
             return;
         }
-        // else if ($res['status'] == -1){
-        //     $res['message']  = 'Sai tên đăng nhập hoặc mật khẩu';
-        //     echo json_encode($res);
-        //     return;
-        // }
-        // else if ($res['status'] == -2){
-        //     $res['message']  = 'Tài khoản chưa cập nhật thông tin';
-        //     echo json_encode($res);
-        //     return;
-        // }
     }
     catch (Throwable $th) {
         $res['status'] = -3;
@@ -155,10 +154,10 @@ else if ($action == 'addCourse'){
         echo json_encode($res);
         return;
     }
-    //end day has format yyyy-mm-dd, check if it is < start day
-    if (strtotime($enddate) <= strtotime($startdate)){
+    //end day has format yyyy-mm-dd, check if it is < start day + 21 day
+    if (strtotime($enddate) < strtotime($startdate) + 21 * 24 * 60 * 60){
         $res['status'] = -2;
-        $res['message'] = 'Ngày kết thúc không hợp lệ!';
+        $res['message'] = 'Ngày kết thúc phải lớn hơn ngày bắt đầu ít nhất 21 ngày!';
         echo json_encode($res);
         return;
     }
@@ -328,7 +327,7 @@ else if ($action == 'getMyCoursePending'){
     return;
 }
 else if ($action == 'acceptCourse'){
-    if ($_SESSION['role'] != 2){
+    if (isset($_SESSION['role']) && $_SESSION['role'] != 2){
         $res['status'] = -1;
         $res['message'] = 'Bạn không có quyền thực hiện thao tác này!';
         echo json_encode($res);
@@ -512,4 +511,347 @@ else if ($action == 'confirmCourseCsv'){
         return;
     }
     return;
+}
+else if ($action == 'getCourse'){
+    $courseid = $rq['courseid'];
+    //validate
+    if (!is_numeric($courseid) || (int)$courseid <= 0){
+        $res['status'] = -2;
+        $res['message'] = 'ID khóa học không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        
+        $res = getCourse($courseid);
+        $canRate = false;
+        if(!isset($_SESSION['id'])){
+            $canRate = false;
+        }
+        else{
+            $myid = $_SESSION['id'];
+            $res2 = checkRateCourse($myid, $courseid);
+            if ($res2['status'] == 0){
+                $canRate = true;
+            }
+        }
+        $res['canRate'] = $canRate;
+        if ($res['status'] == 0){
+            $res['message'] = '';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -1){
+            $res['message'] = 'Id khóa học không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -2){
+            $res['message'] = 'Khóa học đã đủ số lượng học viên!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -3){
+            $res['message'] = 'Khóa học đã hết hạn đăng ký!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'buyCourses'){
+    $cart = $rq['cart'];
+    //if cart is empty
+    if (count($cart) == 0){
+        $res['status'] = -2;
+        $res['message'] = 'Giỏ hàng trống!';
+        echo json_encode($res);
+        return;
+    }
+    //validate
+    //cart is array of object, each object has courseid is one of the key
+    //get list of courseid
+    $courseids = array();
+    foreach ($cart as $item){
+        $courseids[] = $item['courseid'];
+    }
+    //check if all courseid is valid
+    foreach ($courseids as $courseid){
+        if (!is_numeric($courseid) || (int)$courseid <= 0){
+            $res['status'] = -2;
+            $res['message'] = 'ID khóa học không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    //check if all courseid is exist
+    try {
+        foreach ($courseids as $courseid){
+            $res = getCourse($courseid);
+            if ($res['status'] == -1){
+                $res['status'] = -2;
+                $res['message'] = 'Một số khóa học không tồn tại!';
+                echo json_encode($res);
+                return;
+            }
+        }
+        //all courseid is valid and exist
+        $res = buyCourses($courseids);
+        if ($res['status'] == 0){
+            $res['message'] = 'Đã mua thành công!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($res['status'] == -1){
+            $res['message'] = 'Bạn không đủ tiền để mua hết các khóa học này!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($res['status'] == -2){
+            $res['message'] = 'Bạn đã mua một trong các khóa học này!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($res['status'] == -3){
+            $res['message'] = 'Bạn chưa đăng nhập!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($res['status'] == -4 || $res['status'] == -5){
+            $msg = '';
+            if ($res['status'] == -4)
+                $msg = "Có sự trùng lặp thời khóa biểu giữa các khóa học trong giỏ hàng";
+            else $msg = "Có sự trùng lặp thời khóa biểu giữa khóa học trong giỏ hàng với khóa học của bạn";
+                
+            $res['message']  = $msg.', khóa học: ' . $res['data']['fullname']
+            . ', ngày bắt đầu trùng lặp: '. $res['data']['startdate']
+            . ', ngày kết thúc trùng lặp: '. $res['data']['enddate']
+            . ', thứ trùng lặp: ' . $res['data']['day'] //thứ 2, thứ 3, ...
+            . ', giờ bắt đầu: ' . $res['data']['start']
+            . ', giờ kết thúc: ' . $res['data']['end'];
+            echo json_encode($res);
+            return;
+        }
+
+
+        
+    }
+    catch (Throwable $th) {
+        $res['status'] = -4;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'getMemberList'){
+    $courseid = $rq['courseid'];
+    //validate
+    if (!is_numeric($courseid) || (int)$courseid <= 0){
+        $res['status'] = -1;
+        $res['message'] = 'ID khóa học không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    //check if login 
+    if (!isset($_SESSION['id'])){
+        $res['status'] = -3;
+        $res['message'] = 'Bạn chưa đăng nhập!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = getMemberList($courseid);
+        if ($res['status'] == 0){
+            $res['message'] = '';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -2){
+            $res['message'] = 'Khóa học không tồn tại!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -4){
+            $res['message'] = 'Bạn không thuộc khóa học này!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -5;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'getSchedule'){
+    $monday = $rq['monday'];
+    $sunday = $rq['sunday'];
+    //validate yyyy-mm-dd
+    $regex = '/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/';
+    if (!preg_match($regex, $monday) || !preg_match($regex, $sunday)){
+        $res['status'] = -1;
+        $res['message'] = 'Ngày không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    //check if login
+    if (!isset($_SESSION['id'])){
+        $res['status'] = -3;
+        $res['message'] = 'Bạn chưa đăng nhập!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = getSchedule($monday, $sunday);
+        if ($res['status'] == 0){
+            $res['message'] = '';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -2){
+            $res['message'] = 'Không có lịch học trong khoảng thời gian này!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -4;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'getCourseComment'){
+    $courseid = $rq['courseid'];
+    $offset = $rq['offset'];
+    //validate
+    if (!is_numeric($courseid) || (int)$courseid <= 0){
+        $res['status'] = -1;
+        $res['message'] = 'ID khóa học không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    if (!is_numeric($offset) || (int)$offset < 0){
+        $res['status'] = -2;
+        $res['message'] = 'Offset không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = getCourseComment($courseid,$offset);
+        if ($res['status'] == 0){
+            $res['message'] = '';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -4;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'deleteComment'){
+    $id = $rq['id'];
+    //validate
+    if (!is_numeric($id) || (int)$id <= 0){
+        $res['status'] = -1;
+        $res['message'] = 'ID bình luận không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    //check if admin
+    if (isset($_SESSION['role']) && $_SESSION['role'] != 2){
+        $res['status'] = -2;
+        $res['message'] = 'Bạn không có quyền xóa bình luận!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = deleteComment($id);
+        if ($res['status'] == 0){
+            $res['message'] = 'Xóa bình luận thành công!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -2){
+            $res['message'] = 'Bình luận không tồn tại!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -4;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'rateCourse'){
+    $courseid = $rq['courseid'];
+    $userrate = $rq['userrate'];
+    $usercomment = $rq['usercomment'];
+    //validate
+    if (!is_numeric($courseid) || (int)$courseid <= 0){
+        $res['status'] = -1;
+        $res['message'] = 'ID khóa học không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    if (!is_numeric($userrate) || (int)$userrate < 0 || (int)$userrate > 5){
+        $res['status'] = -2;
+        $res['message'] = 'Đánh giá không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    //check if login
+    if (!isset($_SESSION['id'])){
+        $res['status'] = -3;
+        $res['message'] = 'Bạn chưa đăng nhập!';
+        echo json_encode($res);
+        return;
+    }
+    $userid = $_SESSION['id'];
+    try {
+        $res = rateCourse($userid,$courseid, $userrate,$usercomment);
+        if ($res['status'] == 0){
+            $res['message'] = 'Đánh giá thành công!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -1){
+            $res['message'] = 'Khóa học chưa kết thúc!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -2){
+            $res['message'] = 'Bạn đã đánh giá khóa học này!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -3){
+            $res['message'] = 'Bạn không có quyền đánh giá khóa học này!';
+            echo json_encode($res);
+            return;
+        }
+        if ($res['status'] == -4){
+            $res['message'] = 'Khóa học đã kết thúc hơn 1 tháng, không thể đánh giá!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -5;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+
 }

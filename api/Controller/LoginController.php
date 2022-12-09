@@ -34,7 +34,7 @@ if (isset($_SESSION['id'])) {
 }
 //username start with lowercase letter and only has lowercase letters, numbers, ., _ and length 1 to 100
 $regexUsername = '/^[a-z][a-z0-9._]{1,100}$/';
-if (!preg_match($regexUsername, $username)) {
+if (!preg_match($regexUsername, $username) || $username == 'guest') {
     $res['status'] = 3;
     $res['message'] = 'Tên đăng nhập không hợp lệ!';
     echo json_encode($res);

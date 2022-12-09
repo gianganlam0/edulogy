@@ -7,7 +7,7 @@ import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default function AddCate() {
-    // const {isAdmin, isTeacher} = useContext(Context);
+    const {loading} = useContext(Context);
     const [error, setError] = useState('');
     const [isHidden, setIsHidden] = useState(true);
     const [name, setName] = useState('');
@@ -91,7 +91,11 @@ export default function AddCate() {
             data: data,
             processData: false,
             contentType: false,
+            beforeSend: function() {
+                loading();
+            }
         }).done(function(res) {
+            Swal.close();
             try {
                 res = JSON.parse(res);
             } catch (error) {}

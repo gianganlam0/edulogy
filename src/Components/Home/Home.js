@@ -1,15 +1,15 @@
 import './Home.scss'
 import { Button, } from 'react-bootstrap';
 import CourseSquare from '../Utils/CourseSquare/CourseSquare';
-import COURSE_IMAGE from '../../images/course1.jpg';
 import * as Icon from 'react-bootstrap-icons';
 import Carousel from "react-multi-carousel";
 import {useNavigate} from "react-router-dom";
-import { useContext } from 'react';
+import { useContext,useEffect,useState } from 'react';
 import { Context } from '../Utils/ContextProvider';
+import $ from 'jquery';
 export default function Home() {
     const context = useContext(Context);
-    
+    const [courseList, setCourseList] = useState([]);
     document.title = "Trang chủ";
     const responsive = { //for carousel
         desktop: {
@@ -25,6 +25,35 @@ export default function Home() {
             items: 1,
         }
     };
+    useEffect(() => {//get data from api
+        const url = '/edulogy/api/Controller/CourseController.php';
+        const data = {
+            offset: 0,
+            itemPerPage: 10,
+            keyword: '',
+            cateid: 0,
+            teacherid: 0,
+            mycourse: 0,
+            searchby: 'name',
+            sortby: 'rate',
+            orderby: 'desc'
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {data: JSON.stringify(data),
+                action: 'getCourseList'},
+        }).done(function(res){
+            try {
+                res = JSON.parse(res);
+            } catch (error) {}
+            if (res.status === 0) {
+                setCourseList(res.data.data);
+            }
+        }).fail(function(err){
+            console.log(err);
+        });
+    }, []);
     const navigate = useNavigate();
     return <>
         <div id="home">
@@ -56,24 +85,23 @@ export default function Home() {
                     <div className="section-title text-center">
                         <h3>Khóa học nổi bậc</h3>
                         <p>
-                            Dưới đây là danh sách các khóa học nổi bật nhất của chúng tôi.
+                            Dưới đây là danh sách 10 khóa học được đánh giá cao nhất:
                         </p>
                     </div>
 
                     <Carousel responsive={responsive} infinite autoPlay
                         autoPlaySpeed={2000} itemClass='outer-slider'>
-                        <CourseSquare src={COURSE_IMAGE} />
-                        <CourseSquare src={COURSE_IMAGE} />
-                        <CourseSquare src={COURSE_IMAGE} />
-                        <CourseSquare src={COURSE_IMAGE} />
-                        <CourseSquare src={COURSE_IMAGE} />
-                        <CourseSquare src={COURSE_IMAGE} />
+                            {courseList.map((item, index) => {
+                                return (
+                                    <CourseSquare key={item.id} {...item}/>
+                                )
+                            })}
                     </Carousel>
 
                     <hr/>
 
                     <div className="section-button text-center">
-                        <Button variant="success" onClick={()=>{navigate('/course-list')}}>Xem thêm</Button>
+                        <Button variant="success" onClick={()=>{navigate('/course-list?orderby=desc')}}>Xem thêm</Button>
                     </div>
                 </div>
             </section>

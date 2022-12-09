@@ -1,4 +1,4 @@
-import './Cart.scss';
+import './TransactionHistory.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
 import * as I from 'react-bootstrap-icons'
@@ -7,31 +7,46 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
-import CartItem from './CartItem';
+import TransactionItem from './TransactionItem';
 
-export default function Cart() {
+export default function TransactionHistory() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {isAdmin,cart,setCart} = useContext(Context);
+    // const {isAdmin, isTeacher} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
-    const [offset, setOffset] = useState(0);
-    const [totalCost, setTotalCost] = useState(0);
+    const [transList, setTransList] = useState([]);
+    const [totalTrans, setTotalTrans] = useState(0);
     const [render, setRender] = useState(false);
     useEffect(() => {//take params from url
         setPage(parseInt(params.get('page')));
         if (!params.has('page') || params.get('page') === '') {
             setPage(1);  
     }}, [params, setParams]);
-
-    useEffect(() => {//get data from cart
-        setOffset((page-1)*10);
-        setTotalPage(Math.ceil(cart.length / 10));
-        let temp = cart.reduce((a, b) => a + parseInt(b.cost), 0);
-        temp = temp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' VND';
-        setTotalCost(temp);
-        // setPendingList(res.data.data);
-    }, [page, cart,render]);
+    useEffect(() => {//get data from api
+        const url = '/edulogy/api/Controller/UserController.php';
+        const data = {
+            offset: (page - 1) * 10
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {data: JSON.stringify(data),
+                action: 'getTrans'
+            },
+        }).done(function(res){
+            try {
+                res = JSON.parse(res);
+            } catch (error) {}
+            if (res.status === 0) {
+                setTotalPage(Math.ceil(res.data.totalTrans / 10));
+                setTransList(res.data.data);
+                setTotalTrans(res.data.totalTrans);
+            }
+        }).fail(function(err){
+            console.log(err);
+        });
+    }, [page, render]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(
@@ -161,60 +176,9 @@ export default function Cart() {
         }
     }, [page, totalPage, setPage, setParams]);
 
-    function handleBuy(){
-        //first are you sure?
-        Swal.fire({
-            title: 'Bạn có chắc chắn muốn mua hàng?',
-            showDenyButton: true,
-            confirmButtonText: `Đồng ý`,
-            denyButtonText: `Hủy`,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const url = '/edulogy/api/Controller/CourseController.php';
-                const data = {
-                    cart: cart,
-                }
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: {data: JSON.stringify(data),
-                            action: 'buyCourses'},
-                }).done(function(res){
-                    try {
-                        res = JSON.parse(res);
-                    } catch (error) {}
-                    if (res.status === 0){
-                        Swal.fire('', res.message, 'success');
-                        setCart([]);
-                        localStorage.cart='[]';
-                        setRender(!render);
-                    }
-                    else{
-                        Swal.fire('', res.message, 'error');
-                    }
-                }).fail(function(err){
-                    Swal.fire('Thất bại', 'Lỗi mạng', 'error');
-                });
-            } else if (result.isDenied) {
-                Swal.fire('Đã hủy', '', 'info')
-            }
-        }
-        );
-    }
-
-    function handleDelete(i){
-        let newCart = cart;
-        newCart.splice(i, 1);
-        setCart(newCart);
-        localStorage.setItem('cart', JSON.stringify(newCart));
-        setRender(!render);
-    }
-
-
-
-    document.title = "Giỏ hàng";
+    document.title = "Lịch sử giao dịch";
     return (
-        <div className='cart'>
+        <div className='transaction-history'>
             <div className="overlay" />
 
             <section className="section-cate">
@@ -222,43 +186,32 @@ export default function Cart() {
                     <div className="boxed">
 
                         <div className="section-title text-center">
-                            <h3>Giỏ hàng của tôi</h3>
-                        </div>
-                        
+                            <h3>Lịch sử giao dịch</h3>
+                        </div>     
                         <Row style={{padding: '10px 0 0'}}>
-                            <Col className="text-start" xs={12} lg={3}>
-                                <p> Có {cart.length} sản phẩm trong giỏ hàng</p>
+                            <Col className="left-text" xs={12} lg={3}>
+                                <p> Có {totalTrans} giao dịch</p>
                             </Col>
-                            <Col md={12} className="mx-auto">
-                                
+                            <Col md={12} className="mx-auto">           
                                 <Table responsive style={{textAlign: 'center'}} size="sm" striped bordered hover>
                                 <thead>
                                     <tr>
-                                        <th>Tên khóa học</th>
-                                        <th>Tên rút gọn</th>
-                                        <th>Giáo viên</th>
-                                        <th><div style={{minWidth: '300px'}}>Hình ảnh</div></th>
-                                        <th>Giá</th>
-                                        <th>Hành động</th>
+                                        <th>Loại giao dịch</th>
+                                        <th><div style={{minWidth: '200px'}}>Nội dung</div></th>
+                                        <th>Số tiền</th>
+                                        <th>Thời gian</th>
+                                        <th>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {cart.slice(offset,offset+10).map((item, i) => {
-                                        return (
-                                            <CartItem key={i} {...item} onDelete={()=>handleDelete(i)}/>
-                                        )
+                                    {transList.map((item, index) => {
+                                        return <TransactionItem key={item.id} {...item}/>
                                     })}
                                 </tbody>
                                 </Table>                                  
                                    
                                 <hr className="invis"></hr>
                                 <Row>
-                            <Col xs={6} lg={6} className="text-start">
-                                <h2>Tổng tiền: {totalCost}</h2>
-                            </Col>
-                            <Col xs={6} lg={6} className="text-end">
-                                <Button hidden={cart.length === 0} onClick={handleBuy} variant="success">Thanh toán</Button>
-                            </Col>
                             <Col xs={12} lg={{span: 10, offset: 1}} style={{float: 'auto'}}>
                                 <Pagination>{paginationItems}</Pagination>
                             </Col>

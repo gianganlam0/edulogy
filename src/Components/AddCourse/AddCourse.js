@@ -8,7 +8,7 @@ import ScheduleItem from './ScheduleItem';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default function AddCourse() {
-    const {string2time} = useContext(Context);
+    const {string2time,loading} = useContext(Context);
     const {echo} = useContext(Context);
     const [error, setError] = useState('');
     const [isHidden, setIsHidden] = useState(true);
@@ -134,10 +134,11 @@ export default function AddCourse() {
                 message: 'Ngày bắt đầu cách ngày hiện tại trên 1 tuần!'
             }
         }
-        if (new Date(endDay).getTime() <= new Date(startDay).getTime()){
+        //end day must larger than start day at least 21 days
+        if (new Date(endDay).getTime() - new Date(startDay).getTime() < 21*24*60*60*1000){
             return {
                 error: true,
-                message: 'Ngày kết thúc không được nhỏ hơn hay bằng ngày bắt đầu!'
+                message: 'Ngày kết thúc phải cách ngày bắt đầu ít nhất 21 ngày!'
             }
         }
         return {
@@ -397,7 +398,11 @@ export default function AddCourse() {
             data: data,
             processData: false,
             contentType: false,
+            beforeSend: function(){
+                loading();
+            }
         }).done(function(res) {
+            Swal.close();
             try {
                 res = JSON.parse(res);
             } catch (error) {}

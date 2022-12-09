@@ -1,8 +1,14 @@
 .course-square {
+    * {
+        margin: 0;
+        padding: 0;
+    }
     .course-box {
         border-radius: 6px 6px;
         background-color: #ffffff;
         border: 1px solid #eaeaea;
+        inline-size: 100%;
+        overflow-wrap: break-word;
         .image-wrap {
             img {
                 width: 100%;
@@ -13,41 +19,31 @@
             }
         }
         .course-details {
-            h4 {
+            .course-fullname {
                 .title {
-                    color: #000;
+                    font-size: 25px;
+                    padding: 0 0 1rem;
+                    font-weight: 700;
+                    margin: 0;
                 }
-                font-size: 25px;
-                padding: 0 0 1.5rem;
-                font-weight: 700;
-                margin: 0;
                 &:hover {
                     .title {
                         transition: all 0.5s ease;
                         color: #01bacf;
+                        cursor: pointer;
                     }
                 }
             }
-            padding: 3rem 2rem;
-            p {
-                padding-bottom: 0;
-                margin-bottom: 0;
-            }
+            padding: 2rem 2rem;
         }
         .course-footer {
-            display: inline-block;
-            width: 100%;
-            padding: 1.5rem 2rem;
+            padding: 1rem 1rem;
             background-color: #f9f9f9;
             border-top: 1px solid #eaeaea;
             border-radius: 0 0 6px 6px;
             border-top: 1px solid #eaeaea;
-            padding: 15px;
-            .pull-left {
-                float: left;
-            }
-            .pull-right {
-                float: right;
+            p {
+                // font-size: 15px;
             }
         }
     }

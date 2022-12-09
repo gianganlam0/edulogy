@@ -86,10 +86,10 @@ function addCatePending($name, $desc, $imageLink){
     $time = time();
     $sql = '';
     if ($imageLink == null){
-        $sql = "INSERT INTO $catePendingTable (name, description, userid, time) VALUES ('$name', '$desc', $userId, $time)";
+        $sql = "INSERT INTO $catePendingTable (cateid,name, description, userid, time) VALUES (0,'$name', '$desc', $userId, $time)";
     }
     else{
-        $sql = "INSERT INTO $catePendingTable (name, description, image, userid, time) VALUES ('$name', '$desc', '$imageLink', $userId, $time)";
+        $sql = "INSERT INTO $catePendingTable (cateid,name, description, image, userid, time) VALUES (0,'$name', '$desc', '$imageLink', $userId, $time)";
     }
     
     $result = mysqli_query($CONN, $sql);
@@ -122,7 +122,15 @@ function getCatePending($offset){
     $row3 = mysqli_fetch_array($result);
     $totalPending = $row3[0];
     //now get data
-    $sql = "SELECT id, name, description, image, userid, pending, time FROM $catePendingTable ORDER BY pending, time LIMIT $offset, 10";
+    $sql = "SELECT id, name, description, image, userid, pending, time FROM $catePendingTable
+    ORDER BY
+    CASE
+        WHEN pending = 0 THEN 0
+        ELSE 1
+    END,
+    CASE WHEN pending = 0 THEN time END,
+    CASE WHEN pending != 0 THEN time END DESC
+    LIMIT $offset, 10";
     $result = mysqli_query($CONN, $sql);
     $data = array();
     while ($row = mysqli_fetch_array($result)){  
@@ -176,7 +184,15 @@ function getMyCatePending($offset, $userId){
     $row = mysqli_fetch_array($result);
     $uploaderName = $row['lastname'] . ' ' . $row['firstname'];
     //now get data
-    $sql = "SELECT id, name, description, image, userid, pending, time FROM $catePendingTable WHERE userid = '$userId' ORDER BY pending, time LIMIT $offset, 10";
+    $sql = "SELECT id, name, description, image, userid, pending, time FROM $catePendingTable WHERE userid = '$userId'
+    ORDER BY
+    CASE
+        WHEN pending = 0 THEN 0
+        ELSE 1
+    END,
+    CASE WHEN pending = 0 THEN time END,
+    CASE WHEN pending != 0 THEN time END DESC
+    LIMIT $offset, 10";
     $result = mysqli_query($CONN, $sql);
     $data = array();
     while ($row = mysqli_fetch_array($result)){  

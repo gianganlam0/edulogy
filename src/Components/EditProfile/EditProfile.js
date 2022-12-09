@@ -16,7 +16,7 @@ export default function EditProfile() {
     const [userId, setUserId] = useState();
     const [isMyProfile, setIsMyProfile] = useState(false);
     
-    const {BASIC_AVATAR, isAdmin, log, setFullname} = useContext(Context);
+    const {BASIC_AVATAR, isAdmin, log, setFullname,loading} = useContext(Context);
 
     const [lastname, setLastname] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -367,27 +367,31 @@ export default function EditProfile() {
             }
 
             data.append('data', JSON.stringify({
-                            id: userId,
-                            lastname: lastname,
-                            firstname: firstname,
-                            phone: phone,
-                            IDNumber: IDNumber,
-                            sex: sex,
-                            birthday: birthday,
-                            email: email,
-                            //if isAdmin, add role, else not add
-                            ...(isAdmin && {role: role}),
-                            desc: desc,
-                            ...(avaFile === undefined && {avatar: avatar}),
-                         }));
+                id: userId,
+                lastname: lastname,
+                firstname: firstname,
+                phone: phone,
+                IDNumber: IDNumber,
+                sex: sex,
+                birthday: birthday,
+                email: email,
+                //if isAdmin, add role, else not add
+                ...(isAdmin && {role: role}),
+                desc: desc,
+                ...(avaFile === undefined && {avatar: avatar}),
+                }));
             data.append('action', 'updateMyInfo');
             $.ajax({
                 url: url,
                 type: 'POST',
                 data: data,
                 processData: false,
-                contentType: false
+                contentType: false,
+                beforeSend: function(){
+                    loading();
+                }
             }).done(function(res){
+                Swal.close();
                 try {
                     res = JSON.parse(res);
                 } catch (error) {}
@@ -437,7 +441,11 @@ export default function EditProfile() {
                 url: url,
                 type: 'POST',
                 data: data,
+                beforeSend: function(){
+                    loading();
+                }
             }).done(function(res){
+                Swal.close();
                 try {
                     res = JSON.parse(res);
                 } catch (error) {}
@@ -485,8 +493,12 @@ export default function EditProfile() {
             type: 'POST',
             data: data,
             processData: false,
-            contentType: false
+            contentType: false,
+            beforeSend: function(){
+                loading();
+            }
         }).done(function(res){
+            Swal.close();
             try {
                 res = JSON.parse(res);
             } catch (error) {}
@@ -643,7 +655,8 @@ export default function EditProfile() {
                                             <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="email">Email</label>
-                                                    <input disabled={!isMyProfile  || !isEditMode} onChange={handleEmail} value={email} type="email" className="form-control" id="email" placeholder="Email" />
+                                                    {/* <input disabled={!isMyProfile  || !isEditMode} onChange={handleEmail} value={email} type="email" className="form-control" id="email" placeholder="Email" /> */}
+                                                    <input readOnly onChange={handleEmail} value={email} type="email" className="form-control" id="email" placeholder="Email" />
                                                 </div>
                                             </div>
                                             <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">

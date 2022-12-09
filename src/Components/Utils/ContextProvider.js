@@ -1,5 +1,7 @@
 import {useState, createContext} from 'react';
 import useLocalStorage from "use-local-storage";
+import Swal from 'sweetalert2';
+import { useEffect } from 'react';
 export const Context = createContext();
 
 export const ContextProvider = ({children}) => {
@@ -8,6 +10,7 @@ export const ContextProvider = ({children}) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [fullname, setFullname] = useLocalStorage('fullname', 'Khách');
     const [avatar, setAvatar] = useLocalStorage('avatar', '');
+    const [cart, setCart] = useLocalStorage('cart', []);
     const BASIC_AVATAR = 'https://i.imgur.com/AxnVk1a.png';
     const moodleHome = 'http://localhost/saru';
     function log(text){
@@ -37,13 +40,48 @@ export const ContextProvider = ({children}) => {
         const regex = new RegExp('^' + str + '/*$');
         return regex.test(pathname);
     }
+    function loading(){
+        Swal.fire({
+            title: 'Đang xử lý...',
+            html: 'Xin chờ...',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading()
+            }
+        });
+    }
+    useEffect(() => {
+        if (!localStorage.getItem('cart')){
+            localStorage.setItem('cart', JSON.stringify([]));
+            setCart([]);
+            return;
+        }
+        //check type of localStorage.cart is not json string
+        if (localStorage.cart === 'null' || localStorage.cart === 'undefined'){
+            localStorage.setItem('cart', JSON.stringify([]));
+            setCart([]);
+            return;
+        }
+        if (typeof localStorage.cart === 'string'){
+            try {
+                JSON.parse(localStorage.cart);
+            } catch (error) {
+                localStorage.setItem('cart', JSON.stringify([]));
+                setCart([]);
+                return;
+            }
+        }
+    }, [])
+
     return (
-        <Context.Provider value={{BASIC_AVATAR,moodleHome, log, echo, timestamp2Date,string2time,
+        <Context.Provider value={{BASIC_AVATAR,moodleHome,log,echo,timestamp2Date,string2time,loading,
         isLogin, setIsLogin,
         isTeacher, setIsTeacher,
         isAdmin, setIsAdmin,
         fullname, setFullname,
         avatar, setAvatar,
+        cart, setCart,
         checkPathname}}>
             {children}
         </Context.Provider>

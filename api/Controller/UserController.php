@@ -356,5 +356,83 @@ else {
             return;
         }
     }
+    else if ($action == 'recharge'){
+        $userid = $_SESSION['id'];
+        $amount = $data['amount'];
+        $content = $data['content'];
+        $regex = '/^[0-9]+$/';
+        if (!preg_match($regex, $amount)){
+            $res['status'] = -2;
+            $res['message'] = 'Số tiền không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        else if ($amount < 50000){
+            $res['status'] = -2;
+            $res['message'] = 'Số tiền phải lớn hơn 50.000!';
+            echo json_encode($res);
+            return;   
+        }
+        try {
+            $res = recharge($userid, $amount);
+            if ($res['status'] == 0){
+                $res['message'] = 'Giao dịch đang được xử lý!';
+            }
+            echo json_encode($res);
+            return;
+        } catch (Throwable $th) {
+            $res['status'] = -2;
+            $res['message'] = 'Không tìm thấy người dùng!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    else if ($action == 'getInfo'){
+        $id = $data['id'];
+        $regex = '/^[0-9]+$/';
+        if (!preg_match($regex, $id)){
+            $res['status'] = -2;
+            $res['message'] = 'ID không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        try {
+            $res = getInfo($id);
+            if ($res['status'] == 0){
+                $res['message'] = 'Lấy thông tin thành công!';
+            }
+            echo json_encode($res);
+            return;
+        } catch (Throwable $th) {
+            $res['status'] = -2;
+            $res['message'] = 'Không tìm thấy người dùng!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    else if($action == 'getTrans'){
+        $offset = $data['offset'];
+        $userid = $_SESSION['id'];
+        $regex = '/^[0-9]+$/';
+        if (!preg_match($regex, $offset)){
+            $res['status'] = -2;
+            $res['message'] = 'Offset không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        try {
+            $res = getTrans($userid, $offset);
+            if ($res['status'] == 0){
+                $res['message'] = '';
+            }
+            echo json_encode($res);
+            return;
+        } catch (Throwable $th) {
+            $res['status'] = -2;
+            $res['message'] = 'Có lỗi xảy ra!';
+            echo json_encode($res);
+            return;
+        }
+    }
 }
 return;

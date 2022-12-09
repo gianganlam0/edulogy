@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 function getInfo($id){
     require_once '../connectDB.php';
 
@@ -227,4 +228,92 @@ function handleForgotPassword($email){
         $res['status'] = -3;
     }
     return $res;
+}
+function recharge($userid,$amount){
+    require_once '../connectDB.php';
+    require_once '../RechargeConfig.php';
+    $time = time();
+    //get date in format dd-mm-yyyy
+    $date = date('d-m-Y', $time);
+    //get time in format hh:mm:ss
+    $time2 = date('H:i:s', $time);
+    $time2 = $date.' '.$time2;
+    $CONN = connectDB();
+    $content = "Nap tien vao tai khoan vao luc $time2, so tien $amount VND";
+    $sql = "INSERT INTO transaction (userid, amount, content, time,type,status)
+            VALUES ('$userid', '$amount', '$content', '$time','$vnp_OrderType',0)";
+    $result = mysqli_query($CONN, $sql);
+    if (!$result) {
+        throw new Exception(mysqli_error($CONN));
+    }
+    $vnp_TxnRef = mysqli_insert_id($CONN);
+    $vnp_OrderInfo = $content;
+    $vnp_Amount = $amount*100; //vnpay require amount * 100
+    //exp in 15 minutes
+    $vnp_ExpireDate = date('YmdHis', strtotime('+15 minutes'));
+    $inputData = array(
+        "vnp_Version" => "2.1.0",
+        "vnp_TmnCode" => $vnp_TmnCode,
+        "vnp_Amount" => $vnp_Amount,
+        "vnp_Command" => "pay",
+        "vnp_CreateDate" => date('YmdHis'),
+        "vnp_CurrCode" => "VND",
+        "vnp_IpAddr" => $vnp_IpAddr,
+        "vnp_Locale" => $vnp_Locale,
+        "vnp_OrderInfo" => $vnp_OrderInfo,
+        "vnp_OrderType" => $vnp_OrderType,
+        "vnp_ReturnUrl" => $vnp_Returnurl,
+        "vnp_TxnRef" => $vnp_TxnRef,
+        "vnp_ExpireDate"=>$vnp_ExpireDate,
+    );
+    
+    ksort($inputData);
+    $query = "";
+    $i = 0;
+    $hashdata = "";
+    foreach ($inputData as $key => $value) {
+        if ($i == 1) {
+            $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+        } else {
+            $hashdata .= urlencode($key) . "=" . urlencode($value);
+            $i = 1;
+        }
+        $query .= urlencode($key) . "=" . urlencode($value) . '&';
+    }
+    $vnp_Url = $vnp_Url . "?" . $query;
+    if (isset($vnp_HashSecret)) {
+        $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);// 
+        $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash; 
+    }
+    $returnData = array(
+        'status' => '0',
+        'data' => $vnp_Url
+    );
+    return $returnData;
+
+}
+function getTrans($userid,$offset){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    //first count
+    $sql = "SELECT COUNT(*) FROM transaction WHERE userid = '$userid'";
+    $result = mysqli_query($CONN, $sql);
+    $totalTrans = mysqli_fetch_assoc($result)['COUNT(*)'];
+
+    $sql = "SELECT * FROM transaction WHERE userid = '$userid' ORDER BY
+    time DESC
+    LIMIT 10 OFFSET $offset";
+    $result = mysqli_query($CONN, $sql);
+    $transList = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $transList[] = $row;
+    }
+    $returnData = array(
+        'status' => 0,
+        'data' => array(
+            'totalTrans' => $totalTrans,
+            'data' => $transList
+        )
+    );
+    return $returnData;
 }
