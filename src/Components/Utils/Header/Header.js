@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { Context } from '../ContextProvider';
 
 export default function Header() {
-  const {log, checkPathname, fullname, setFullname, avatar, setAvatar, isLogin,setIsAdmin,setIsTeacher,setIsLogin,setCart} = useContext(Context);
+  const {log, checkPathname, fullname, setFullname, avatar, setAvatar, isLogin,isTeacher,isAdmin,setIsAdmin,setIsTeacher,setIsLogin,setCart} = useContext(Context);
   const navigate = useNavigate();
   const {pathname} = useLocation();
   const [navBarBg, setNavBarBg] = useState('transparent');
@@ -26,7 +26,9 @@ export default function Header() {
       recharge: false,
       transHistory: false,
       login: false,
-      cart: false
+      cart: false,
+      income: false,
+      incomeAll: false,
     }
   }, []);
 
@@ -75,6 +77,12 @@ export default function Header() {
     }
     else if(checkPathname(pathname, "/cart")) {
       setActive({...initState, cart: true})
+    }
+    else if(checkPathname(pathname, "/income")) {
+      setActive({...initState, income: true})
+    }
+    else if(checkPathname(pathname, "/income-all")) {
+      setActive({...initState, incomeAll: true})
     }
     else {
       setActive(initState);
@@ -175,12 +183,12 @@ export default function Header() {
             <Nav.Link active={active.home} onClick={()=>{navigate('/')}}><Icon.HouseFill/> Trang chủ</Nav.Link>
             <Nav.Link active={active.courses} onClick={()=>{navigate('/course-list')}}><Icon.BookFill/> Khóa học</Nav.Link>
             <Nav.Link active={active.cate} onClick={()=>{navigate('/cate-list')}}><Icon.PenFill/> Danh mục</Nav.Link>
-            {/* <Nav.Link href="/contact"><Icon.TelephoneFill/> Liên lạc</Nav.Link> */}
+            {(isTeacher || isAdmin) && <Nav.Link active={active.income} onClick={()=>{navigate('/income')}}><Icon.CashStack/> Thu nhập</Nav.Link>}
           </Nav>
           <Nav>
             
             <NavDropdown disabled={!isLogin} title={fullname}
-            active={active.myInfo || active.myCourse || active.changePass||
+            active={active.myInfo || active.myCourse || active.changePass||active.incomeAll||
               active.schedule||active.recharge||active.transHistory}>
               <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
               <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/?mycourse=1')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
@@ -188,6 +196,8 @@ export default function Header() {
               <NavDropdown.Item active={active.schedule} onClick={()=>{navigate('/schedule')}}><span><Icon.Clock/> Xem thời khóa biểu</span></NavDropdown.Item>
               <NavDropdown.Item active={active.recharge} onClick={()=>{navigate('/recharge')}}><span><Icon.Cash/> Nạp tiền vào tài khoản</span></NavDropdown.Item>
               <NavDropdown.Item active={active.transHistory} onClick={()=>{navigate('/transaction-history')}}><span><Icon.ClockHistory/> Lịch sử giao dịch</span></NavDropdown.Item>
+              {isAdmin?<NavDropdown.Item active={active.incomeAll} onClick={()=>{navigate('/income-all')}}><span><i className="fas fa-chalkboard-teacher"/> Giáo viên</span></NavDropdown.Item>:null}
+              {isAdmin?<NavDropdown.Item active={active.userList} onClick={()=>{navigate('/user-list')}}><span><i className="fas fa-chalkboard"/> Thành viên</span></NavDropdown.Item>:null}
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
             </NavDropdown>

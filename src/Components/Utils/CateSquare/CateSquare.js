@@ -17,7 +17,7 @@ export default function CateSquare({id, avatar, name, desc, courseCount, IDNumbe
         <div className="cate-square">
             <Container className="cate-box">
                 <Row className="image-wrap">
-                    <img src={avatar} alt="" />
+                    <img onClick={()=>navi('/course-list?cateid='+id)} src={avatar} alt="" />
                 </Row>
                 {/* end image-wrap */}
                 <Row className="cate-details">

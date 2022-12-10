@@ -197,7 +197,7 @@ else if ($action == 'addCourse'){
 
 
     //vali id number
-    if (strlen($idnumber) > 100){
+    if (strlen($idnumber) > 100 || strlen($idnumber) == 0){
         $res['status'] = -2;
         $res['message'] = 'Mã khóa học không hợp lệ!';
         echo json_encode($res);
@@ -854,4 +854,96 @@ else if ($action == 'rateCourse'){
         return;
     }
 
+}
+else if ($action == 'getIncome'){
+    if (!isset($_SESSION['role']) || $_SESSION['role'] == 0){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền truy cập!';
+        echo json_encode($res);
+        return;
+    }
+    $firstDay = $rq['firstDay'];
+    $lastDay = $rq['lastDay'];
+    $offset = $rq['offset'];
+    if ($_SESSION['role'] == 2){
+        $teacherId = $rq['teacherId'];
+    }
+    else if($_SESSION['role'] == 1) {
+        $teacherId = $_SESSION['id'];
+    }
+    else{
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền truy cập!';
+        echo json_encode($res);
+        return;
+    }
+    //validate
+    if (!is_numeric($offset) || (int)$offset < 0){
+        $res['status'] = -2;
+        $res['message'] = 'Offset không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    //format yyyy-mm-dd
+    $regex = '/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/';
+    if (!preg_match($regex, $firstDay) || !preg_match($regex, $lastDay)){
+        $res['status'] = -2;
+        $res['message'] = 'Ngày không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = getIncome($firstDay, $lastDay, $teacherId, $offset);
+        if ($res['status'] == 0){
+            $res['message'] = '';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
+}
+else if ($action == 'getIncomeAll'){
+    $offset = $rq['offset'];
+    $firstDay = $rq['firstDay'];
+    $lastDay = $rq['lastDay'];
+    if (!isset($_SESSION['role']) || $_SESSION['role'] != 2){
+        $res['status'] = -1;
+        $res['message'] = 'Bạn không có quyền truy cập!';
+        echo json_encode($res);
+        return;
+    }
+    //validate
+    if (!is_numeric($offset) || (int)$offset < 0){
+        $res['status'] = -2;
+        $res['message'] = 'Offset không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    //format yyyy-mm-dd
+    $regex = '/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/';
+    if (!preg_match($regex, $firstDay) || !preg_match($regex, $lastDay)){
+        $res['status'] = -2;
+        $res['message'] = 'Ngày không hợp lệ!';
+        echo json_encode($res);
+        return;
+    }
+    try {
+        $res = getIncomeAll($firstDay, $lastDay, $offset);
+        if ($res['status'] == 0){
+            $res['message'] = '';
+            echo json_encode($res);
+            return;
+        }
+    }
+    catch (Throwable $th) {
+        $res['status'] = -3;
+        $res['message'] = 'Đã có lỗi xảy ra!';
+        echo json_encode($res);
+        return;
+    }
 }

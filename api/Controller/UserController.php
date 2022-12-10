@@ -434,5 +434,59 @@ else {
             return;
         }
     }
+    else if ($action == 'getTeacherList'){
+        $offset = $data['offset'];
+        $limit = $data['limit'];
+        $keyword = $data['keyword'];
+        $regex = '/^[0-9]+$/';
+        if (!preg_match($regex, $offset)){
+            $res['status'] = -2;
+            $res['message'] = 'Offset không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        if (!preg_match($regex, $limit)){
+            $res['status'] = -2;
+            $res['message'] = 'Limit không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        try {
+            $res = getTeacherList($offset, $limit, $keyword);
+            if ($res['status'] == 0){
+                $res['message'] = '';
+            }
+            echo json_encode($res);
+            return;
+        } catch (Throwable $th) {
+            $res['status'] = -2;
+            $res['message'] = 'Có lỗi xảy ra!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    else if ($action == 'getUserList'){
+        $offset = $data['offset'];
+        $keyword = $data['keyword'];
+        $regex = '/^[0-9]+$/';
+        if (!preg_match($regex, $offset)){
+            $res['status'] = -2;
+            $res['message'] = 'Offset không hợp lệ!';
+            echo json_encode($res);
+            return;
+        }
+        try {
+            $res = getUserList($offset, $keyword);
+            if ($res['status'] == 0){
+                $res['message'] = '';
+            }
+            echo json_encode($res);
+            return;
+        } catch (Throwable $th) {
+            $res['status'] = -2;
+            $res['message'] = 'Có lỗi xảy ra!';
+            echo json_encode($res);
+            return;
+        }
+    }
 }
-return;

@@ -26,7 +26,9 @@ export default function AddCourse() {
         //today + 7 day + 1 year
         new Date(new Date().getTime() + 7*60*60*1000 + 8*24*60*60*1000 + 365*24*60*60*1000).toISOString().split('T')[0]
     );
-    const [idNumber, setIdNumber] = useState('');
+    //const random 6 digit number
+    const idnum = Math.floor(100000 + Math.random() * 900000);
+    const [idNumber, setIdNumber] = useState(idnum);
     const [desc, setDesc] = useState('');
     const [cost, setCost] = useState(0);
     const [imgFile, setImgFile] = useState(undefined);
@@ -151,6 +153,11 @@ export default function AddCourse() {
             return {
                 error: true,
                 message: 'Mã khóa học không được quá 100 ký tự!',
+            }
+        if (idNumber.length === 0)
+            return {
+                error: true,
+                message: 'Mã khóa học không được trống!',
             }
         return {
             error: false,
@@ -493,7 +500,7 @@ export default function AddCourse() {
                                         <Form.Control value={endDay} onChange={handleEndDay} type="date" />
                                     </Form.Group>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>ID khóa học</Form.Label>
+                                        <Form.Label>ID khóa học <span style={{color:'red'}}>*</span></Form.Label>
                                         <Form.Control value={idNumber} onChange={handleIdNumber} type="text" placeholder="Nhập id khóa học" />
                                     </Form.Group>
 

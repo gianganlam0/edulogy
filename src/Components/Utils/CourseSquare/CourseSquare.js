@@ -68,7 +68,7 @@ export default function CourseSquare({id,courseId,fullname,shortname,cateId,cate
         <div className="course-square">
             <Container className="course-box">
                 <Row className="image-wrap">
-                    <img src={image} alt={fullname} />
+                    <img onClick={()=>navi('/course-detail/'+courseId)} src={image} alt={fullname} />
                 </Row>
                 {/* end image-wrap */}
                 <Row className="course-details">

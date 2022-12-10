@@ -226,16 +226,6 @@ function addCoursePending($fullname, $shortname, $schedule, $category, $startdat
     }
     
     $result = mysqli_query($CONN, $sql);
-    //get inserted id
-    $insertedId = mysqli_insert_id($CONN);
-    if ($idnumber == ''){
-        $idnumber = $shortname;
-        $sql = "UPDATE $coursePendingTable SET idnumber = '$idnumber' WHERE id = $insertedId";
-        $result = mysqli_query($CONN, $sql);
-    }
-    if (!$result){
-        throw new Exception(mysqli_error($CONN));
-    }
     $res = array(
         'status'=> 0,
         'message' => '',
@@ -823,6 +813,7 @@ function buyCourses($idList){
     $coursePendingTable = "course_pending";
     $userTable = "user";
     $transTable = "transaction";
+    $teacherIncomeTable = "teacher_income";
     //first get my balance
     if(!isset($_SESSION['id'])){
         $res = array(
@@ -964,6 +955,18 @@ function buyCourses($idList){
     $sql = "INSERT INTO $transTable (userid,amount,content,time,type,status) VALUES ($myid,$totalPrice,'$content',$currTimestamp,'buy',1)";
     mysqli_query($CONN, $sql);
     
+    //now add to teacher_income
+    for ($i = 0; $i < count($idList); $i++){
+        $courseid = $idList[$i];
+        $sql = "SELECT cost,userid AS teacherid FROM $courseTable WHERE courseid = $courseid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $cost = $row['cost'];
+        $teacherid = $row['teacherid'];
+        $sql = "INSERT INTO $teacherIncomeTable (teacherid,studentid,courseid,amount,time) VALUES ($teacherid,$myid,$courseid,$cost,$currTimestamp)";
+        mysqli_query($CONN, $sql);
+    }
+
     $res = array(
         'status'=> 0,
     );
@@ -1312,4 +1315,122 @@ function rateCourse($userid,$courseid, $userrate,$usercomment){
         );
         return $res;
     }
+}
+function getIncome($firstDay,$lastDay,$teacherId,$offset){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $incomeTable = "teacher_income";
+    $userView = "user_view";
+    $saruUserTable = "saru_user";
+    $courseTable = "course";
+    $firstDay = strtotime($firstDay);
+    $lastDay = strtotime($lastDay);
+    //count total income
+    $sql = "SELECT COUNT(*) AS total FROM $incomeTable WHERE teacherid = $teacherId AND time >= $firstDay AND time <= $lastDay";
+    $result = mysqli_query($CONN, $sql);
+    $row = mysqli_fetch_array($result);
+    $total = $row['total'];
+    $sql = "SELECT studentid,courseid,amount,time
+    FROM $incomeTable WHERE teacherid = $teacherId AND time >= $firstDay AND time <= $lastDay
+    ORDER BY time DESC LIMIT $offset,10";
+    $result = mysqli_query($CONN, $sql);
+    $incomeList = array();
+    while($row = mysqli_fetch_array($result)){
+        $studentid = $row['studentid'];
+        $courseid = $row['courseid'];
+        $sql  = "SELECT CONCAT(lastname,' ',firstname) AS fullname FROM $saruUserTable WHERE id = $studentid";
+        $result2 = mysqli_query($CONN, $sql);
+        $row2 = mysqli_fetch_array($result2);
+        $row['studentname'] = $row2['fullname'];
+        $sql  = "SELECT fullname FROM $courseTable WHERE courseid = $courseid";
+        $result2 = mysqli_query($CONN, $sql);
+        $row2 = mysqli_fetch_array($result2);
+        $row['coursename'] = $row2['fullname'];
+        $incomeList[] = $row;
+    }
+    $res = array(
+        'status'=> 0,
+        'data' => array(
+            'total' => $total,
+            'data' => $incomeList
+        )
+    );
+    return $res;
+    // if ($teacherId == 'all'){//all
+    //     $sql = "SELECT teacherid,SUM(amount) AS income
+    //     FROM teacher_income
+    //     WHERE time >= $firstDay AND time <= $lastDay GROUP BY teacherid
+    //     ORDER BY income DESC
+    //     LIMIT $offset,10";
+    //     $result = mysqli_query($CONN, $sql);
+    //     $incomeList = array();
+    //     while($row = mysqli_fetch_array($result)){
+    //         $teacherid = $row['teacherid'];
+    //         $sql  = "SELECT CONCAT(lastname,' ',firstname) AS fullname FROM $userTable WHERE userid = $teacherid";
+    //         $result2 = mysqli_query($CONN, $sql);
+    //         $row2 = mysqli_fetch_array($result2);
+    //         $row['teachername'] = $row2['fullname'];
+    //         $incomeList[] = $row;
+    //     }
+    //     $res = array(
+    //         'status'=> 0,
+    //         'data' => $incomeList,
+    //     );
+    // }
+
+}
+function getIncomeAll($firstDay,$lastDay,$offset){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $firstDay = strtotime($firstDay);
+    $lastDay = strtotime($lastDay);
+    $sql = "SELECT COUNT(*) AS total FROM
+    (SELECT teacherid,fullname,COALESCE(SUM(amount),0) AS totalamount
+    FROM
+    (SELECT id AS teacherid,fullname FROM user_view WHERE role=1 OR role=2) a
+    LEFT JOIN
+    (SELECT teacherid AS tid,amount FROM teacher_income
+    WHERE time >= $firstDay AND time <= $lastDay) b
+    ON a.teacherid=b.tid GROUP BY teacherid) c
+    LEFT JOIN
+    (SELECT userid,COUNT(id) AS num_of_course
+    FROM course GROUP BY userid) d
+    ON c.teacherid=d.userid";
+    $result = mysqli_query($CONN, $sql);
+    $row = mysqli_fetch_array($result);
+    $total = $row['total'];
+    $sql = "SELECT teacherid,fullname,totalamount,COALESCE(num_of_course,0) as num_of_course FROM
+    (SELECT teacherid,fullname,COALESCE(SUM(amount),0) AS totalamount
+    FROM
+    (SELECT id AS teacherid,fullname FROM user_view WHERE role=1 OR role=2) a
+    LEFT JOIN
+    (SELECT teacherid AS tid,amount FROM teacher_income
+    WHERE time >= $firstDay AND time <= $lastDay) b
+    ON a.teacherid=b.tid GROUP BY teacherid) c
+    LEFT JOIN
+    (SELECT userid,COUNT(id) AS num_of_course
+    FROM course GROUP BY userid) d
+    ON c.teacherid=d.userid
+    ORDER BY totalamount DESC,fullname LIMIT $offset,30";
+    $result = mysqli_query($CONN, $sql);
+    $incomeList = [];
+    while($row = mysqli_fetch_array($result)){
+        $temp = array(
+           'teacherid' => $row['teacherid'],
+           'fullname' => $row['fullname'],          
+           'num_of_course' => $row['num_of_course'],
+           'totalamount' => $row['totalamount']
+        );
+        $incomeList[] = $temp;
+    }
+    $csv = array2Csv($incomeList);
+    $res = array(
+        'status'=> 0,
+        'data' => array(
+            'total' => $total,
+            'data' => $incomeList,
+            'csv' => $csv
+        )
+    );
+    return $res;
 }

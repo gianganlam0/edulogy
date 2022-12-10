@@ -317,3 +317,91 @@ function getTrans($userid,$offset){
     );
     return $returnData;
 }
+function getTeacherList($offset, $limit, $keyword){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $userView = 'user_view';
+    $sql = "SELECT id,fullname FROM $userView WHERE (role = '1' OR role='2') AND fullname LIKE '%$keyword%' LIMIT $limit OFFSET $offset";
+    $result = mysqli_query($CONN, $sql);
+    $teacherList = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $teacherList[] = $row;
+    }
+    $returnData = array(
+        'status' => 0,
+        'data' => array
+        (
+            'data' => $teacherList
+        )
+    );
+    return $returnData;
+}
+function getUserList($offset,$keyword){
+    require_once '../connectDB.php';
+    $CONN = connectDB();
+    $userView = 'user_view';
+    //first count
+    $sql = "SELECT COUNT(*) FROM $userView WHERE fullname LIKE '%$keyword%' AND username != 'guest'";
+    $result = mysqli_query($CONN, $sql);
+    $totalUser = mysqli_fetch_assoc($result)['COUNT(*)'];
+    //get user list
+    $sql = "SELECT * FROM $userView WHERE fullname LIKE '%$keyword%' AND username != 'guest'
+    order by fullname ASC
+    LIMIT 30 OFFSET $offset";
+    $result = mysqli_query($CONN, $sql);
+    $userList = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $userList[] = $row;
+    } 
+    foreach ($userList as $key => $value) {
+        unset($userList[$key]['password']);
+        unset($userList[$key]['userid']);
+        unset($userList[$key]['avatar']);
+    }
+    $newUserList = $userList;
+    foreach ($userList as $key => $value) {
+        switch($value['sex']){
+            case 0:
+                $userList[$key]['sex'] = 'Nam';
+                break;
+            case 1:
+                $userList[$key]['sex'] = 'Nữ';
+                break;
+            case 2:
+                $userList[$key]['sex'] = 'Khác';
+                break;
+            default:
+                $userList[$key]['sex'] = 'Khác';
+        }
+        switch ($value['role']){
+            case '0':
+                $userList[$key]['role'] = 'Học viên';
+                break;
+            case '1':
+                $userList[$key]['role'] = 'Giáo viên';
+                break;
+            case '2':
+                $userList[$key]['role'] = 'Quản trị viên';
+                break;
+            default:
+                $userList[$key]['role'] = 'Học viên';
+        }
+        if ($userList[$key]['birthday'] != null){
+            $userList[$key]['birthday'] = date('d/m/Y', strtotime($userList[$key]['birthday']));
+        }
+        else{
+            $userList[$key]['birthday'] = '';
+        } 
+    }
+    $csv = array2Csv($userList);
+    $returnData = array(
+        'status' => 0,
+        'data' => array
+        (
+            'data' => $newUserList,
+            'total' => $totalUser,
+            'csv' => $csv
+        )
+    );
+    return $returnData;
+}

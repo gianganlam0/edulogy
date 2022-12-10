@@ -20,6 +20,9 @@ import CatePending from './Components/CatePending/CatePending';
 import ErrorPage from './Components/ErrorPage/ErrorPage';
 import Recharge from './Components/Recharge/Recharge';
 import TransactionHistory from './Components/TransactionHistory/TransactionHistory';
+import Income from './Components/Income/Income';
+import IncomeAll from './Components/IncomeAll/IncomeAll';
+import UserList from './Components/UserList/UserList';
 import {Routes, Route, useLocation} from 'react-router-dom';
 
 import * as CK from './Components/Utils/Cookie';
@@ -89,6 +92,12 @@ function App() {
       <Route path="/change-password"  element={isLogin ? <ChangePassword/> : <ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
       <Route path="/recharge" element={isLogin?<Recharge/>:<ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
       <Route path="/transaction-history" element={isLogin?<TransactionHistory/>:<ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
+      <Route path="/income" element={(isAdmin||isTeacher)?<Income/>:<ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
+      <Route path="/income?page=:page" element={(isAdmin||isTeacher)?<Income/>:<ErrorPage msg="Bạn chưa đăng nhập !"/>}/>
+      <Route path="/income-all" element={isAdmin?<IncomeAll/>:<ErrorPage msg="Bạn không có quyền !"/>}/>
+      <Route path="/income-all?page=:page" element={isAdmin?<IncomeAll/>:<ErrorPage msg="Bạn không có quyền !"/>}/>
+      <Route path="/user-list" element={isAdmin?<UserList/>:<ErrorPage msg="Bạn không có quyền !"/>}/>
+      <Route path="/user-list?page=:page" element={isAdmin?<UserList/>:<ErrorPage msg="Bạn không có quyền !"/>}/>
       <Route path="/un-auth" element={<ErrorPage msg="Bạn không có quyền xem trang này!"/>}/>
       <Route path="/not-found" element={<ErrorPage msg="Không tìm thấy trang cá nhân này! =(((("/>}/>
       <Route path="/:urlmsg" element={<ErrorPage/>}>
@@ -97,7 +106,6 @@ function App() {
     </Routes>
     <Footer/>
     <Header/>
-    
     </>
   );
 }
