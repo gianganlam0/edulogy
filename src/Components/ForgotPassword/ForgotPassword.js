@@ -45,6 +45,9 @@ export default function ForgotPassword() {
             url: url,
             type: 'POST',
             data: data,
+            beforeSend: function(){
+                context.loading();
+            }
         }).done(function(res){
             try {
                 res = JSON.parse(res);

@@ -9,7 +9,7 @@ import { Context } from '../Utils/ContextProvider';
 export default function ChangePassword() {
 
     // const navi = useNavigate();
-    const {fullname, avatar} = useContext(Context);
+    const {fullname, avatar,loading} = useContext(Context);
 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -91,7 +91,10 @@ export default function ChangePassword() {
             type: 'POST',
             data: data,
             processData: false,
-            contentType: false
+            contentType: false,
+            beforeSend: function () {
+                loading();
+            },
         }).done(function(res){
             try {
                 res = JSON.parse(res);
