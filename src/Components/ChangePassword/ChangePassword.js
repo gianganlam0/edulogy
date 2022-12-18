@@ -1,16 +1,13 @@
 import './ChangePassword.scss';
-import { Button, Form } from 'react-bootstrap';
+import { Button} from 'react-bootstrap';
 import $ from 'jquery';
-import * as CK from '../Utils/Cookie';
 import Swal from 'sweetalert2';
 import {sha256} from 'js-sha256';
 import { useState, useEffect , useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 export default function ChangePassword() {
 
-    // const navi = useNavigate();
-    const {fullname, avatar,loading} = useContext(Context);
-
+    const {fullname, avatar,loading,API} = useContext(Context);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [reNewPassword, setReNewPassword] = useState('');
@@ -78,9 +75,8 @@ export default function ChangePassword() {
     }
     function handleSave(){
         setError('');//reset error
-        const url = '/edulogy/api/Controller/UserController.php';
+        const url = `${API}/Controller/UserController.php`;
         var data = new FormData();
-
         data.append('data', JSON.stringify({
                         oldPassword: sha256(oldPassword),
                         newPassword: sha256(newPassword),
@@ -128,7 +124,6 @@ export default function ChangePassword() {
             <section className="section-profile">
                 <div className="container">
                     <div className="boxed">
-
                         <div className="section-title text-center">
                             <h3>Thay đổi mật khẩu</h3>
                         </div>

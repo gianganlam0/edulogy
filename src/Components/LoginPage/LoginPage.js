@@ -9,7 +9,7 @@ import { Context } from '../Utils/ContextProvider';
 export default function LoginPage() {
 
     const navigate = useNavigate();
-    const context = useContext(Context);
+    const {LOGIN_BG,LOGIN_LEFT,PATTERN,setFullname,setAvatar,setIsLogin,moodleHome,API} = useContext(Context);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -23,7 +23,6 @@ export default function LoginPage() {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
         return regex.test(password);
     }
-
     function valiAll(username, password) {
         if (!valiUsername(username)) {
             setErrorMsg('Tên đăng nhập không hợp lệ');
@@ -38,7 +37,6 @@ export default function LoginPage() {
             setIsHidden(false);
         }
     }
-
     function handleUsername(e){
         setUsername(e.target.value);
         valiAll(e.target.value, password);
@@ -55,7 +53,7 @@ export default function LoginPage() {
         }
     }
     function handleLogin(){
-        const url = '/edulogy/api/Controller/LoginController.php';
+        const url = `${API}/Controller/LoginController.php`;
         const data = {
             data: JSON.stringify({
                 username: username,
@@ -78,9 +76,9 @@ export default function LoginPage() {
                     timer: 2000,
                     width: 500,
                 })
-                context.setFullname(res.data.fullname);
-                context.setAvatar(res.data.avatar);
-                context.setIsLogin(true);
+                setFullname(res.data.fullname);
+                setAvatar(res.data.avatar);
+                setIsLogin(true);
                 navigate('/');
             }
             else if (res.status === 2 || res.status === 3 || res.status === -1 ){//sai username hoặc password hoặc lỗi qq j đó
@@ -96,7 +94,7 @@ export default function LoginPage() {
                     denyButtonText: 'Để sau',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.open(context.moodleHome, '_blank');
+                        window.open(moodleHome, '_blank');
                         
                     } else if (result.isDenied) {
                         // navigate('/');
@@ -127,21 +125,17 @@ export default function LoginPage() {
     document.title = "Đăng nhập";
     return (
         <div className="login-page">
-            <div className="main-bg">
-                <div className="overlay" />
+            <div className="main-bg" style={{backgroundImage:"url("+LOGIN_BG+")"}}>
+                <div className="overlay" style={{backgroundImage:"url("+PATTERN+")"}}/>
                 <MDBContainer>
-
                     <MDBCard>
                         <MDBRow className='g-0'>
-
                             <MDBCol md='6'>
-                                <div className='login-img' />
+                                <div className='login-img' style={{backgroundImage:"url("+LOGIN_LEFT+")"}}/>
                             </MDBCol>
-
                             <MDBCol md='6'>
                                 <MDBCardBody className='d-flex flex-column'>
                                     <h3 className="fw-normal my-4 pb-3">ĐĂNG NHẬP</h3>
-
                                     <MDBInput value={username} onChange={handleUsername} wrapperClass='mb-4' label='Tên tài khoản' type='text' size="lg" />
                                     <MDBInput value={password} onChange={handlePassword} wrapperClass='mb-4' label='Mật khẩu' type={showPassword} size="lg" />
                                     {/* check box show password */}

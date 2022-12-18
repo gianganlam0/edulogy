@@ -1,7 +1,7 @@
 <?php
 
-require_once '../Model/RegisterModel.php';
-require_once '../Model/LogoutModel.php';
+require_once __DIR__.'/../Model/RegisterModel.php';
+require_once __DIR__.'/../Model/LogoutModel.php';
 $rq = json_decode($_POST['data'], true);
 $username = $rq['username'];
 $password = $rq['password'];
@@ -45,7 +45,8 @@ if (!preg_match($regexPassword, $password)) {
 try {
     $res = handleRegister($username, $password);
     if ($res['status'] == 0){ 
-        $res['message'] = 'Đăng ký thành công, bạn hãy cập nhập thông tin bên trang http://localhost/saru/ trước khi đăng nhập tại trang này.';
+        $home = $DBS['home'];
+        $res['message'] = "Đăng ký thành công, bạn hãy cập nhập thông tin bên trang $home trước khi đăng nhập tại trang này.";
         echo json_encode($res); 
         return;
     }

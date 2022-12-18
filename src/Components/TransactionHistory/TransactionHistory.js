@@ -1,30 +1,27 @@
 import './TransactionHistory.scss';
-import {Row, Col, Button, Table} from 'react-bootstrap';
+import {Row, Col, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useSearchParams} from 'react-router-dom';
+import { useState, useEffect,useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
-import Swal from 'sweetalert2';
 import TransactionItem from './TransactionItem';
 
 export default function TransactionHistory() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    // const {isAdmin, isTeacher} = useContext(Context);
+    const {API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [transList, setTransList] = useState([]);
     const [totalTrans, setTotalTrans] = useState(0);
-    const [render, setRender] = useState(false);
     useEffect(() => {//take params from url
         setPage(parseInt(params.get('page')));
         if (!params.has('page') || params.get('page') === '') {
             setPage(1);  
     }}, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/UserController.php';
+        const url = `${API}/Controller/UserController.php`;
         const data = {
             offset: (page - 1) * 10
         }
@@ -46,7 +43,7 @@ export default function TransactionHistory() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, render]);
+    }, [page, API]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(
@@ -175,16 +172,13 @@ export default function TransactionHistory() {
                 
         }
     }, [page, totalPage, setPage, setParams]);
-
     document.title = "Lịch sử giao dịch";
     return (
         <div className='transaction-history'>
             <div className="overlay" />
-
             <section className="section-cate">
                 <div className="container">
                     <div className="boxed">
-
                         <div className="section-title text-center">
                             <h3>Lịch sử giao dịch</h3>
                         </div>     

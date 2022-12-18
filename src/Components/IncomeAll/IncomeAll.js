@@ -1,15 +1,14 @@
 import './IncomeAll.scss';
 import {Row, Col, Table, InputGroup, FormControl, FormLabel,Button} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
 import { useState, useEffect, useContext } from 'react';
-import { useNavigate,useSearchParams } from 'react-router-dom';
+import {useSearchParams } from 'react-router-dom';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import Item from './Item';
-import * as CK from '../Utils/Cookie';
 export default function IncomeAll() {
+    const {API} = useContext(Context);
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
@@ -161,7 +160,7 @@ export default function IncomeAll() {
         }
     }, [page, totalPage, setPage, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: (page - 1) * 30,
             firstDay: firstDay,
@@ -191,7 +190,7 @@ export default function IncomeAll() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page,firstDay, lastDay]);
+    }, [page, firstDay, lastDay, API]);
     function handleCsv(){
         let newCsv = csv;
         //rename header to Vietnamese

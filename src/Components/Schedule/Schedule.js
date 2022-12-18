@@ -1,14 +1,12 @@
 import './Schedule.scss';
-import {Row, Col, Button, Form, InputGroup, FormControl} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useState, useEffect, useRef, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Row, Col, Button, InputGroup, FormControl} from 'react-bootstrap';
+import { useState, useEffect,useContext,useMemo } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import TimeTable from '../Utils/TimeTable/TimeTable';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default function Schedule() {
-    const navi=useNavigate();
+    const {API} = useContext(Context);
     //gmt +7
     const [today, setToday] = useState(new Date(new Date().getTime() + 7 * 60 * 60 * 1000).toISOString().split('T')[0]);
     const [schedule, setSchedule] = useState([]);
@@ -29,18 +27,25 @@ export default function Schedule() {
     let day = new Date(today).getDay();
     let temp = day-1;
     if (day === 0) temp = 6;
-    let monday = new Date(today);
-    monday.setDate(monday.getDate() - temp);
-    let sunday = new Date(monday);
-    sunday.setDate(sunday.getDate() + 6);
 
-    monday = monday.toISOString().split('T')[0];
-    sunday = sunday.toISOString().split('T')[0];
+    const {monday,sunday} = useMemo(() => {
+        let monday = new Date(today);
+        monday.setDate(monday.getDate() - temp);
+        let sunday = new Date(monday);
+        sunday.setDate(sunday.getDate() + 6);
+    
+        monday = monday.toISOString().split('T')[0];
+        sunday = sunday.toISOString().split('T')[0];
+        return {
+          monday: monday,
+          sunday: sunday,
+        }
+      }, [temp, today]); 
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             monday: monday,
-            sunday: sunday,
+            sunday: sunday
         }
         $.ajax({
             url: url,
@@ -64,7 +69,7 @@ export default function Schedule() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [today]);
+    }, [API, monday, sunday, today]);
     document.title = "Thời khóa biểu";
     return (
         <div className='schedule'>
@@ -72,9 +77,7 @@ export default function Schedule() {
 
             <section className="section-cate">
                 <div className="container">
-                    <div className="boxed">
-
-                        
+                    <div className="boxed">               
                         <Row className="section-title text-center mb-3">
                             <h3>Thời khóa biểu của tôi</h3>
                         </Row>
@@ -99,14 +102,10 @@ export default function Schedule() {
                                 <Button onClick={setNow}>Quay lại hôm nay</Button>
                             </Col>
                         </Row>
-                        <Row>
-                            
+                        <Row>                           
                             <TimeTable value={schedule}/>
-
                         </Row>
-
-                    </div>
-                    
+                    </div>                  
                 </div>
             </section>
         </div>

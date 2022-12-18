@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 function getInfo($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
@@ -52,7 +52,7 @@ function getInfo($id){
     return $res;
 }
 function updateInfo($id, $lastname, $firstname, $phone, $IDNumber, $sex, $birthday, $email, $role, $desc, $avatar, $deleteHash){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
@@ -89,7 +89,7 @@ function updateInfo($id, $lastname, $firstname, $phone, $IDNumber, $sex, $birthd
     return $res;
 }
 function updateAnotherInfo($id, $role){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
@@ -110,7 +110,7 @@ function updateAnotherInfo($id, $role){
     return $res;
 }
 function deleteAvatar($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -152,7 +152,7 @@ function deleteAvatar($id){
     return $res;
 }
 function changePassword($id, $oldPassword, $newPassword){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -184,7 +184,7 @@ function changePassword($id, $oldPassword, $newPassword){
     return $res;
 }
 function handleForgotPassword($email){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
@@ -203,14 +203,15 @@ function handleForgotPassword($email){
         'data' => ''
     );
     if ($count == 1) {
+        $edulogyhome = $DBS['edulogyhome'];
         $res['status'] = 0;
         $code = randomString(64,64);
         //sha 256 timestamp
         $hash = hash('sha256', time());
         //now send mail
         //$body has html format
-        $body = '<p>Click vào <a href="http://localhost/edulogy/api/ResetPassword.php?code='.$code.'&hash='.$hash.'">Link này</a> để đặt lại mật khẩu 
-        cho tài khoản Edulogy</p>';
+        $body = "<p>Click vào <a href=$edulogyhome/api/ResetPassword.php?code=$code&hash=$hash>Link này</a> để đặt lại mật khẩu 
+        cho tài khoản Edulogy</p>";
         $subject = '[Đặt lại mật khẩu cho tài khoản Edulogy]';
         try {
             sendMail([$email], $subject, $body);
@@ -230,8 +231,8 @@ function handleForgotPassword($email){
     return $res;
 }
 function recharge($userid,$amount){
-    require_once '../connectDB.php';
-    require_once '../RechargeConfig.php';
+    require_once __DIR__.'/../connectDB.php';
+    require_once __DIR__.'/../RechargeConfig.php';
     $time = time();
     //get date in format dd-mm-yyyy
     $date = date('d-m-Y', $time);
@@ -293,7 +294,7 @@ function recharge($userid,$amount){
 
 }
 function getTrans($userid,$offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     //first count
     $sql = "SELECT COUNT(*) FROM transaction WHERE userid = '$userid'";
@@ -318,7 +319,7 @@ function getTrans($userid,$offset){
     return $returnData;
 }
 function getTeacherList($offset, $limit, $keyword){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $userView = 'user_view';
     $sql = "SELECT id,fullname FROM $userView WHERE (role = '1' OR role='2') AND fullname LIKE '%$keyword%' LIMIT $limit OFFSET $offset";
@@ -337,7 +338,7 @@ function getTeacherList($offset, $limit, $keyword){
     return $returnData;
 }
 function getUserList($offset,$keyword){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $userView = 'user_view';
     //first count

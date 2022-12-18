@@ -1,10 +1,12 @@
 .login-page {
     .main-bg {
         position: relative;
-        background-image: url('../../images/home-bg.jpeg');
-        // background-color: white;
-        height: auto;
+        min-height: 100vh;
         background-position: center center;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         .overlay {
             position: absolute;
             top: 0;
@@ -12,7 +14,9 @@
             left: 0;
             bottom: 0;
             z-index: 1;
-            background: url('../../images/pattern.png') repeat center center rgba(0, 0, 0, 0.7);
+            background-position: center center;
+            background-color: rgba(0, 0, 0, 0.7);
+            background-repeat: repeat;
         }
         .container {
             position: relative;
@@ -35,9 +39,7 @@
                 }
             }
             .login-img {
-                //image has height of 100 of outer container
                 height: 100%;
-                background-image: url('../../images/login-bg.png');
                 background-position: center center;
                 background-size: cover;
                 background-repeat: no-repeat;

@@ -1,19 +1,17 @@
 import './AddCate.scss';
 import {Row, Col, Button, Form} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default function AddCate() {
-    const {loading} = useContext(Context);
+    const {loading,BASIC_COURSE,API} = useContext(Context);
     const [error, setError] = useState('');
     const [isHidden, setIsHidden] = useState(true);
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
     const [imgFile, setImgFile] = useState(undefined);
-    const [image, setImage] = useState('https://i.imgur.com/HcIaAlA.png');
+    const [image, setImage] = useState(BASIC_COURSE);
     const imgFileRef = useRef();
     function valiAll(name, imgFile) {
         if (!valiName(name)) {
@@ -71,11 +69,11 @@ export default function AddCate() {
         }
         imgFileRef.current.value = null;
         setImgFile(undefined);
-        setImage('https://i.imgur.com/HcIaAlA.png');
+        setImage(BASIC_COURSE);
         valiAll(name, undefined);
     }
     function handleUp(){
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = `${API}/Controller/CateController.php`;
         const data = new FormData();
         if (imgFile !== undefined) {
             data.append('imgFile', imgFile);

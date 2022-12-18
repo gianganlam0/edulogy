@@ -1,15 +1,13 @@
 import './AddCourse.scss';
 import {Container,Row, Col, Button, Form} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import ScheduleItem from './ScheduleItem';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default function AddCourse() {
-    const {string2time,loading} = useContext(Context);
-    const {echo} = useContext(Context);
+    const {string2time,loading,API} = useContext(Context);
+    const {BASIC_COURSE} = useContext(Context);
     const [error, setError] = useState('');
     const [isHidden, setIsHidden] = useState(true);
     const [fullName, setFullName] = useState('');
@@ -32,7 +30,7 @@ export default function AddCourse() {
     const [desc, setDesc] = useState('');
     const [cost, setCost] = useState(0);
     const [imgFile, setImgFile] = useState(undefined);
-    const [image, setImage] = useState('https://i.imgur.com/HcIaAlA.png');
+    const [image, setImage] = useState(BASIC_COURSE);
     const imgFileRef = useRef();
     function valiAll(fullName, shortName, schedule, startDay, endDay, idNumber, cost, imgFile) {
         if (valiFullName(fullName).error) {
@@ -378,11 +376,11 @@ export default function AddCourse() {
         }
         imgFileRef.current.value = null;
         setImgFile(undefined);
-        setImage('https://i.imgur.com/HcIaAlA.png');
+        setImage(BASIC_COURSE);
         valiAll(fullName, shortName, schedule, startDay, endDay, idNumber, cost, undefined);
     }
     function handleUp(){
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = new FormData();
         if (imgFile !== undefined) {
             data.append('imgFile', imgFile);

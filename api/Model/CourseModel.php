@@ -2,7 +2,7 @@
 //set timezone gmt+7
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacherid, $mycourse, $searchby, $sortby, $orderby){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
@@ -176,7 +176,7 @@ function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacheri
     
 }
 function addCoursePending($fullname, $shortname, $schedule, $category, $startdate, $enddate, $idnumber, $desc, $cost, $imageLink){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     // require_once '../Utils.php';
     if (!isset($_SESSION)) {
         session_start();
@@ -234,7 +234,7 @@ function addCoursePending($fullname, $shortname, $schedule, $category, $startdat
     
 }
 function getCoursePending($offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -311,7 +311,7 @@ function getCoursePending($offset){
     return $res;
 }
 function getMyCoursePending($offset, $userId){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -389,7 +389,7 @@ function getMyCoursePending($offset, $userId){
     return $res;
 }
 function acceptCourse($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -476,7 +476,7 @@ function acceptCourse($id){
     return $res;
 }
 function rejectCourse($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -494,7 +494,7 @@ function rejectCourse($id){
     return $res;
 }
 function checkStartDate($offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -545,7 +545,7 @@ function checkStartDate($offset){
 
 }
 function saveCsvCourse(){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -601,7 +601,7 @@ function saveCsvCourse(){
     return $res;
 }
 function getCourseCsv(){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -658,7 +658,7 @@ function getCourseCsv(){
     return $res;
 }
 function confirmCourseCsv($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -721,7 +721,7 @@ function confirmCourseCsv($id){
     return $res;
 }
 function getCourse($courseid){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -803,7 +803,7 @@ function getCourse($courseid){
 }
 ///need check overlap sche
 function buyCourses($idList){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -973,7 +973,7 @@ function buyCourses($idList){
     return $res;
 }
 function getMemberList($courseid){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -1051,7 +1051,7 @@ function getMemberList($courseid){
     return $res;
 }
 function getSchedule($monday, $sunday){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -1140,7 +1140,7 @@ function getSchedule($monday, $sunday){
     return $res;
 }
 function getCourseComment($courseid,$offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $rateView = "rate_view";
     if (!isset($_SESSION)) {
@@ -1211,7 +1211,7 @@ function getCourseComment($courseid,$offset){
     
 }
 function deleteComment($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $rateView = "rate_view";
     //check if this comment is exist
@@ -1239,7 +1239,7 @@ function deleteComment($id){
     }
 }
 function checkRateCourse($userid,$courseid){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if(!isset($_SESSION)){
         session_start();
     }
@@ -1290,7 +1290,7 @@ function checkRateCourse($userid,$courseid){
     );
 }
 function rateCourse($userid,$courseid, $userrate,$usercomment){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $rateTable = "rate_result";
     if(!isset($_SESSION)){
@@ -1317,7 +1317,7 @@ function rateCourse($userid,$courseid, $userrate,$usercomment){
     }
 }
 function getIncome($firstDay,$lastDay,$teacherId,$offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $incomeTable = "teacher_income";
     $userView = "user_view";
@@ -1380,7 +1380,7 @@ function getIncome($firstDay,$lastDay,$teacherId,$offset){
 
 }
 function getIncomeAll($firstDay,$lastDay,$offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     $CONN = connectDB();
     $firstDay = strtotime($firstDay);
     $lastDay = strtotime($lastDay);

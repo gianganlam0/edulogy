@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 function handleGetCate($keyword, $sortby, $orderby, $offset, $itemPerPage){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();
@@ -72,8 +72,7 @@ function handleGetCate($keyword, $sortby, $orderby, $offset, $itemPerPage){
     
 }
 function addCatePending($name, $desc, $imageLink){
-    require_once '../connectDB.php';
-    // require_once '../Utils.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -104,7 +103,7 @@ function addCatePending($name, $desc, $imageLink){
     
 }
 function getCatePending($offset){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -161,7 +160,7 @@ function getCatePending($offset){
     return $res;
 }
 function getMyCatePending($offset, $userId){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -220,7 +219,7 @@ function getMyCatePending($offset, $userId){
     return $res;
 }
 function acceptCate($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -268,7 +267,7 @@ function acceptCate($id){
     return $res;
 }
 function rejectCate($id){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
     if (!isset($_SESSION)) {
         session_start();
     }

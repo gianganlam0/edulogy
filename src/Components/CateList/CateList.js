@@ -11,7 +11,7 @@ import $ from 'jquery';
 
 export default function CateList() {
     const navi = useNavigate();
-    const {isAdmin, isTeacher} = useContext(Context);
+    const {isAdmin, isTeacher,API} = useContext(Context);
     const itemPerPageRef = useRef();
     const jumpPageRef = useRef();
     const keywordRef = useRef();
@@ -45,7 +45,7 @@ export default function CateList() {
         }     
     }, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = `${API}/Controller/CateController.php`;
         const data = {
             offset: (page - 1) * itemPerPage,
             itemPerPage: itemPerPage,
@@ -70,7 +70,7 @@ export default function CateList() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, itemPerPage, keyword, sortby, orderby]);
+    }, [page, itemPerPage, keyword, sortby, orderby, API]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(

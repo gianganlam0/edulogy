@@ -1,6 +1,6 @@
 <?php
-require_once("../RechargeConfig.php");
-require_once("../connectDB.php");
+require_once __DIR__."/../RechargeConfig.php";
+require_once __DIR__."/../connectDB.php";
 $inputData = array();
 $returnData = array();
 

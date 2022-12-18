@@ -11,13 +11,10 @@ import { UrlMatcher, HashtagMatcher } from 'interweave-autolink';
 
 export default function EditProfile() {
     const params = useParams();
-
     const navi = useNavigate();
     const [userId, setUserId] = useState();
     const [isMyProfile, setIsMyProfile] = useState(false);
-    
-    const {BASIC_AVATAR, isAdmin, log, setFullname,loading} = useContext(Context);
-
+    const {BASIC_AVATAR, isAdmin, log, setFullname,loading,API} = useContext(Context);
     const [lastname, setLastname] = useState('');
     const [firstname, setFirstname] = useState('');
     const [phone, setPhone] = useState('');
@@ -30,10 +27,8 @@ export default function EditProfile() {
     const [balance, setBalance] = useState('');
     const [desc, setDesc] = useState('');
     const [avaFile, setAvaFile] = useState(undefined);
-
     const {avatar, setAvatar} = useContext(Context);
     const [anotherAvatar, setAnotherAvatar] = useState('');
-
     const [error, setError] = useState('');
     const [isHidden, setIsHidden] = useState(true);
     const [isBasicAva, setIsBasicAva] = useState(true);
@@ -219,7 +214,7 @@ export default function EditProfile() {
         else{
             setIsBasicAva(false);
         }
-    }, [anotherAvatar]);
+    }, [BASIC_AVATAR, anotherAvatar]);
     useEffect(() => {//kiểm tra xem phải trang của mình hay không
         if(params.id === "my" || Object.keys(params).length === 0 || params.id === CK.getCookie('id')) {
             setUserId(CK.getCookie('id'));
@@ -241,7 +236,7 @@ export default function EditProfile() {
             return;
         }
         if (isMyProfile) {
-            const url = '/edulogy/api/Controller/UserController.php';
+            const url = `${API}/Controller/UserController.php`;
             const data = {data: JSON.stringify({id: ''}),
                           action: 'getMyInfo'};
             $.ajax({
@@ -297,7 +292,7 @@ export default function EditProfile() {
             });
         }
         else {
-            const url = '/edulogy/api/Controller/UserController.php';
+            const url = `${API}/Controller/UserController.php`;
             const data = {data: JSON.stringify({id: userId}),
                           action: 'getAnotherInfo'};
             $.ajax({
@@ -355,17 +350,15 @@ export default function EditProfile() {
                 })
             });
         }
-    }, [isEditMode, isMyProfile, userId, isAdmin, navi, render]);
+    }, [isEditMode, isMyProfile, userId, isAdmin, navi, render, API, setAvatar]);
     function handleSave(){
-        setError('');//reset error
-        
+        setError('');//reset error    
         if (isMyProfile) {
-            const url = '/edulogy/api/Controller/UserController.php';
+            const url = `${API}/Controller/UserController.php`;
             var data = new FormData();
             if (avaFile !== undefined) {
                 data.append('avatar', avaFile);
             }
-
             data.append('data', JSON.stringify({
                 id: userId,
                 lastname: lastname,
@@ -397,8 +390,6 @@ export default function EditProfile() {
                 } catch (error) {}
                 if (res.status === 0){
                     setFullname(lastname + ' ' + firstname);
-                    // setAnotherAvatar(avatar);
-                    // setAvatar(avatar);
                     Swal.fire(res.message, '', 'success')
                 }
                 else if (res.status === -1 || res.status === -2){
@@ -431,7 +422,7 @@ export default function EditProfile() {
             });
         }
         else{
-            const url = '/edulogy/api/Controller/UserController.php';
+            const url = `${API}/Controller/UserController.php`;
             const data = {data: JSON.stringify({
                             id: userId,
                             role: role,
@@ -483,7 +474,7 @@ export default function EditProfile() {
         }
     }
     function handleDeleteAva(){
-        const url = '/edulogy/api/Controller/UserController.php';
+        const url = `${API}/Controller/UserController.php`;
         var data = new FormData();
         data.append('data', JSON.stringify({
                         id: userId}));

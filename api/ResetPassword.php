@@ -1,15 +1,12 @@
 <?php
-require_once 'connectDB.php';
-require_once 'Utils.php';
-
+require_once __DIR__.'/connectDB.php';
+require_once __DIR__.'/Utils.php';
 if (!isset($_GET['hash']) || !isset($_GET['code'])) {
     echo 'Liên kết hết hạn hoặc không hợp lệ';
     return;
 }
-
 $hash = $_GET['hash'];
 $code = $_GET['code'];
-
 $CONN = connectDB();
 //get mail
 $forgotInfoTable = 'forgot_info';

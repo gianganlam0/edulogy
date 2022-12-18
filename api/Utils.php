@@ -1,7 +1,5 @@
 <?php
-
-require_once 'DBInfo.php';
-
+require_once __DIR__.'/DBInfo.php';
 function logger(){
     echo "<script>alert('I am here');</script>";
 }
@@ -87,7 +85,7 @@ function deleteImgur($deleteHash){
     return $reply->data;
 }
 function sendMail($toList, $subject, $body){
-    require 'phpmailer.php';
+    require __DIR__.'/phpmailer.php';
     for ($i = 0; $i < count($toList); $i++) {
         $mail->AddAddress($toList[$i]);
     }
@@ -113,7 +111,6 @@ function time2string($time){
 }
 function checkOverlapSche($sche1, $sche2){
     date_default_timezone_set('Asia/Ho_Chi_Minh');
-
     //first get overlap date
     $overlapDate = array();
     $startDate1 = $sche1['startdate'];

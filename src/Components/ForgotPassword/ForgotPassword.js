@@ -4,12 +4,11 @@ import './ForgotPassword.scss';
 import {MDBBtn,MDBContainer,MDBCard,MDBCardBody,MDBRow,MDBCol,MDBInput} from 'mdb-react-ui-kit';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
-import {sha256} from 'js-sha256';
 import { Context } from '../Utils/ContextProvider';
 export default function ForgotPassword() {
 
     const navigate = useNavigate();
-    const context = useContext(Context);
+    const {FORGOT_BG,PATTERN,FORGOT_LEFT,loading,API} = useContext(Context);
     const [email, setEmail] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [isHidden, setIsHidden] = useState(true);
@@ -17,7 +16,6 @@ export default function ForgotPassword() {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         return regex.test(email);
     }
-
     function valiAll(email) {
         if (!valiEmail(email)) {
             setErrorMsg('Email không hợp lệ');
@@ -28,13 +26,12 @@ export default function ForgotPassword() {
             setIsHidden(false);
         }
     }
-
     function handleEmail(e){
         setEmail(e.target.value);
         valiAll(e.target.value);
     }
     function handleForgot(){
-        const url = '/edulogy/api/Controller/UserController.php';
+        const url = `${API}/Controller/UserController.php`;
         const data = {
             data: JSON.stringify({
                 email: email,
@@ -46,13 +43,13 @@ export default function ForgotPassword() {
             type: 'POST',
             data: data,
             beforeSend: function(){
-                context.loading();
+                loading();
             }
         }).done(function(res){
             try {
                 res = JSON.parse(res);
             } catch (error) {}
-            if (res.status === 0){//đăng nhập thành công hoặc đã đăng nhập
+            if (res.status === 0){
                 Swal.fire({
                     position: 'center',
                     text: res.message,
@@ -88,17 +85,14 @@ export default function ForgotPassword() {
     document.title = "Quên mật khẩu";
     return (
         <div className="forgot-password">
-            <div className="main-bg">
-                <div className="overlay" />
+            <div className="main-bg" style={{backgroundImage:"url("+FORGOT_BG+")"}}>
+                <div className="overlay" style={{backgroundImage:"url("+PATTERN+")"}}/>
                 <MDBContainer>
-
                     <MDBCard>
                         <MDBRow className='g-0'>
-
                             <MDBCol md='6'>
-                                <div className='login-img' />
+                                <div className='login-img' style={{backgroundImage:"url("+FORGOT_LEFT+")"}}/>
                             </MDBCol>
-
                             <MDBCol md='6'>
                                 <MDBCardBody className='d-flex flex-column'>
                                     <h3 className="fw-normal">QUÊN MẬT KHẨU</h3>

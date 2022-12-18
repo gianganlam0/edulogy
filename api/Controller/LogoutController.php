@@ -1,5 +1,5 @@
 <?php
-require_once '../Model/LogoutModel.php';
+require_once __DIR__.'/../Model/LogoutModel.php';
 if (!isset($_SESSION)) {
     session_start();
 }

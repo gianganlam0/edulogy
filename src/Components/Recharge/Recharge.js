@@ -2,10 +2,11 @@ import './Recharge.scss';
 import {Row, Col, Button, Form} from 'react-bootstrap';
 import {useNavigate } from 'react-router-dom';
 import { useState, useContext } from 'react';
-// import { Context } from '../Utils/ContextProvider';
+import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default function Recharge() {
+    const {API} = useContext(Context)
     //get time and date
     const date = new Date();
     //padding 2 zeros
@@ -18,14 +19,12 @@ export default function Recharge() {
     const second = `0${date.getSeconds()}`.slice(-2);
     const time = `${day}-${month}-${year} ${hour}:${minute}:${second}`;
     const navi = useNavigate();
-    // const {loading} = useContext(Context);
     const [error, setError] = useState('');
     const [isHidden, setIsHidden] = useState(false);
     const [amount, setAmount] = useState(50000);
-    const [desc, setDesc] = useState(`Nap tien vao tai khoan vao luc ${time}, so tien: 50000 VND`);
+    const [desc, setDesc] = useState(`Nap tien vao tai khoan vao luc ${time}, so tien: ${amount} VND`);
     const [title, setTitle] = useState('Nạp tiền vào tài khoản');
     const [hidden, setHidden] = useState(false);
-    
     function valiAll(amount) {
         if (!valiAmount(amount)) {
             setError('Số tiền phải trong khoảng 50.000 và 1.000.000.000!');    
@@ -70,7 +69,7 @@ export default function Recharge() {
         })
     }
     function handleRecharge(){
-        const url = '/edulogy/api/Controller/UserController.php';
+        const url = `${API}/Controller/UserController.php`;
         const data = {
             amount: amount,
             content: desc,
@@ -115,17 +114,13 @@ export default function Recharge() {
     return (
         <div className='recharge'>
             <div className="overlay" />
-
             <section className="section-cate">
                 <div className="container">
                     <div className="boxed">
-
                         <div className="section-title text-center">
                             <h3>{title}</h3>
-                        </div>
-                        
-                        <Row>
-                            
+                        </div>                
+                        <Row>                      
                             <Col md={8} className="mx-auto">
                                 <div style={{minHeight:'30px', color: 'red'}}>{error}</div> 
                                 <p>Dấu <span style={{color:'red'}}>*</span> chỉ mục bắt buộc</p>
@@ -153,14 +148,10 @@ export default function Recharge() {
                                         Chuyển đến trang thanh toán
                                         </Button>
                                     </Col>
-                                </Row>
-                                
-                                    
+                                </Row>                                       
                             </Col>
                         </Row>
-
-                    </div>
-                    
+                    </div>               
                 </div>
             </section>
         </div>

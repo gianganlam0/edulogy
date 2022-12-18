@@ -1,15 +1,11 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
-
 require_once __DIR__ . '/../vendor/autoload.php';
-
 $mail = new PHPMailer(true);
-
 try {
     $mail = new PHPMailer();
     $mail->isSMTP();
     $mail->Mailer = "smtp";
- 
     // $mail->SMTPDebug  = 2;  
     // $mail->Debugoutput = "html"; // Lỗi trả về hiển thị với cấu trúc HTML
     $mail->SMTPAuth   = TRUE;

@@ -12,6 +12,16 @@ export const ContextProvider = ({children}) => {
     const [avatar, setAvatar] = useLocalStorage('avatar', '');
     const [cart, setCart] = useLocalStorage('cart', []);
     const BASIC_AVATAR = 'https://i.imgur.com/AxnVk1a.png';
+    const BASIC_COURSE = 'https://i.imgur.com/HcIaAlA.png';
+    const HOME_BG = "https://i.imgur.com/y6UfhyS.jpg";
+    const LOGIN_BG = "https://i.imgur.com/SPbELbr.jpg";
+    const LOGIN_LEFT = "https://i.imgur.com/FytAiPZ.png";
+    const FORGOT_BG = "https://i.imgur.com/NCRPlNl.jpg";
+    const FORGOT_LEFT = "https://i.imgur.com/coQNbJS.jpg";
+    const REGISTER_BG="https://i.imgur.com/HoMCxXL.jpg";
+    const REGISTER_LEFT="https://i.imgur.com/X4Jojqp.jpg";
+    const PATTERN = "https://i.imgur.com/9NgU9mI.png";
+    const API = '/edulogy/api';
     const moodleHome = 'http://localhost/saru';
     function log(text){
         console.log(text);
@@ -72,17 +82,20 @@ export const ContextProvider = ({children}) => {
                 return;
             }
         }
-    }, [])
+    }, [setCart])
 
     return (
-        <Context.Provider value={{BASIC_AVATAR,moodleHome,log,echo,timestamp2Date,string2time,loading,
+        <Context.Provider value={{
+        BASIC_AVATAR,moodleHome,HOME_BG,PATTERN,LOGIN_BG,LOGIN_LEFT,FORGOT_BG,FORGOT_LEFT,
+        REGISTER_BG,REGISTER_LEFT,BASIC_COURSE,API,
+        log,echo,timestamp2Date,string2time,loading,checkPathname,
         isLogin, setIsLogin,
         isTeacher, setIsTeacher,
         isAdmin, setIsAdmin,
         fullname, setFullname,
         avatar, setAvatar,
         cart, setCart,
-        checkPathname}}>
+        }}>
             {children}
         </Context.Provider>
     )

@@ -1,22 +1,18 @@
 <?php
-require_once '../Model/CateModel.php';
-require_once '../Utils.php';
-// require_once '../Model/UserModel.php';
+require_once __DIR__.'/../Model/CateModel.php';
+require_once __DIR__.'/../Utils.php';
 $rq = json_decode($_POST['data'], true);
 $action = $_POST['action'];
-
 $res = array(
     'status' => '',
     'message' => '',
     'data' => ''
 );
-
 //if chua bat dau thì bắt đầu sess
 if (!isset($_SESSION)) {
     session_start();
     setcookie('PHPSESSID', session_id(), time() + 3600*24, '/');//1 ngày
 }
-
 if ($action == 'getCateList'){
     $keyword = $rq['keyword'];
     $sortby = $rq['sortBy'];
@@ -41,16 +37,6 @@ if ($action == 'getCateList'){
             echo json_encode($res);
             return;
         }
-        // else if ($res['status'] == -1){
-        //     $res['message']  = 'Sai tên đăng nhập hoặc mật khẩu';
-        //     echo json_encode($res);
-        //     return;
-        // }
-        // else if ($res['status'] == -2){
-        //     $res['message']  = 'Tài khoản chưa cập nhật thông tin';
-        //     echo json_encode($res);
-        //     return;
-        // }
     }
     catch (Throwable $th) {
         $res['status'] = -3;

@@ -30,7 +30,7 @@ import {useContext, useLayoutEffect, useEffect} from 'react';
 import { Context } from './Components/Utils/ContextProvider';
 
 function App() {
-  const {log,
+  const {
     isLogin, setIsLogin,
     isTeacher, setIsTeacher,
     isAdmin, setIsAdmin} = useContext(Context);
@@ -54,7 +54,7 @@ function App() {
       setIsAdmin(false);
     }
 
-  }, [isLogin]);
+  }, [isLogin, setIsAdmin, setIsLogin, setIsTeacher]);
 
   useEffect(() => {
     //scroll to top

@@ -1,11 +1,11 @@
 import {Button} from 'react-bootstrap';
 import * as I from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import {useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 
 export default function CourseCsvItem({shortNameList,confirmerId, confirmerName,pending,time,onConfirm, onDownload}) {
-    const {isAdmin,timestamp2Date} = useContext(Context);
+    const {timestamp2Date} = useContext(Context);
     var status;
     switch(pending){
         case '0':

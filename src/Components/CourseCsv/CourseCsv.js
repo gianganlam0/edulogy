@@ -1,20 +1,18 @@
 import './CourseCsv.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link , useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useSearchParams} from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import CourseCsvItem from './CourseCsvItem';
 
 export default function CourseCsv() {
-    const navi = useNavigate();
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {moodleHome,loading} = useContext(Context);
+    const {moodleHome,loading,API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [pendingList, setPendingList] = useState([]);
     const [total, setTotal] = useState();
@@ -26,7 +24,7 @@ export default function CourseCsv() {
             setPage(1);  
     }}, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: (page - 1) * 10
         }
@@ -49,7 +47,7 @@ export default function CourseCsv() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, render]);
+    }, [API, page, render]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(
@@ -180,7 +178,7 @@ export default function CourseCsv() {
     }, [page, totalPage, setPage, setParams]);
     
     function handleConfirm(id){
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             id: id,
         }
@@ -208,7 +206,6 @@ export default function CourseCsv() {
             Swal.fire('Thất bại', 'Xác nhận thất bại', 'error');
         });
     }
-
     function handleDownload(csv){
         const file = new Blob([csv], {type: 'text/csv'});
         const url = URL.createObjectURL(file);

@@ -2,9 +2,6 @@
 import {Button} from 'react-bootstrap';
 import * as I from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
-import $ from 'jquery';
-import Swal from 'sweetalert2';
 
 export default function Cart({courseid,fullname,shortname,uploaderId, uploaderName,image,cost,onDelete}) {
     if (cost === '0') cost = 'Miễn phí';

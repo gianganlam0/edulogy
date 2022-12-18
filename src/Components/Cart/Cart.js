@@ -1,9 +1,8 @@
 import './Cart.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useSearchParams} from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
@@ -13,7 +12,7 @@ export default function Cart() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {isAdmin,cart,setCart} = useContext(Context);
+    const {cart,setCart,API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [offset, setOffset] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
@@ -170,7 +169,7 @@ export default function Cart() {
             denyButtonText: `Hủy`,
         }).then((result) => {
             if (result.isConfirmed) {
-                const url = '/edulogy/api/Controller/CourseController.php';
+                const url = `${API}/Controller/CourseController.php`;
                 const data = {
                     cart: cart,
                 }
@@ -209,8 +208,6 @@ export default function Cart() {
         localStorage.setItem('cart', JSON.stringify(newCart));
         setRender(!render);
     }
-
-
 
     document.title = "Giỏ hàng";
     return (

@@ -11,12 +11,10 @@ import $ from 'jquery';
 
 export default function CourseList() {
     const navi = useNavigate();
-    const {isAdmin, isTeacher} = useContext(Context);
+    const {isAdmin, isTeacher,API} = useContext(Context);
     const itemPerPageRef = useRef();
     const jumpPageRef = useRef();
     const keywordRef = useRef();
-    // page=:page&keyword=:keyword&cateid=:cateid&teacherid=:teacherid&
-    // mycourse=:mycourse&searchby=:searchby&sortby=:sortby&orderby:=orderby
     const [page, setPage] = useState(1);
     const [keyword, setKeyword] = useState('');
     const [cateid, setCateid] = useState(0);//0: all
@@ -74,7 +72,7 @@ export default function CourseList() {
         }
     }, [mycourse, params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: (page - 1) * itemPerPage,
             itemPerPage: itemPerPage,
@@ -115,7 +113,7 @@ export default function CourseList() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, itemPerPage, keyword, sortby, orderby, cateid, teacherid, mycourse, searchby]);
+    }, [page, itemPerPage, keyword, sortby, orderby, cateid, teacherid, mycourse, searchby, API]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(

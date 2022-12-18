@@ -1,9 +1,8 @@
 import './Income.scss';
-import {Row, Col, Button, Table, InputGroup, FormControl, FormLabel} from 'react-bootstrap';
+import {Row, Col, Table, InputGroup, FormControl, FormLabel} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useState, useEffect, useRef, useContext } from 'react';
-import { useNavigate,useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import {useSearchParams } from 'react-router-dom';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
@@ -13,9 +12,8 @@ export default function Income() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {isAdmin, isTeacher} = useContext(Context);
+    const {isAdmin, API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
-    const navi=useNavigate();
     //gmt +7
     //get today yyyy-mm-dd
     const today = new Date(new Date().getTime());
@@ -166,7 +164,7 @@ export default function Income() {
         }
     }, [page, totalPage, setPage, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: (page - 1) * 10,
             firstDay: firstDay,
@@ -202,7 +200,7 @@ export default function Income() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page,firstDay, lastDay, teacherId]);
+    }, [page, firstDay, lastDay, teacherId, API]);
     function handleTeacherKeyword(e) {
         const newKeyword = e.target.value;
         setTeacherKeyword(newKeyword);
@@ -211,7 +209,7 @@ export default function Income() {
             setTeacherId(CK.getCookie('id'));
         }
         else{
-            const url = '/edulogy/api/Controller/UserController.php';
+            const url = `${API}/Controller/UserController.php`;
             const data = {
                 offset: 0,
                 limit: 30,

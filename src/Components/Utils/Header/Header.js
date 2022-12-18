@@ -9,7 +9,8 @@ import Swal from 'sweetalert2';
 import { Context } from '../ContextProvider';
 
 export default function Header() {
-  const {log, checkPathname, fullname, setFullname, avatar, setAvatar, isLogin,isTeacher,isAdmin,setIsAdmin,setIsTeacher,setIsLogin,setCart} = useContext(Context);
+  const {checkPathname, fullname, setFullname, avatar, setAvatar,
+    isLogin,isTeacher,isAdmin,setIsAdmin,setIsTeacher,setIsLogin,setCart,API,BASIC_AVATAR} = useContext(Context);
   const navigate = useNavigate();
   const {pathname} = useLocation();
   const [navBarBg, setNavBarBg] = useState('transparent');
@@ -38,7 +39,7 @@ export default function Header() {
     if (CK.getCookie('id') === '') {
       setFullname('Khách');
     }
-  }, [pathname]);
+  }, [pathname, setFullname]);
   useEffect(() => { //chuyển trang thì đóng dropdown
     setIsExpand(false);
   }, [pathname]);
@@ -87,15 +88,12 @@ export default function Header() {
     else {
       setActive(initState);
     }
-    
   }
   , [checkPathname, initState, pathname]);
-
   function handleDropdown(expanded){
     setIsExpand(expanded);
     setNavBarBg('black');
   }
-  
   const handleScroll = () => {
     setScrollY(window.scrollY);
   }
@@ -108,7 +106,7 @@ export default function Header() {
   }, [scrollY, isExpand])
   window.addEventListener('scroll', handleScroll);
   const handleLogout = () => {
-    const url = '/edulogy/api/Controller/LogoutController.php';
+    const url = `${API}/Controller/LogoutController.php`;
         $.ajax({
             url: url,
             type: 'POST',
@@ -143,7 +141,7 @@ export default function Header() {
                   width: 500,
               })
               setFullname("Khách");
-              setAvatar("");
+              setAvatar(BASIC_AVATAR);
               setIsLogin(false);
               navigate('/login');
               setCart([])
@@ -157,9 +155,7 @@ export default function Header() {
                   timer: 4000,
                   width: 500,
               })
-            }
-            
-            
+            }      
         }).fail(function(){
             Swal.fire({
               position: 'top',
@@ -171,7 +167,6 @@ export default function Header() {
         });
     
   }
-  
   return (
   <header className="header">
     <Navbar fixed='top' collapseOnSelect expand="lg" bg={navBarBg} variant="white" expanded={isExpand} onToggle = {handleDropdown}>

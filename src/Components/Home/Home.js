@@ -8,7 +8,7 @@ import { useContext,useEffect,useState } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 export default function Home() {
-    const context = useContext(Context);
+    const {isLogin,moodleHome,HOME_BG,PATTERN,API} = useContext(Context);
     const [courseList, setCourseList] = useState([]);
     document.title = "Trang chủ";
     const responsive = { //for carousel
@@ -26,7 +26,7 @@ export default function Home() {
         }
     };
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: 0,
             itemPerPage: 10,
@@ -53,12 +53,12 @@ export default function Home() {
         }).fail(function(err){
             console.log(err);
         });
-    }, []);
+    }, [API]);
     const navigate = useNavigate();
     return <>
         <div id="home">
-            <section className="main-bg">
-                <div className="overlay" />
+            <section className="main-bg" style={{backgroundImage:"url("+HOME_BG+")"}}>
+                <div className="overlay" style={{backgroundImage:"url("+PATTERN+")"}}/>
                 <div className="home-text-wrapper relative container">
                     <div className="home-message">
                         <p>Hệ thống quản lý khóa học</p>
@@ -67,9 +67,9 @@ export default function Home() {
                         Tham gia khóa học trực tuyến của chúng tôi ngay bây giờ !.
                         </small>
                         <div className="btn-wrapper">
-                            <div><Button hidden={context.isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button></div>
-                            <Button variant="warning" hidden={context.isLogin} onClick={()=>{navigate('/register')}}>Đăng ký tài khoản</Button>    
-                            <Button variant="success" size="lg" hidden={!context.isLogin} onClick={()=>{window.open(context.moodleHome)}}>Truy cập trang moodle</Button>
+                            <div><Button hidden={isLogin} onClick={()=>{navigate('/login')}}>Đăng nhập</Button></div>
+                            <Button variant="warning" hidden={isLogin} onClick={()=>{navigate('/register')}}>Đăng ký tài khoản</Button>    
+                            <Button variant="success" size="lg" hidden={!isLogin} onClick={()=>{window.open(moodleHome)}}>Truy cập trang moodle</Button>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <?php
-require_once("../RechargeConfig.php");
+require_once __DIR__."/../RechargeConfig.php";
 $vnp_SecureHash = $_GET['vnp_SecureHash'];
 $inputData = array();
 foreach ($_GET as $key => $value) {

@@ -1,7 +1,6 @@
 <?php
-
 function handleregister($username, $password){
-    require_once '../connectDB.php';
+    require_once __DIR__.'/../connectDB.php';
 
     if (!isset($_SESSION)) {
         session_start();

@@ -1,4 +1,3 @@
-import * as I from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom';
 
 export default function MemberItem({fullname,userid,email,phone,classrole}) {

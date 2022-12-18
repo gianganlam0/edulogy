@@ -1,9 +1,8 @@
 import './CoursePending.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link , useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
@@ -14,7 +13,7 @@ export default function CoursePending() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {isAdmin, isTeacher} = useContext(Context);
+    const {isAdmin, API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [pendingList, setPendingList] = useState([]);
     const [totalPending, setTotalPending] = useState();
@@ -26,7 +25,7 @@ export default function CoursePending() {
             setPage(1);  
     }}, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: (page - 1) * 10
         }
@@ -49,7 +48,7 @@ export default function CoursePending() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, render]);
+    }, [API, isAdmin, page, render]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(
@@ -179,7 +178,7 @@ export default function CoursePending() {
         }
     }, [page, totalPage, setPage, setParams]);
     useEffect(() => {//check if course startdate is <= today
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             offset: (page - 1) * 10
         }
@@ -201,9 +200,9 @@ export default function CoursePending() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, render]);
+    }, [API, page, render]);
     function handleAccept(id){
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             id: id,
         }
@@ -227,9 +226,8 @@ export default function CoursePending() {
             Swal.fire('Thất bại', 'Duyệt thất bại', 'error');
         });
     }
-
     function handleReject(id){
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             id: id,
         }
@@ -254,7 +252,7 @@ export default function CoursePending() {
         });
     }
     function handleSaveCsv(){
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
         }
         $.ajax({
@@ -282,15 +280,12 @@ export default function CoursePending() {
     return (
         <div className='course-pending'>
             <div className="overlay" />
-
             <section className="section-cate">
                 <div className="container">
                     <div className="boxed">
-
                         <div className="section-title text-center">
                             <h3>Khóa học chờ duyệt</h3>
-                        </div>
-                        
+                        </div>                    
                         <Row style={{padding: '10px 0 0'}}>
                             <Col className="left-text" xs={12} lg={3}>
                                 <p> Có {totalPending} khóa học chưa duyệt</p>

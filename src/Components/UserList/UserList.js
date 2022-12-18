@@ -1,15 +1,15 @@
 import './UserList.scss';
-import {Row, Col, Table, InputGroup, FormControl, FormLabel,Button} from 'react-bootstrap';
+import {Row, Col, Table, InputGroup, FormControl,Button} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
 import * as I from 'react-bootstrap-icons'
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate,useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useRef,useContext } from 'react';
+import {useSearchParams } from 'react-router-dom';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import Item from './Item';
-import * as CK from '../Utils/Cookie';
 export default function UserList() {
+    const {API} = useContext(Context);
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
@@ -153,7 +153,7 @@ export default function UserList() {
         }
     }, [page, totalPage, setPage, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/UserController.php';
+        const url = `${API}/Controller/UserController.php`;
         const data = {
             offset: (page - 1) * 30,
             keyword: keyword,
@@ -183,7 +183,7 @@ export default function UserList() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page,keyword]);
+    }, [page, keyword, API]);
     function handleCsv(){
         let newCsv = csv;
         //rename header to Vietnamese
@@ -207,12 +207,9 @@ export default function UserList() {
     return (
         <div className='user-list'>
             <div className="overlay" />
-
             <section className="section-cate">
                 <div className="container">
-                    <div className="boxed">
-
-                        
+                    <div className="boxed">                     
                         <Row className="section-title text-center mb-3">
                             <h3>Danh sách thành viên</h3>
                         </Row>

@@ -1,14 +1,10 @@
 import './TimeTable.scss';
-import { Button, Table } from 'react-bootstrap';
-import * as Icon from 'react-bootstrap-icons';
+import {Table } from 'react-bootstrap';
 import { useState,useContext,useEffect } from 'react';
 import { Context } from '../ContextProvider';
 export default function TimeTable({value}) {
     const {string2time,moodleHome} = useContext(Context);
     const [scheHtml, setScheHtml] = useState();
-
-    //value = [{'day':'2',start:'8:00',end:'10:00',fullname:'ltw',id:'1'},{'day':'3',start:'8:00',end:'10:00',fullname:'lt java',id:'2'},{'day':'4',start:'8:00',end:'10:00',fullname:'python',id:'1'}]
-    
     useEffect(() => {
         var scheArr = {
             '2': [],
@@ -58,14 +54,14 @@ export default function TimeTable({value}) {
             }
             html.push(<tr key={i}>{row}</tr>)
         }
-        // move first column to last column because we want to start from monday
+        // move first column to last column because start from monday
         html.forEach((item) => {
             var first = item.props.children[0];
             item.props.children.splice(0, 1);
             item.props.children.push(first);
         })
         setScheHtml(html);
-    }, [value]);
+    }, [moodleHome, string2time, value]);
 
     return (
         <Table responsive style={{textAlign: 'center'}} size="sm" striped bordered hover>

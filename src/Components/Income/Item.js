@@ -3,7 +3,7 @@ import {useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 
 export default function Item({studentid,courseid,amount,time,studentname,coursename}) {
-    const {isAdmin,timestamp2Date} = useContext(Context);
+    const {timestamp2Date} = useContext(Context);
     amount = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "VNĐ";
     time = timestamp2Date(time);         
     return (

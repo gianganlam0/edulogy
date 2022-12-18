@@ -1,7 +1,6 @@
 <?php
-
-require_once '../Model/UserModel.php';
-require_once '../Utils.php';
+require_once __DIR__.'/../Model/UserModel.php';
+require_once __DIR__.'/../Utils.php';
 $data = json_decode($_POST['data'], true);
 $action = $_POST['action'];
 

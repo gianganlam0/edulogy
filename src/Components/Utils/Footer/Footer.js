@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    MDBFooter,
-    MDBContainer,
-    MDBCol,
-    MDBRow,
-    MDBIcon
-} from 'mdb-react-ui-kit';
+import {MDBFooter,MDBContainer,MDBCol,MDBRow,MDBIcon} from 'mdb-react-ui-kit';
 import * as Icon from 'react-bootstrap-icons';
 import './Footer.scss';
 import { Button } from 'react-bootstrap';
@@ -14,9 +8,7 @@ import Swal from 'sweetalert2';
 export default function Footer() {
     const handleCopyEmail = () => {
         var email = document.getElementById("myEmail");
-
         navigator.clipboard.writeText(email.textContent);
-
         // Alert the copied text
         Swal.fire({
             position: 'top',
@@ -54,7 +46,7 @@ export default function Footer() {
                                         EDULOGY
                                     </h6>
                                     <p>
-                                        Viết viết cái gì đó ở đây
+                                    Tham gia khóa học trực tuyến của chúng tôi ngay bây giờ !
                                     </p>
                                 </MDBCol>
 
@@ -76,7 +68,7 @@ export default function Footer() {
                                         <Icon.TelephoneFill className='me-3' />
                                         Địa chỉ</h6>
                                     <p>
-                                        <MDBIcon icon="home" className="me-3" />Ký túc xá khu B...
+                                        <MDBIcon icon="home" className="me-3" />VRJ4+65C, Đông Hoà, Dĩ An, Bình Dương
                                     </p>
                                     <p id='myEmail'>
                                         <MDBIcon icon="envelope" className="me-3" />vios.tee97@gmail.com<span><Button variant='dark' id='copyBtn' onClick={handleCopyEmail}><Icon.ClipboardFill /></Button></span>

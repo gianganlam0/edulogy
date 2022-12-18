@@ -1,9 +1,8 @@
 import './CatePending.scss';
-import {Row, Col, Button, Table} from 'react-bootstrap';
+import {Row, Col,Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams, Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useSearchParams} from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
@@ -13,7 +12,7 @@ export default function CatePending() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {isAdmin, isTeacher} = useContext(Context);
+    const {isAdmin,API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
     const [pendingList, setPendingList] = useState([]);
     const [totalPending, setTotalPending] = useState();
@@ -24,7 +23,7 @@ export default function CatePending() {
             setPage(1);  
     }}, [params, setParams]);
     useEffect(() => {//get data from api
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = `${API}/Controller/CateController.php`;
         const data = {
             offset: (page - 1) * 10
         }
@@ -46,7 +45,7 @@ export default function CatePending() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [page, render]);
+    }, [API, isAdmin, page, render]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(
@@ -177,7 +176,7 @@ export default function CatePending() {
     }, [page, totalPage, setPage, setParams]);
 
     function handleAccept(id){
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = `${API}Controller/CateController.php`;
         const data = {
             id: id,
         }
@@ -203,7 +202,7 @@ export default function CatePending() {
     }
 
     function handleReject(id){
-        const url = '/edulogy/api/Controller/CateController.php';
+        const url = `${API}/Controller/CateController.php`;
         const data = {
             id: id,
         }
@@ -227,8 +226,6 @@ export default function CatePending() {
             Swal.fire('Thất bại', 'Từ chối thất bại', 'error');
         });
     }
-
-
 
     document.title = "Danh mục chờ duyệt";
     return (

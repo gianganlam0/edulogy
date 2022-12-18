@@ -1,23 +1,19 @@
 <?php
-require_once '../Model/CourseModel.php';
-require_once '../Utils.php';
-// require_once '../Model/UserModel.php';
+require_once __DIR__.'/../Model/CourseModel.php';
+require_once __DIR__.'/../Utils.php';
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 $rq = json_decode($_POST['data'], true);
 $action = $_POST['action'];
-
 $res = array(
     'status' => '',
     'message' => '',
     'data' => ''
 );
-
 //if chua bat dau thì bắt đầu sess
 if (!isset($_SESSION)) {
     session_start();
     setcookie('PHPSESSID', session_id(), time() + 3600*24, '/');//1 ngày
 }
-
 if ($action == 'getCourseList'){
     $offset = $rq['offset'];
     $itemPerPage = $rq['itemPerPage'];

@@ -1,9 +1,8 @@
 import './MemberList.scss';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import {Pagination} from 'react-bootstrap';
-import * as I from 'react-bootstrap-icons'
-import { useSearchParams,Link,useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useSearchParams,useNavigate } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
@@ -14,9 +13,8 @@ export default function MemberList() {
     const [paginationItems, setPaginationItems] = useState();
     const [params, setParams] = useSearchParams();
     const [page, setPage] = useState(1);
-    const {moodleHome} = useContext(Context);
+    const {moodleHome,API} = useContext(Context);
     const [totalPage, setTotalPage] = useState();
-    const [render, setRender] = useState(false);
     const [courseid, setCourseid] = useState('');
     const [offset, setOffset] = useState(0);
     const [title, setTitle] = useState('');
@@ -40,12 +38,11 @@ export default function MemberList() {
             return; 
         }
         setCourseid(parseInt(params.get('id')))
-        setPage(parseInt(params.get('page')));
-        
+        setPage(parseInt(params.get('page')));    
     }, [navi, params]);
     useEffect(() => {//get data from api
         if (courseid === '') return;
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             courseid: courseid,
         }
@@ -77,12 +74,12 @@ export default function MemberList() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [courseid, render]);
+    }, [API, courseid, navi]);
     useEffect(() => {//set offset
         if (memberList.length === 0) return;
         setOffset((page-1)*limit);
         setTotalPage(Math.ceil(memberList.length / limit));
-    }, [page, memberList, render]);
+    }, [page, memberList]);
     useEffect(() => {//paging
         if (totalPage <= 4){
             setPaginationItems(
@@ -211,11 +208,11 @@ export default function MemberList() {
                 
         }
     }, [page, totalPage, setPage, setParams, courseid]);
-
     function handleCsv(){
         //delete the first row of csv
         const csvArr = csv.split('\n');
         csvArr.shift();
+        //delete teacher info
         csvArr.shift();
         const newCsv = csvArr.join('\n');
 
@@ -224,20 +221,16 @@ export default function MemberList() {
         window.open(url);
         URL.revokeObjectURL(url);
     }
-
     document.title = "Danh sách thành viên";
     return (
         <div className='member-list'>
             <div className="overlay" />
-
             <section className="section-cate">
                 <div className="container">
                     <div className="boxed">
-
                         <div className="section-title text-center">
                             <h3>{title}</h3>
-                        </div>
-                        
+                        </div>                       
                         <Row style={{padding: '10px 0 0'}}>
                             <Col className="text-start" xs={12} lg={3}>
                                 <p> Có {memberList.length} thành viên</p>

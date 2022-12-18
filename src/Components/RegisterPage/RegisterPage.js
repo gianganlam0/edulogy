@@ -9,7 +9,7 @@ import { Context } from '../Utils/ContextProvider';
 export default function RegisterPage() {
 
     const navigate = useNavigate();
-    const {setFullname,setAvatar,setIsLogin,moodleHome} = useContext(Context);
+    const {setFullname,setAvatar,setIsLogin,moodleHome,PATTERN,REGISTER_BG,REGISTER_LEFT,API} = useContext(Context);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
@@ -27,7 +27,6 @@ export default function RegisterPage() {
     function valiSamePassword(password1, password2) {
         return password1 === password2;
     }
-
     function valiAll(username, password, rePassword) {
         if (!valiUsername(username)) {
             setErrorMsg('Tên đăng nhập không hợp lệ');
@@ -46,7 +45,6 @@ export default function RegisterPage() {
             setIsHidden(false);
         }
     }
-
     function handleUsername(e){
         setUsername(e.target.value);
         if(!valiUsername(e.target.value)){
@@ -77,7 +75,7 @@ export default function RegisterPage() {
         }
     }
     function handleRegister(){
-        const url = '/edulogy/api/Controller/RegisterController.php';
+        const url = `${API}/Controller/RegisterController.php`;
         const data = {
             data: JSON.stringify({
                 username: username,
@@ -132,17 +130,14 @@ export default function RegisterPage() {
     document.title = "Đăng ký tài khoản";
     return (
         <div className="register">
-            <div className="main-bg">
-                <div className="overlay" />
+            <div className="main-bg" style={{backgroundImage:"url("+REGISTER_BG+")"}}>
+                <div className="overlay" style={{backgroundImage:"url("+PATTERN+")"}}/>
                 <MDBContainer>
-
                     <MDBCard>
                         <MDBRow className='g-0'>
-
                             <MDBCol md='6'>
-                                <div className='register-img' />
+                                <div className='register-img' style={{backgroundImage:"url("+REGISTER_LEFT+")"}}/>
                             </MDBCol>
-
                             <MDBCol md='6'>
                                 <MDBCardBody className='d-flex flex-column'>
                                     <h3 className="fw-normal my-4 pb-3">ĐĂNG KÝ</h3>

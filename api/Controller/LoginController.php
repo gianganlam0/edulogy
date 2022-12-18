@@ -1,7 +1,7 @@
 <?php
 
-require_once '../Model/LoginModel.php';
-require_once '../Model/UserModel.php';
+require_once __DIR__.'/../Model/LoginModel.php';
+require_once __DIR__.'/../Model/UserModel.php';
 $rq = json_decode($_POST['data'], true);
 $username = $rq['username'];
 $password = $rq['password'];

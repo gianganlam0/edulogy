@@ -3,20 +3,18 @@ import * as Icon from 'react-bootstrap-icons';
 import {Row, Col, Button, Table} from 'react-bootstrap';
 import Comment from '../Utils/Comment/Comment';
 import TimeTable from '../Utils/TimeTable/TimeTable';
-import { useState,useEffect,useContext,useLayoutEffect } from 'react';
+import { useState,useEffect,useContext } from 'react';
 import { useParams,Link,useNavigate } from 'react-router-dom';
 import { Context } from '../Utils/ContextProvider';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import { Interweave } from 'interweave';
 import { UrlMatcher, HashtagMatcher } from 'interweave-autolink';
-// fullname,shortname,cateId,cateName,schedule,
-//     startdate,enddate,image,desc,studentCount,cost,teacherId,teacherName,rate
 
 export default function CourseDetail() {
     const params = useParams();
     const navi = useNavigate();
-    const {timestamp2Date,isLogin,moodleHome,cart,setCart} = useContext(Context);
+    const {timestamp2Date,isLogin,moodleHome,cart,setCart,API} = useContext(Context);
     const [courseid,setCourseid] = useState('');
     const [fullname,setFullname] = useState('');
     const [shortname,setShortname] = useState('');
@@ -45,14 +43,13 @@ export default function CourseDetail() {
     const [usercomment,setUsercomment] = useState('');
     const [canRate,setCanRate] = useState(false);
     useEffect(() => {//take params from url
-        // setPage(parseInt(params.get('page'))); // for comment
         setCourseid(parseInt(params.id));
     }, [params]);
 
     useEffect(() => {//get data from api
         async function fetchData() {
             if (courseid === '') return;
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             courseid: courseid,
         }
@@ -120,7 +117,7 @@ export default function CourseDetail() {
         });
     }
     fetchData();
-    }, [courseid]);
+    }, [API, courseid, navi, timestamp2Date]);
 
     useEffect(() => {
         //offset + 10 when scroll to bottom
@@ -135,7 +132,7 @@ export default function CourseDetail() {
 
     useEffect(() => {//get data from api //comment
         if (courseid === '') return;
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             courseid: courseid,
             offset: offset,
@@ -157,7 +154,7 @@ export default function CourseDetail() {
         }).fail(function(err){
             console.log(err);
         });
-    }, [courseid,render,offset]);
+    }, [courseid,render,offset,API]);
 
 
     useEffect(() => {//check if course is in cart
@@ -202,8 +199,7 @@ export default function CourseDetail() {
             text: 'Đã thêm vào giỏ hàng',
         });
         setRender(!render);
-    }
-    
+    } 
     function handleDelete(id){
         Swal.fire({
             title: 'Xóa bình luận',
@@ -213,7 +209,7 @@ export default function CourseDetail() {
             denyButtonText: `Hủy`,
         }).then((result) => {
             if (result.isConfirmed) {
-                const url = '/edulogy/api/Controller/CourseController.php';
+                const url = `${API}/Controller/CourseController.php`;
                 const data = {
                     id: id,
                 }
@@ -253,7 +249,7 @@ export default function CourseDetail() {
         
     }
     function handleRate(){
-        const url = '/edulogy/api/Controller/CourseController.php';
+        const url = `${API}/Controller/CourseController.php`;
         const data = {
             courseid: courseid,
             userrate: userrate,
