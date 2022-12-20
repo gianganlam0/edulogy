@@ -282,7 +282,7 @@ export default function AddCourse() {
             setCateId('1');
         }
         else{
-            const url = '/edulogy/api/Controller/CateController.php';
+            const url = `${API}/Controller/CateController.php`;
             const data = {
                 offset: 0,
                 itemPerPage: 30,

@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__.'/../Model/LoginModel.php';
 require_once __DIR__.'/../Model/UserModel.php';
 $rq = json_decode($_POST['data'], true);

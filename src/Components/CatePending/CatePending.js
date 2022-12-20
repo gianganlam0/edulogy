@@ -176,7 +176,7 @@ export default function CatePending() {
     }, [page, totalPage, setPage, setParams]);
 
     function handleAccept(id){
-        const url = `${API}Controller/CateController.php`;
+        const url = `${API}/Controller/CateController.php`;
         const data = {
             id: id,
         }

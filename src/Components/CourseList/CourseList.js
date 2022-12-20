@@ -98,13 +98,13 @@ export default function CourseList() {
                 setTotalPage(Math.ceil(res.data.total / itemPerPage));
                 setCourseList(res.data.data);
                 if (teacherid !== 0) {
-                    setFilterTitle('Lọc theo giáo viên: "' + res.data.data[0].teacherName + '"');
+                    setFilterTitle('Lọc theo giáo viên: "' + res.data.teacherName + '"');
                 }
                 if (cateid !== 0) {
-                    setFilterTitle('Lọc theo danh mục: "' + res.data.data[0].cateName + '"');
+                    setFilterTitle('Lọc theo danh mục: "' + res.data.cateName + '"');
                 }
                 if (teacherid !== 0 && cateid !== 0) {
-                    setFilterTitle('Lọc theo giáo viên: "' + res.data.data[0].teacherName + '" và lọc theo danh mục: "' + res.data.data[0].cateName + '"');
+                    setFilterTitle('Lọc theo giáo viên: "' + res.data.teacherName + '" và lọc theo danh mục: "' + res.data.cateName + '"');
                 }
                 if (teacherid === 0 && cateid === 0) {
                     setFilterTitle('');

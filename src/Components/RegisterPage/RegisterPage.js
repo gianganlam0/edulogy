@@ -33,7 +33,7 @@ export default function RegisterPage() {
             setIsHidden(true);
         }
         else if(!valiPassword(password)){
-            setErrorMsg('Mật khẩu không hợp lệ');
+            setErrorMsg('Mật khẩu phải chứa chữ thường, chữ hoa, số, ký tự đặc biệt và ít nhất 8 ký tự');
             setIsHidden(true);
         }
         else if(!valiSamePassword(password, rePassword)){
@@ -57,7 +57,7 @@ export default function RegisterPage() {
     function handlePassword(e){
         setPassword(e.target.value);
         if(!valiPassword(e.target.value)){
-            setErrorMsg('Mật khẩu không hợp lệ');
+            setErrorMsg('Mật khẩu phải chứa chữ thường, chữ hoa, số, ký tự đặc biệt và ít nhất 8 ký tự');
             setIsHidden(true);
         }
         else

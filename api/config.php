@@ -14,7 +14,7 @@ $CFG->prefix    = $DBS['prefix'];
 $CFG->dboptions = $DBS['dboptions'];
 $CFG->wwwroot   = $DBS['home'];
 $CFG->dataroot  = $DBS['dataroot'];
-$CFG->siteguest = 1;
+$CFG->siteguest = -1;
 
 $sql = "SELECT userid FROM user WHERE role = '2'"; //get userid of admins, 2 is admin role
 $admins = array();

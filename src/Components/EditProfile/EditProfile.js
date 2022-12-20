@@ -14,7 +14,7 @@ export default function EditProfile() {
     const navi = useNavigate();
     const [userId, setUserId] = useState();
     const [isMyProfile, setIsMyProfile] = useState(false);
-    const {BASIC_AVATAR, isAdmin, log, setFullname,loading,API} = useContext(Context);
+    const {BASIC_AVATAR, isAdmin, log, setFullname,loading,API,moodleHome} = useContext(Context);
     const [lastname, setLastname] = useState('');
     const [firstname, setFirstname] = useState('');
     const [phone, setPhone] = useState('');
@@ -560,6 +560,9 @@ export default function EditProfile() {
 	                                                matchers={[new UrlMatcher('url'), new HashtagMatcher('hashtag')]}
                                                     newWindow
                                                 />
+                                            </div>
+                                            <div className='text-center more-info'>
+                                                <Button onClick={()=>window.open(moodleHome+'/user/profile.php?id='+userId)} variant="success">Xem thêm thông tin</Button>
                                             </div>
                                             <div hidden={!isMyProfile} className="change-ava-btn">
                                                 <input onChange={handleAvaFile} onClick={e => e.target.value = null} hidden id="up-btn" type="file" accept="image/png, image/jpeg" />

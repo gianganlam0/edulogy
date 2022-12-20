@@ -14,6 +14,5 @@ function handleLogout(){
     foreach($_COOKIE as $key => $value){
         setcookie($key, '', time() - 3600, '/');
     }
-    return json_encode($res);
+    return $res;
 }
-?>

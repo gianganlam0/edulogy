@@ -71,6 +71,20 @@ function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacheri
             $keywordcond = " $searchby LIKE '%$keyword%' ";
             break;
     }
+    $teacherName='';
+    $cateName = '';
+    if ($teacherid != 0){
+        $sql = "SELECT fullname FROM user_view WHERE id=$teacherid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $teacherName = $row['fullname'];
+    }
+    if ($cateid != 0){
+        $sql = "SELECT name FROM saru_course_categories WHERE id=$cateid";
+        $result = mysqli_query($CONN, $sql);
+        $row = mysqli_fetch_array($result);
+        $cateName = $row['name'];
+    }
     if ($mycourse == 0){
         $mycoursecond = " startdate > $threeDaysLater AND totaluser < 100 ";
         $finalcond = "$cond AND $catecond AND $teachercond AND $keywordcond AND $mycoursecond";
@@ -112,7 +126,9 @@ function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacheri
             'message' => '',
             'data' => array(
                 'total' => $total,
-                'data' => $data
+                'data' => $data,
+                'teacherName'=>$teacherName,
+                'cateName'=>$cateName,
             )
         );
         return $res;

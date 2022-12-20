@@ -21,8 +21,9 @@ export const ContextProvider = ({children}) => {
     const REGISTER_BG="https://i.imgur.com/HoMCxXL.jpg";
     const REGISTER_LEFT="https://i.imgur.com/X4Jojqp.jpg";
     const PATTERN = "https://i.imgur.com/9NgU9mI.png";
-    const API = '/edulogy/api';
-    const moodleHome = 'http://localhost/saru';
+    // const API = '/edulogy/api'; // for dev
+    const API = 'https://edulogy.tech/edulogy/api'; //for up len host
+    const moodleHome = 'https://saru.edulogy.tech';
     function log(text){
         console.log(text);
     }

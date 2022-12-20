@@ -73,9 +73,9 @@ function updateInfo($id, $lastname, $firstname, $phone, $IDNumber, $sex, $birthd
     //wrap string in ""
     $lastname = '"' . $lastname . '"';
     $firstname = '"' . $firstname . '"';
-    $desc = '"' . $desc . '"';
+    $desc = mysqli_real_escape_string($CONN, $desc);
     $sql = "UPDATE $userTable
-            SET lastname = $lastname, firstname = $firstname, phone2 = '$phone', idnumber = '$IDNumber', email = '$email', description = $desc
+            SET lastname = $lastname, firstname = $firstname, phone2 = '$phone', idnumber = '$IDNumber', email = '$email', description = '$desc'
             WHERE id = '$id'";
     $result = mysqli_query($CONN, $sql);
     if (!$result) {
@@ -263,7 +263,9 @@ function recharge($userid,$amount){
         "vnp_Locale" => $vnp_Locale,
         "vnp_OrderInfo" => $vnp_OrderInfo,
         "vnp_OrderType" => $vnp_OrderType,
-        "vnp_ReturnUrl" => $vnp_Returnurl,
+        "vnp_ReturnUrl" => $vnp_IpnURL, //môi trường test nên vậy
+        // "vnp_ReturnUrl" => $vnp_Returnurl,
+        // "vnp_IpnURL" => $vnp_IpnURL,
         "vnp_TxnRef" => $vnp_TxnRef,
         "vnp_ExpireDate"=>$vnp_ExpireDate,
     );
@@ -283,7 +285,7 @@ function recharge($userid,$amount){
     }
     $vnp_Url = $vnp_Url . "?" . $query;
     if (isset($vnp_HashSecret)) {
-        $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);// 
+        $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash; 
     }
     $returnData = array(
@@ -403,6 +405,22 @@ function getUserList($offset,$keyword){
             'total' => $totalUser,
             'csv' => $csv
         )
+    );
+    return $returnData;
+}
+function getAdminList(){
+    require_once __DIR__.'/../connectDB.php';
+    $CONN = connectDB();
+    $userView = 'user_view';
+    $sql = "SELECT id FROM $userView WHERE role = '2'";
+    $result = mysqli_query($CONN, $sql);
+    $adminList = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $adminList[] = $row['id'];
+    }
+    $returnData = array(
+        'status' => 0,
+        'data' => $adminList,
     );
     return $returnData;
 }

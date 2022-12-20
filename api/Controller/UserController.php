@@ -254,7 +254,7 @@ else {
             return;
         } catch (Throwable $th) {
             $res['status'] = -2;
-            $res['message'] = 'Không tìm thấy người dùng!';
+            $res['message'] = 'Đã có lỗi xảy ra!';
             echo json_encode($res);
             return;
         }
@@ -476,6 +476,21 @@ else {
         }
         try {
             $res = getUserList($offset, $keyword);
+            if ($res['status'] == 0){
+                $res['message'] = '';
+            }
+            echo json_encode($res);
+            return;
+        } catch (Throwable $th) {
+            $res['status'] = -2;
+            $res['message'] = 'Có lỗi xảy ra!';
+            echo json_encode($res);
+            return;
+        }
+    }
+    else if ($action=='getAdminList'){
+        try {
+            $res = getAdminList();
             if ($res['status'] == 0){
                 $res['message'] = '';
             }

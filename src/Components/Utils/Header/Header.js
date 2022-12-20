@@ -10,7 +10,7 @@ import { Context } from '../ContextProvider';
 
 export default function Header() {
   const {checkPathname, fullname, setFullname, avatar, setAvatar,
-    isLogin,isTeacher,isAdmin,setIsAdmin,setIsTeacher,setIsLogin,setCart,API,BASIC_AVATAR} = useContext(Context);
+    isLogin,isTeacher,isAdmin,setIsAdmin,setIsTeacher,setIsLogin,setCart,API,BASIC_AVATAR,moodleHome} = useContext(Context);
   const navigate = useNavigate();
   const {pathname} = useLocation();
   const [navBarBg, setNavBarBg] = useState('transparent');
@@ -32,9 +32,9 @@ export default function Header() {
       incomeAll: false,
     }
   }, []);
-
   const [active, setActive] = useState(initState);
   const [scrollY, setScrollY] = useState(0);
+  const [adminList, setAdminList] = useState(['1']);
   useEffect(() => { // kiểm tra cookie hết hạn
     if (CK.getCookie('id') === '') {
       setFullname('Khách');
@@ -107,9 +107,15 @@ export default function Header() {
   window.addEventListener('scroll', handleScroll);
   const handleLogout = () => {
     const url = `${API}/Controller/LogoutController.php`;
+    const data = {
+      data: JSON.stringify({
+          data: 'logout',
+      })
+    }
         $.ajax({
             url: url,
             type: 'POST',
+            data: data,
         }).done(function(res){
             try {
               res = JSON.parse(res);
@@ -167,6 +173,33 @@ export default function Header() {
         });
     
   }
+  useEffect(() => {//get admin id list
+    const url = `${API}/Controller/UserController.php`;
+    const data = {data: JSON.stringify({}),
+                  action: 'getAdminList'};
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: data,
+    }).done(function(res){
+      try {
+        res = JSON.parse(res);
+      } catch (error) {}
+      if (res.status === 0){
+        setAdminList(res.data);
+      }
+      else{
+        setAdminList(["1"]);
+      }
+    }).fail(function(){
+      setAdminList(['1']);
+    });
+  }, [API])
+  function getRandomItem(arr) {
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    const item = arr[randomIndex];
+    return item;
+  }
   return (
   <header className="header">
     <Navbar fixed='top' collapseOnSelect expand="lg" bg={navBarBg} variant="white" expanded={isExpand} onToggle = {handleDropdown}>
@@ -179,10 +212,10 @@ export default function Header() {
             <Nav.Link active={active.courses} onClick={()=>{navigate('/course-list')}}><Icon.BookFill/> Khóa học</Nav.Link>
             <Nav.Link active={active.cate} onClick={()=>{navigate('/cate-list')}}><Icon.PenFill/> Danh mục</Nav.Link>
             {(isTeacher || isAdmin) && <Nav.Link active={active.income} onClick={()=>{navigate('/income')}}><Icon.CashStack/> Thu nhập</Nav.Link>}
+            {isLogin && <Nav.Link onClick={()=>window.open(moodleHome+'/user/profile.php?id='+getRandomItem(adminList))}><Icon.TelephoneFill/> Liên hệ quản lý</Nav.Link>}
           </Nav>
-          <Nav>
-            
-            <NavDropdown disabled={!isLogin} title={fullname}
+          <Nav>    
+          <NavDropdown disabled={!isLogin} title={'💻 '+fullname}
             active={active.myInfo || active.myCourse || active.changePass||active.incomeAll||
               active.schedule||active.recharge||active.transHistory}>
               <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
@@ -195,9 +228,9 @@ export default function Header() {
               {isAdmin?<NavDropdown.Item active={active.userList} onClick={()=>{navigate('/user-list')}}><span><i className="fas fa-chalkboard"/> Thành viên</span></NavDropdown.Item>:null}
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
-            </NavDropdown>
+          </NavDropdown>
             <Nav.Link active={active.login} hidden={isLogin} onClick={()=>{navigate('/login')}}> Đăng nhập</Nav.Link>
-            <Nav.Link active={active.cart} hidden={!isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/></Nav.Link>
+            <Nav.Link active={active.cart} hidden={!isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/> Giỏ hàng</Nav.Link>
             {/* avatar box */}
             <div hidden={!isLogin} className="avatar-box">
               <img src={avatar} alt="avatar" />      

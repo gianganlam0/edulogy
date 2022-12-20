@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/../Model/LogoutModel.php';
+require_once __DIR__.'/../Model/LogOutModel.php';
 if (!isset($_SESSION)) {
     session_start();
 }
@@ -20,8 +20,8 @@ if(!isset($_SESSION['id'])){
     echo json_encode($res);
 }
 else{
-    echo handleLogout();
+    $res = handleLogout();
+    echo json_encode($res);
 }
 session_destroy();
 return;
-?>
