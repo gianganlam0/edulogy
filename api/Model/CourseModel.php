@@ -9,7 +9,8 @@ function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacheri
     }
     $CONN = connectDB();
     $courseTable = "course";
-    $threeDaysLater = time() + 3*24*60*60;
+    //now <= startdate + 14 day => now - 14 day <= startdate
+    $twoWeeksBefore = time() - 14*24*60*60;
     $cond = " pending = 4 ";
     $keyword = mysqli_real_escape_string($CONN, $keyword);
     $cateid = (int)$cateid;
@@ -86,7 +87,7 @@ function handleGetCourseList($offset, $itemPerPage, $keyword, $cateid, $teacheri
         $cateName = $row['name'];
     }
     if ($mycourse == 0){
-        $mycoursecond = " startdate > $threeDaysLater AND totaluser < 100 ";
+        $mycoursecond = " startdate >= $twoWeeksBefore AND totaluser < 100 ";
         $finalcond = "$cond AND $catecond AND $teachercond AND $keywordcond AND $mycoursecond";
         //first count total
         $sql = "SELECT COUNT(*) FROM $courseTable
@@ -759,7 +760,8 @@ function getCourse($courseid){
         }
     }
     if(!$isMyCourse){
-        $threeDaysLater = time() + 3*24*60*60;
+        //now <= startdate + 14 day => now - 14 day <= startdate
+        $twoWeeksBefore = time() - 14*24*60*60;
         $maxUser = 100;
         $sql = "SELECT * FROM $courseTable WHERE courseid = $courseid";
         $result = mysqli_query($CONN, $sql);
@@ -773,8 +775,7 @@ function getCourse($courseid){
         }
         else{
             //check if expired
-            // if ($row['startdate'] <= $threeDaysLater){
-            if ($row['startdate'] <= $threeDaysLater){
+            if ($row['startdate'] <= $twoWeeksBefore){
                 $res = array(
                     'status'=> -3
                 );

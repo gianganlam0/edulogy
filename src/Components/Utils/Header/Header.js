@@ -229,10 +229,10 @@ export default function Header() {
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
           </NavDropdown>
-            <Nav.Link active={active.login} hidden={isLogin} onClick={()=>{navigate('/login')}}> Đăng nhập</Nav.Link>
+            <Nav.Link active={active.login} hidden={isLogin} onClick={()=>{navigate('/login')}}><Icon.BoxArrowInRight/> Đăng nhập</Nav.Link>
             <Nav.Link active={active.cart} hidden={!isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/> Giỏ hàng</Nav.Link>
             {/* avatar box */}
-            <div hidden={!isLogin} className="avatar-box">
+            <div onClick={()=>navigate('edit-profile/'+CK.getCookie('id'))} hidden={!isLogin} className="avatar-box">
               <img src={avatar} alt="avatar" />      
             </div>
           </Nav>

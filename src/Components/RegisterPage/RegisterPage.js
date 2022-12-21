@@ -1,5 +1,5 @@
 import { useState, useContext} from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link,useLocation } from 'react-router-dom';
 import './RegisterPage.scss';
 import {MDBBtn,MDBContainer,MDBCard,MDBCardBody,MDBRow,MDBCol,MDBInput} from 'mdb-react-ui-kit';
 import $ from 'jquery';
@@ -9,6 +9,7 @@ import { Context } from '../Utils/ContextProvider';
 export default function RegisterPage() {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const {setFullname,setAvatar,setIsLogin,moodleHome,PATTERN,REGISTER_BG,REGISTER_LEFT,API} = useContext(Context);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -127,6 +128,14 @@ export default function RegisterPage() {
             Swal.fire('Lỗi', 'Không thể kết nối đến server', 'error');
         });
     }
+    //bind enter key to #login-btn
+    $(document).on('keypress', function(e) {
+        if(e.key === 'Enter') {
+            if(location.pathname === '/register'){
+                $('#signup-btn').trigger('click');
+            }
+        }
+    });
     document.title = "Đăng ký tài khoản";
     return (
         <div className="register">
@@ -152,7 +161,7 @@ export default function RegisterPage() {
                                     </div>
 
                                     <div style={{minHeight:'30px', color: 'red'}}>{errorMsg}</div>
-                                    <MDBBtn disabled = {isHidden} className="mb-4 px-5" color='primary' size='lg' onClick={handleRegister}>Đăng ký</MDBBtn>
+                                    <MDBBtn id='signup-btn' disabled = {isHidden} className="mb-4 px-5" color='success' size='lg' onClick={handleRegister}>Đăng ký</MDBBtn>
                                     <Link to={'/login'} style={{ color: '#393f81' }}>Đã có tài khoản? Đăng nhập ngay!</Link>
                                 </MDBCardBody>
                             </MDBCol>

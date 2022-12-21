@@ -31,6 +31,12 @@ if (!preg_match($regexUsername, $username)) {
     echo json_encode($res);
     return;
 }
+if ($username == 'guest') {
+    $res['status'] = -2;
+    $res['message'] = 'Bạn không thể đăng ký với tên đăng nhập này!';
+    echo json_encode($res);
+    return;
+}
 
 //password is a sha256 string
 $regexPassword = '/^[a-f0-9]{64}$/';

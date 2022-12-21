@@ -1,13 +1,13 @@
 import { useState, useContext} from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link ,useLocation} from 'react-router-dom';
 import './ForgotPassword.scss';
 import {MDBBtn,MDBContainer,MDBCard,MDBCardBody,MDBRow,MDBCol,MDBInput} from 'mdb-react-ui-kit';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import { Context } from '../Utils/ContextProvider';
 export default function ForgotPassword() {
-
     const navigate = useNavigate();
+    const location = useLocation();
     const {FORGOT_BG,PATTERN,FORGOT_LEFT,loading,API} = useContext(Context);
     const [email, setEmail] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -82,6 +82,14 @@ export default function ForgotPassword() {
             })
         });
     }
+    //bind enter key
+    $(document).on('keypress', function(e) {
+        if(e.key === 'Enter') {
+            if(location.pathname === '/forgot-password'){
+                $('#forgot-btn').trigger('click');
+            }
+        }
+    });
     document.title = "Quên mật khẩu";
     return (
         <div className="forgot-password">
@@ -100,7 +108,7 @@ export default function ForgotPassword() {
                                     <MDBInput value={email} onChange={handleEmail} wrapperClass='mb-4' label='Email' type='text' size="lg" />
 
                                     <div style={{minHeight:'30px', color: 'red'}}>{errorMsg}</div>
-                                    <MDBBtn disabled = {isHidden} className="mb-4 px-5" color='primary' size='lg' onClick={handleForgot}>Khôi phục mật khẩu</MDBBtn>
+                                    <MDBBtn id='forgot-btn' disabled = {isHidden} className="mb-4 px-5" color='warning' size='lg' onClick={handleForgot}>Khôi phục mật khẩu</MDBBtn>
                                     <Link to={'/register'} style={{ color: '#393f81' }}>Chưa có tài khoản? Đăng ký ngay!</Link>
 
                                 </MDBCardBody>
