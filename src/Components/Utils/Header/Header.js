@@ -30,6 +30,7 @@ export default function Header() {
       cart: false,
       income: false,
       incomeAll: false,
+      register: false,
     }
   }, []);
   const [active, setActive] = useState(initState);
@@ -84,6 +85,9 @@ export default function Header() {
     }
     else if(checkPathname(pathname, "/income-all")) {
       setActive({...initState, incomeAll: true})
+    }
+    else if(checkPathname(pathname, "/register")) {
+      setActive({...initState, register: true})
     }
     else {
       setActive(initState);
@@ -215,20 +219,21 @@ export default function Header() {
             {isLogin && <Nav.Link onClick={()=>window.open(moodleHome+'/user/profile.php?id='+getRandomItem(adminList))}><Icon.TelephoneFill/> Liên hệ quản lý</Nav.Link>}
           </Nav>
           <Nav>    
-          <NavDropdown disabled={!isLogin} title={'💻 '+fullname}
-            active={active.myInfo || active.myCourse || active.changePass||active.incomeAll||
-              active.schedule||active.recharge||active.transHistory}>
-              <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
-              <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/?mycourse=1')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
-              <NavDropdown.Item active={active.changePass} onClick={()=>{navigate('/change-password')}}><span><Icon.Lock/> Thay đổi mật khẩu</span></NavDropdown.Item>
-              <NavDropdown.Item active={active.schedule} onClick={()=>{navigate('/schedule')}}><span><Icon.Clock/> Xem thời khóa biểu</span></NavDropdown.Item>
-              <NavDropdown.Item active={active.recharge} onClick={()=>{navigate('/recharge')}}><span><Icon.Cash/> Nạp tiền vào tài khoản</span></NavDropdown.Item>
-              <NavDropdown.Item active={active.transHistory} onClick={()=>{navigate('/transaction-history')}}><span><Icon.ClockHistory/> Lịch sử giao dịch</span></NavDropdown.Item>
-              {isAdmin?<NavDropdown.Item active={active.incomeAll} onClick={()=>{navigate('/income-all')}}><span><i className="fas fa-chalkboard-teacher"/> Giáo viên</span></NavDropdown.Item>:null}
-              {isAdmin?<NavDropdown.Item active={active.userList} onClick={()=>{navigate('/user-list')}}><span><i className="fas fa-chalkboard"/> Thành viên</span></NavDropdown.Item>:null}
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
-          </NavDropdown>
+          {!isLogin?<Nav.Link active={active.register} onClick={()=>{navigate('/register')}}><Icon.PersonPlus/> Đăng ký</Nav.Link>:
+          <NavDropdown title={<span><Icon.Person/> {fullname}</span>}
+          active={active.myInfo || active.myCourse || active.changePass||active.incomeAll||
+            active.schedule||active.recharge||active.transHistory}>
+            <NavDropdown.Item active={active.myInfo} onClick={()=>{navigate('/edit-profile/my')}}><span><Icon.Person/> Thay đổi thông tin</span></NavDropdown.Item>
+            <NavDropdown.Item active={active.myCourse} onClick={()=>{navigate('/course-list/?mycourse=1')}}><span><Icon.Book/> Khóa học của tôi</span></NavDropdown.Item>
+            <NavDropdown.Item active={active.changePass} onClick={()=>{navigate('/change-password')}}><span><Icon.Lock/> Thay đổi mật khẩu</span></NavDropdown.Item>
+            <NavDropdown.Item active={active.schedule} onClick={()=>{navigate('/schedule')}}><span><Icon.Clock/> Xem thời khóa biểu</span></NavDropdown.Item>
+            <NavDropdown.Item active={active.recharge} onClick={()=>{navigate('/recharge')}}><span><Icon.Cash/> Nạp tiền vào tài khoản</span></NavDropdown.Item>
+            <NavDropdown.Item active={active.transHistory} onClick={()=>{navigate('/transaction-history')}}><span><Icon.ClockHistory/> Lịch sử giao dịch</span></NavDropdown.Item>
+            {isAdmin?<NavDropdown.Item active={active.incomeAll} onClick={()=>{navigate('/income-all')}}><span><i className="fas fa-chalkboard-teacher"/> Giáo viên</span></NavDropdown.Item>:null}
+            {isAdmin?<NavDropdown.Item active={active.userList} onClick={()=>{navigate('/user-list')}}><span><i className="fas fa-chalkboard"/> Thành viên</span></NavDropdown.Item>:null}
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}><span><Icon.DoorClosed/> Đăng xuất</span></NavDropdown.Item>
+        </NavDropdown>}
             <Nav.Link active={active.login} hidden={isLogin} onClick={()=>{navigate('/login')}}><Icon.BoxArrowInRight/> Đăng nhập</Nav.Link>
             <Nav.Link active={active.cart} hidden={!isLogin} onClick={()=>{navigate('/cart')}}><Icon.Cart/> Giỏ hàng</Nav.Link>
             {/* avatar box */}

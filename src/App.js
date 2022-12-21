@@ -27,7 +27,7 @@ import {Routes, Route, useLocation} from 'react-router-dom';
 import * as CK from './Components/Utils/Cookie';
 import {useContext, useLayoutEffect, useEffect} from 'react';
 import { Context } from './Components/Utils/ContextProvider';
-
+import $ from 'jquery';
 function App() {
   const {
     isLogin, setIsLogin,
@@ -60,6 +60,26 @@ function App() {
     window.scrollTo(0, 0);
   }, [location]);
 
+  //bind enter key
+  useEffect(() => {
+    function enter(e) {
+      if (e.key === 'Enter') {
+          if (location.pathname === '/login') {
+            $('#login-btn').trigger('click');
+          }
+          else if (location.pathname === '/register') {
+            $('#signup-btn').trigger('click');
+          }
+          else if (location.pathname === '/forgot-password') {
+            $('#forgot-btn').trigger('click');
+          }
+      }   
+    } 
+    document.addEventListener("keydown", enter);
+    return () => {
+      document.removeEventListener("keydown",enter);
+    } 
+  }, [location.pathname]);
   return (
     <>
     <Routes>

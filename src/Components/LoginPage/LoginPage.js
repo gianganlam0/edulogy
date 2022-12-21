@@ -1,5 +1,5 @@
 import { useState, useContext} from 'react';
-import { useNavigate, Link,useLocation } from 'react-router-dom';
+import { useNavigate, Link} from 'react-router-dom';
 import './LoginPage.scss';
 import {MDBBtn,MDBContainer,MDBCard,MDBCardBody,MDBRow,MDBCol,MDBInput} from 'mdb-react-ui-kit';
 import $ from 'jquery';
@@ -9,7 +9,6 @@ import { Context } from '../Utils/ContextProvider';
 export default function LoginPage() {
 
     const navigate = useNavigate();
-    const location = useLocation();
     const {LOGIN_BG,LOGIN_LEFT,PATTERN,setFullname,setAvatar,setIsLogin,moodleHome,API} = useContext(Context);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -123,14 +122,6 @@ export default function LoginPage() {
             })
         });
     }
-    //bind enter key to #login-btn
-    $(document).on('keypress', function(e) {
-        if(e.key === 'Enter') {
-            if(location.pathname === '/login'){
-                $('#login-btn').trigger('click');
-            }
-        }
-    });
     document.title = "Đăng nhập";
     return (
         <div className="login-page">
